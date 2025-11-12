@@ -1,0 +1,82 @@
+# =================
+# JAVA
+# =================
+
+# Compiled class files
+.class
+*.class
+
+# Log file
+.log
+
+# Package Files
+.jar
+*war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+
+# ====================
+
+# IDEs and Editors
+
+# ====================
+
+# Eclipse specific files
+.project
+.classpath
+.settings/
+.metadata/
+bin/
+tmp/
+
+# VS Code specific files
+.vscode/
+
+
+
+# =================
+# Others
+# =================
+
+# Environment variables
+.env
+.env.*
+
+# Backup files
+*.bak
+*swp
+
+
+# =================
+# Spring Boot Specific
+# =================
+
+# Spring Boot specific
+/logs/
+/Lambda/**
+
+# =================
+# Server Configuration
+# =================
+/Servers
+
+.DS_Store 
+#Mac용 운영체제파일
+Thumbs.db
+#Window용 운영체제파일
+
+.idea/
+*.iml
+# IntelliJ IDEA 관련 파일
+
+target/
+# Maven 빌드 아티팩트
+build/
+# Gradle 빌드 아티팩트
+
+*.yml
+
