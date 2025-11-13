@@ -17,12 +17,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.kh.configuration.filter.JwtFilter;
+
+import lombok.RequiredArgsConstructor;
 
 
 @Configuration
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfigure {
+	
+	private final JwtFilter jwtFilter;
 	
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -31,7 +38,12 @@ public class SecurityConfigure {
 						   .csrf(AbstractHttpConfigurer::disable)
 						   .cors(Customizer.withDefaults())
 						   .authorizeHttpRequests(requests -> {
-							   requests.requestMatchers(HttpMethod.POST, "/boards").authenticated();
+							   requests.requestMatchers(HttpMethod.POST, "/auth/login", "/login/admin").permitAll();
+							   requests.requestMatchers(HttpMethod.POST,"/members", "/boards", "/activityBoards", "/notices", "/campaigns").authenticated();
+							   requests.requestMatchers(HttpMethod.GET,"/members/**", "/boards/**","/activityBoards/**", "/images/**", "/notices/**", "/campaigns/**").permitAll();
+							   requests.requestMatchers(HttpMethod.PUT,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
+							   requests.requestMatchers(HttpMethod.DELETE,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
+							   requests.requestMatchers("/admin/**").hasRole("ADMIN");
 						   })
 						   .sessionManagement(manager ->
 						   	   manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -49,7 +61,6 @@ public class SecurityConfigure {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
-		
 	}
 	
 	@Bean
