@@ -11,6 +11,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.token.util.JwtUtil;
 
 import io.jsonwebtoken.Claims;
@@ -48,11 +49,13 @@ public class JwtFilter extends OncePerRequestFilter{
 			Claims claims = jwtUtil.paresJwt(token);
 			String username = claims.getSubject();
 			
-//			UsernamePasswordAuthenticationToken authentication
-//				= new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-//			authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+			CustomUserDetails user = (CustomUserDetails)userDetailsService.loadUserByUsername(username);
 			
-//			SecurityContextHolder.getContext().setAuthentication(authentication);
+			UsernamePasswordAuthenticationToken authentication
+				= new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+			authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+			
+			SecurityContextHolder.getContext().setAuthentication(authentication);
 			
 		} catch(ExpiredJwtException e) {
 			log.info("토큰 유효기간 만료");
