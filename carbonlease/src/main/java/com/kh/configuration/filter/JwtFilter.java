@@ -1,16 +1,20 @@
 package com.kh.configuration.filter;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.kh.auth.model.vo.CustomUserDetails;
+import com.kh.member.model.dao.MemberMapper;
+import com.kh.member.model.dto.MemberDTO;
 import com.kh.token.util.JwtUtil;
 
 import io.jsonwebtoken.Claims;
@@ -28,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter{
 
+	private final MemberMapper memberMapper;
 	private final JwtUtil jwtUtil;
 	private final UserDetailsService userDetailsService;
 	
@@ -46,13 +51,29 @@ public class JwtFilter extends OncePerRequestFilter{
 		
 		try {
 			Claims claims = jwtUtil.paresJwt(token);
-			String username = claims.getSubject();
+			System.out.println(claims);
+			String userNo = claims.getSubject();
 			
-//			UsernamePasswordAuthenticationToken authentication
-//				= new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-//			authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+			MemberDTO member = memberMapper.loadUserByUserNo(Long.parseLong(userNo));
 			
-//			SecurityContextHolder.getContext().setAuthentication(authentication);
+			CustomUserDetails user =  CustomUserDetails.builder()
+						.memberNo(member.getMemberNo())
+		                .username(member.getMemberId())
+		                .password(member.getMemberPwd())
+		                .nickname(member.getNickname())
+		                .email(member.getEmail())
+		                .addressLine1(member.getAddressLine1())
+		                .addressLine2(member.getAddressLine2())
+		                .enrollDate(member.getEnrollDate())
+		                .authorities(Collections.singletonList(new SimpleGrantedAuthority(member.getRole())))
+		                .status(member.getStatus())
+		                .build();
+			
+			UsernamePasswordAuthenticationToken authentication
+				= new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+			authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+			
+			SecurityContextHolder.getContext().setAuthentication(authentication);
 			
 		} catch(ExpiredJwtException e) {
 			log.info("토큰 유효기간 만료");
