@@ -9,4 +9,6 @@ public interface MemberMapper {
 
 	MemberDTO loadUser(String username);
 	
+	MemberDTO loadUserByUserNo(Long userNo);
+	
 }

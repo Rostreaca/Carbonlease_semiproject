@@ -28,18 +28,18 @@ public class JwtUtil {
 		this.key = Keys.hmacShaKeyFor(arr);
 	}
 	
-	public String getAccessToken(String memberNo) {
+	public String getAccessToken(String memberId) {
 		return Jwts.builder()
-				   .subject(memberNo)
+				   .subject(memberId)
 				   .issuedAt(new Date())
 				   .expiration(Date.from(Instant.now().plus(Duration.ofDays(1))))
 				   .signWith(key)
 				   .compact();
 	}
 	
-	public String getRefreshToken(String memberNo) {
+	public String getRefreshToken(String memberId) {
 		return Jwts.builder()
-				   .subject(memberNo)
+				   .subject(memberId)
 				   .issuedAt(new Date())
 				   .expiration(Date.from(Instant.now().plus(Duration.ofDays(3))))
 				   .signWith(key)
