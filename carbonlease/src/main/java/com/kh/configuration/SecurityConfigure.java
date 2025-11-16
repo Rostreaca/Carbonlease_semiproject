@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -33,6 +32,7 @@ public class SecurityConfigure {
 	
 	private final JwtFilter jwtFilter;
 	
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 		
@@ -47,8 +47,8 @@ public class SecurityConfigure {
 							   requests.requestMatchers(HttpMethod.DELETE,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
 							   requests.requestMatchers("/admin/**").hasRole("ADMIN");
 						   })
-						   .sessionManagement(manager ->
-						   	   manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+							.sessionManagement(manager ->
+							manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 						   )
 						   .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 						   .build();
@@ -74,7 +74,7 @@ public class SecurityConfigure {
 	
 	
 	@Bean
-	public AuthenticationManager autheticationMamger(AuthenticationConfiguration authConfig) throws Exception {
+	public AuthenticationManager autheticationManager(AuthenticationConfiguration authConfig) throws Exception {
 		return authConfig.getAuthenticationManager();
 	}
 }
