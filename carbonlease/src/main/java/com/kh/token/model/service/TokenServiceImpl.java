@@ -58,6 +58,9 @@ public class TokenServiceImpl implements TokenService{
 		
 		TokenDTO tokenDTO = tokenMapper.findByToken(refreshToken);
 		
+		if(tokenDTO == null) {
+			throw new CustomAuthenticationException("토큰이 존재하지 않습니다.");
+		}
 		//RefreshToken(VO)에 autoMapping을 시도해서 실패. 새롭게 DTO를 만들어서 매퍼에서 DTO로 매핑된 값을 RefreshToken에 담음 
 		RefreshToken token = RefreshToken.builder().token(tokenDTO.getToken()).memberNo(tokenDTO.getMemberNo()).expiration(tokenDTO.getExpiration()).build();
 		
