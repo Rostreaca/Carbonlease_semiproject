@@ -2,8 +2,24 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<<<<<<< HEAD
 <mapper namespace="com.kh.notice.model.dao.NoticeMapper">
 
 	
+=======
+<mapper namespace="com.kh.token.model.dao.TokenMapper">
+	
+	<insert id="saveTokens" parameterType="com.kh.token.model.vo.RefreshToken">
+		INSERT
+		  INTO
+		       CL_TOKEN
+		VALUES
+		       (
+		       #{memberNo}
+		     , #{token} 
+		     , #{expiration}
+		       )
+	</insert>
+>>>>>>> 5a67896a9aea12546cad684444671c46622ddc70
 	
 </mapper>

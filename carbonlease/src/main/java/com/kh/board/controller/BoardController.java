@@ -1,5 +1,6 @@
 package com.kh.board.controller;
 
+<<<<<<< HEAD
 import java.util.List;
 
 import org.springframework.http.RequestEntity;
@@ -35,4 +36,18 @@ public class BoardController {
 	}
 	
 	
+=======
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/boards")
+public class BoardController {
+	
+	@PostMapping
+	public void board() {
+		
+	}
+>>>>>>> 5a67896a9aea12546cad684444671c46622ddc70
 }

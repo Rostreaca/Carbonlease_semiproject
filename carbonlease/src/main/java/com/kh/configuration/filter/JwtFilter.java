@@ -1,10 +1,11 @@
 package com.kh.configuration.filter;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -12,6 +13,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.kh.auth.model.vo.CustomUserDetails;
+<<<<<<< HEAD
+=======
+import com.kh.member.model.dao.MemberMapper;
+import com.kh.member.model.dto.MemberDTO;
+>>>>>>> 5a67896a9aea12546cad684444671c46622ddc70
 import com.kh.token.util.JwtUtil;
 
 import io.jsonwebtoken.Claims;
@@ -29,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter{
 
+	private final MemberMapper memberMapper;
 	private final JwtUtil jwtUtil;
 	private final UserDetailsService userDetailsService;
 	
@@ -47,10 +54,29 @@ public class JwtFilter extends OncePerRequestFilter{
 		
 		try {
 			Claims claims = jwtUtil.paresJwt(token);
-			String username = claims.getSubject();
+			System.out.println(claims);
+			String userNo = claims.getSubject();
 			
+<<<<<<< HEAD
 			CustomUserDetails user = (CustomUserDetails)userDetailsService.loadUserByUsername(username);
 			
+=======
+			MemberDTO member = memberMapper.loadUserByUserNo(Long.parseLong(userNo));
+			
+			CustomUserDetails user =  CustomUserDetails.builder()
+						.memberNo(member.getMemberNo())
+		                .username(member.getMemberId())
+		                .password(member.getMemberPwd())
+		                .nickname(member.getNickname())
+		                .email(member.getEmail())
+		                .addressLine1(member.getAddressLine1())
+		                .addressLine2(member.getAddressLine2())
+		                .enrollDate(member.getEnrollDate())
+		                .authorities(Collections.singletonList(new SimpleGrantedAuthority(member.getRole())))
+		                .status(member.getStatus())
+		                .build();
+			
+>>>>>>> 5a67896a9aea12546cad684444671c46622ddc70
 			UsernamePasswordAuthenticationToken authentication
 				= new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 			authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

@@ -33,6 +33,7 @@ public class SecurityConfigure {
 	
 	private final JwtFilter jwtFilter;
 	
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 		
@@ -47,8 +48,13 @@ public class SecurityConfigure {
 							   requests.requestMatchers(HttpMethod.DELETE,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
 							   requests.requestMatchers("/admin/**").hasRole("ADMIN");
 						   })
+<<<<<<< HEAD
 						   .sessionManagement(manager ->
 						   	   manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+=======
+							.sessionManagement(manager ->
+							manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+>>>>>>> 5a67896a9aea12546cad684444671c46622ddc70
 						   )
 						   .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 						   .build();
@@ -74,7 +80,7 @@ public class SecurityConfigure {
 	
 	
 	@Bean
-	public AuthenticationManager autheticationMamger(AuthenticationConfiguration authConfig) throws Exception {
+	public AuthenticationManager autheticationManager(AuthenticationConfiguration authConfig) throws Exception {
 		return authConfig.getAuthenticationManager();
 	}
 }

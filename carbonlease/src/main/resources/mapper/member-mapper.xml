@@ -23,6 +23,29 @@
 		       MEMBER_ID = #{username}
 		
 	</select>
+<<<<<<< HEAD
+=======
+	
+		<select id="loadUserByUserNo" parameterType="_long" resultType="com.kh.member.model.dto.MemberDTO">
+		SELECT
+		       MEMBER_NO memberNo
+		     , MEMBER_ID memberId
+		     , MEMBER_PWD memberPwd
+		     , NICKNAME
+		     , EMAIL
+		     , ADDRESS_LINE_1 addressLine1
+		     , ADDRESS_LINE_2 addressLine2
+		     , ROLE
+		     , ENROLL_DATE enrollDate
+		  FROM
+		       CL_MEMBER
+		 WHERE
+		       STATUS = 'Y'
+		   AND
+		       MEMBER_NO = #{userNo}
+		
+	</select>
+>>>>>>> 5a67896a9aea12546cad684444671c46622ddc70
 	
 	
 </mapper>
