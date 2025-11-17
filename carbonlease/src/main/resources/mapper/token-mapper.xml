@@ -16,4 +16,14 @@
 		       )
 	</insert>
 	
+	<select id="findByToken" parameterType="string" resultType="com.kh.token.model.vo.RefreshToken">
+		SELECT
+		       MEMBER_NO memberNo
+		     , TOKEN
+		     , EXPIRATION
+		  FROM
+		       CL_TOKEN
+		 WHERE
+		       TOKEN = #{refreshToken}
+	</select>
 </mapper>

@@ -8,4 +8,6 @@ import com.kh.token.model.vo.RefreshToken;
 public interface TokenMapper {
 
 	void saveTokens(RefreshToken token);
+	
+	RefreshToken findByToken(String refreshToken);
 }
