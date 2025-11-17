@@ -5,7 +5,7 @@
 <mapper namespace="com.kh.notice.model.dao.NoticeMapper">
 
 	<select id="findAll"
-			resultType="NoticeDTO">
+			resultType="com.kh.notice.model.dto.NoticeDTO">
 		SELECT
 				  NOTICE_NO noticeNo
 				, NOTICE_TITLE noticeTitle

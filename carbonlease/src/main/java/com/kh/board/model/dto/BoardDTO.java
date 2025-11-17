@@ -16,6 +16,8 @@ import lombok.ToString;
 @ToString
 public class BoardDTO {
 
+	private int totalPages; // 일반 게시판 총 건수
+	private int currentPage;   // 현재 페이지
 	private int boardNo;
 	private String boardTitle;
 	private String boardContent;
