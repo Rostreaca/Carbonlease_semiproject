@@ -13,11 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.kh.auth.model.vo.CustomUserDetails;
-<<<<<<< HEAD
-=======
 import com.kh.member.model.dao.MemberMapper;
 import com.kh.member.model.dto.MemberDTO;
->>>>>>> 5a67896a9aea12546cad684444671c46622ddc70
 import com.kh.token.util.JwtUtil;
 
 import io.jsonwebtoken.Claims;
@@ -57,10 +54,6 @@ public class JwtFilter extends OncePerRequestFilter{
 			System.out.println(claims);
 			String userNo = claims.getSubject();
 			
-<<<<<<< HEAD
-			CustomUserDetails user = (CustomUserDetails)userDetailsService.loadUserByUsername(username);
-			
-=======
 			MemberDTO member = memberMapper.loadUserByUserNo(Long.parseLong(userNo));
 			
 			CustomUserDetails user =  CustomUserDetails.builder()
@@ -76,7 +69,6 @@ public class JwtFilter extends OncePerRequestFilter{
 		                .status(member.getStatus())
 		                .build();
 			
->>>>>>> 5a67896a9aea12546cad684444671c46622ddc70
 			UsernamePasswordAuthenticationToken authentication
 				= new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 			authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

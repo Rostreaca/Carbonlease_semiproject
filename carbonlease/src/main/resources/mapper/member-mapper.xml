@@ -23,8 +23,6 @@
 		       MEMBER_ID = #{username}
 		
 	</select>
-<<<<<<< HEAD
-=======
 	
 		<select id="loadUserByUserNo" parameterType="_long" resultType="com.kh.member.model.dto.MemberDTO">
 		SELECT
@@ -45,7 +43,6 @@
 		       MEMBER_NO = #{userNo}
 		
 	</select>
->>>>>>> 5a67896a9aea12546cad684444671c46622ddc70
 	
 	
 </mapper>

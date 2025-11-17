@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -48,13 +47,8 @@ public class SecurityConfigure {
 							   requests.requestMatchers(HttpMethod.DELETE,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
 							   requests.requestMatchers("/admin/**").hasRole("ADMIN");
 						   })
-<<<<<<< HEAD
-						   .sessionManagement(manager ->
-						   	   manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-=======
 							.sessionManagement(manager ->
 							manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
->>>>>>> 5a67896a9aea12546cad684444671c46622ddc70
 						   )
 						   .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 						   .build();
