@@ -1,8 +1,7 @@
 package com.kh.board.model.dto;
 
-import java.util.Date;
-
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,12 +12,9 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class BoardDTO {
-	
-	private int boardNo;
-	private String boardTitle;
-	private String boardContent;
-	private int viewCount;
-	private Date enrollDate;
+public class BoardCategoryDTO {
+
+	private int regionNo;
+	private String regionName;
 	
 }
