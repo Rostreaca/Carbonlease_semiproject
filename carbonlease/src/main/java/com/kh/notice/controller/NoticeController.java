@@ -24,10 +24,13 @@ public class NoticeController {
 
 	private final NoticeService noticeService;
 	
+	
 	@GetMapping
-	public ResponseEntity<?> findAll(@RequestParam(name="page", defaultValue = "0")int pageNo){
+	public ResponseEntity<?> findAll(@RequestParam(name="pageNo", defaultValue = "0")int pageNo){
 		
+		log.info("머임:{}",pageNo);
 		List<NoticeDTO> notices = noticeService.findAll(pageNo);
+		
 		
 		return ResponseEntity.ok(notices);
 	}

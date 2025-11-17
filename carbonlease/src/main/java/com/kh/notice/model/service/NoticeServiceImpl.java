@@ -1,5 +1,6 @@
 package com.kh.notice.model.service;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 
 import org.apache.ibatis.session.RowBounds;
@@ -22,9 +23,11 @@ public class NoticeServiceImpl implements NoticeService{
 	public List<NoticeDTO> findAll(int pageNo) {
 		
 		// 유효성 검사
-		
+		if( pageNo < 0){
+			throw new InvalidParameterException("유효하지 않은 접근입니다.");
+		}
 		// 조회
-		RowBounds rb = new RowBounds(pageNo * 5, 10);
+		RowBounds rb = new RowBounds(pageNo * 10, 10);
 		
 		return noticeMapper.findAll(rb);
 	}
