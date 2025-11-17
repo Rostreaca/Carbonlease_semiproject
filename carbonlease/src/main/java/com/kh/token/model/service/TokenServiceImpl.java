@@ -71,7 +71,7 @@ public class TokenServiceImpl implements TokenService{
 		Claims claims = tokenUtil.paresJwt(refreshToken);
 		String username = claims.getSubject();
 		
-		return createTokens(token.getMemberNo());
+		return generateToken(token.getMemberNo());
 	}
 	
 }
