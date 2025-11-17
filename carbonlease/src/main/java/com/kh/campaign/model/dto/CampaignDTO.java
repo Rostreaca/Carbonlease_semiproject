@@ -3,7 +3,6 @@ package com.kh.campaign.model.dto;
 import java.sql.Date;
 import java.util.List;
 
-import com.kh.campaign.model.vo.AttachmentVO;
 import com.kh.campaign.model.vo.CategoryVO;
 import com.kh.campaign.model.vo.LikeVO;
 
@@ -29,11 +28,12 @@ public class CampaignDTO {
     private int viewCount;
     private String status;
 
-    // Category (카테고리 객체 포함) 
+    // Category (카테고리 객체 포함)
     private CategoryVO category;
 
-    // Attachment (첨부파일 목록 포함)
-    private List<AttachmentVO> attachments;
+    // Thumbnail (썸네일 파일 정보)
+    private String filePath;
+    private String changeName;
 
     // Like 정보 (누가 눌렀는지, 총 좋아요수 등)
     private int likeCount;              // 총 좋아요 개수

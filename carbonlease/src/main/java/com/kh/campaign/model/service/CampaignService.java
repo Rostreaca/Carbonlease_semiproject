@@ -1,28 +1,21 @@
 package com.kh.campaign.model.service;
 
-import java.util.List;
-
 import com.kh.campaign.model.dto.CampaignDTO;
-
-
+import com.kh.campaign.model.dto.CampaignListResponseDTO;
+import com.kh.campaign.model.dto.CampaignSearchDTO;
 
 public interface CampaignService {
 	
 	/**
 	 * 전체조회
 	 **/
-	List<CampaignDTO> selectCampaignList(int pageNo);
+	CampaignListResponseDTO selectCampaignList(int currentPage, Long memberNo);
 	
 	
 	/**
 	 * 상세조회
 	 **/
-	CampaignDTO selectByCampaignNo(Long CampaingNo);
+	CampaignDTO selectByCampaignNo(CampaignSearchDTO searchDTO);
 	
-	
-	/**
-	 * 상세조회
-	 **/
-//    List<CategoryVo> selectCampaignList();
-	
+	void toggleLike(Long campaignNo, Long memberNo);
 }
