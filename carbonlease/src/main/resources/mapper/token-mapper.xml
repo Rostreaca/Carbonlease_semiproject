@@ -16,7 +16,7 @@
 		       )
 	</insert>
 	
-	<select id="findByToken" parameterType="string" resultType="com.kh.token.model.vo.RefreshToken">
+	<select id="findByToken" parameterType="string" resultType="com.kh.token.model.dto.TokenDTO">
 		SELECT
 		       MEMBER_NO memberNo
 		     , TOKEN
