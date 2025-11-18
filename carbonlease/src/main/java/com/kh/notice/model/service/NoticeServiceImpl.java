@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class NoticeServiceImpl implements NoticeService{
 
 	private final NoticeMapper noticeMapper;
-	private final Pagination pagigation;
+	private final Pagination pagination;
 	
 	@Override
 	public Map<String, Object> findAll(int pageNo) {
@@ -46,7 +46,7 @@ public class NoticeServiceImpl implements NoticeService{
 		// (offset) : 목록조회에 필요한 offset값을 저장합니다.
 		// (limit) : 목록조회에 필요한 limit값을 저장합니다.
 		// (pi) : 프론트에서 페이징 처리에 필요한 pageInfo 인자값을 저장합니다.
-		Map<String, Object> params = pagigation.pageRequest(pageNo, 2, listCount);
+		Map<String, Object> params = pagination.pageRequest(pageNo, 2, listCount);
 		
 		// 3. 게시글의 목록들을 Map을 인자값으로 받아 조회합니다.
 		// Map에 offset, limit가 저장되어있으니 쿼리문에 #{offset}, #{limit} 추가하면됨.
