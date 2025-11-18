@@ -12,5 +12,7 @@ public interface TokenMapper {
 	
 	TokenDTO findByToken(String refreshToken);
 	
-	int deleteByToken(String refreshToken);
+	int deleteByMemberNo(Long memberNo);
+	
+	int deleteToken(Long refreshToken);
 }

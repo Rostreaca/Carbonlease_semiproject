@@ -27,11 +27,11 @@
 		       TOKEN = #{refreshToken}
 	</select>
 	
-	<delete id="deleteByToken" parameterType="string">
+	<delete id="deleteToken" parameterType="_long">
 		DELETE
 		  FROM
 		       CL_TOKEN
 		 WHERE
-		       TOKEN = #{refreshToken}
+		       MEMBER_NO = #{memberNo}
 	</delete>
 </mapper>

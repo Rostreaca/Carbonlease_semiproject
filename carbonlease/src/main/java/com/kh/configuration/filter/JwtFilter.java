@@ -61,7 +61,7 @@ public class JwtFilter extends OncePerRequestFilter{
 						.memberNo(member.getMemberNo())
 		                .username(member.getMemberId())
 		                .password(member.getMemberPwd())
-		                .nickname(member.getNickname())
+		                .nickname(member.getNickName())
 		                .email(member.getEmail())
 		                .addressLine1(member.getAddressLine1())
 		                .addressLine2(member.getAddressLine2())
