@@ -1,4 +1,4 @@
-package com.kh.common.doman.campaign.model.vo;
+package com.kh.common.domain.campaign.model.vo;
 
 public class LikeVO {
 
