@@ -59,10 +59,12 @@ public class MemberServiceImpl implements MemberService{
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		CustomUserDetails user = (CustomUserDetails)auth.getPrincipal();
 		
+		// 기존 사용했던 닉네임은 변경(유지) 가능
 		if(!member.getNickName().equals(user.getNickname())) {
 			memberValidator.checkNickName(member.getNickName());
 		}
-		
+
+		// 기존 사용했던 이메일은 변경(유지) 가능
 		if(!member.getEmail().equals(user.getEmail())) {
 			memberValidator.checkEmail(member.getEmail());
 		}
