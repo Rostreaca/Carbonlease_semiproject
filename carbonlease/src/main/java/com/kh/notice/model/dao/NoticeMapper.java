@@ -10,6 +10,10 @@ import com.kh.notice.model.dto.NoticeDTO;
 @Mapper
 public interface NoticeMapper {
 
+	int findAndCountAll();
+
 	List<NoticeDTO> findAll(RowBounds rb);
+
+	NoticeDTO findByNo(Long noticeNo);
 
 }

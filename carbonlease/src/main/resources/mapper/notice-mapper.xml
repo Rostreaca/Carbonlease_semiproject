@@ -20,4 +20,30 @@
 				NOTICE_NO DESC
 	</select>
 	
+	<select id="findAndCountAll"
+			resultType="_int">
+		SELECT
+				COUNT(*)
+		FROM
+				CL_NOTICE
+		WHERE
+				STATUS='Y'
+	</select>
+	
+	<select id="findByNo"
+			parameterType="long"
+			resultType="NoticeDTO">
+		SELECT
+				  NOTICE_TITLE noticeTitle
+				, NOTICE_CONTENT noticeContent
+				, VIEW_COUNT viewCount
+				, ENROLL_DATE createDate
+		FROM
+				CL_NOTICE
+		WHERE
+				STATUS='Y'
+		AND
+				NOTICE_NO = #{noticeNo}
+	</select>
+	
 </mapper>
