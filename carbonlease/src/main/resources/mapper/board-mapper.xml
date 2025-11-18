@@ -29,9 +29,9 @@
    						ORDER 
    						   BY  B.ENROLL_DATE DESC
     						   ) TA
-    					WHERE  ROWNUM <= #{endNumber}
+    					WHERE  ROWNUM &lt;= #{endNumber}
 						       ) 
-					    WHERE  RN >= #{startNumber}
+					    WHERE  RN &gt;= #{startNumber}
 	</select>
 	
 	<select id="boardTotalcount" resultType="int">
@@ -40,5 +40,5 @@
 		  FROM 
 		       CL_BOARD
 	</select>
-	
+
 </mapper>

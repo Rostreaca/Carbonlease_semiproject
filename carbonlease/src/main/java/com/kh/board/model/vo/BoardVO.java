@@ -18,7 +18,9 @@ import lombok.ToString;
 @ToString
 public class BoardVO {
 
-	private int totalPages; // 일반 게시판 총 건수
+	private int totalPages;    // 일반 게시판 총 건수
 	private int currentPage;   // 현재 페이지
+	private int startNumber;   // 시작 페이지
+	private int endNumber;	   // 마지막 페이지
 	private List<BoardDTO> boardList;
 }

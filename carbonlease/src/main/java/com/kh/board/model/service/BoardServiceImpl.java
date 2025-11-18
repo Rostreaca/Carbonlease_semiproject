@@ -20,7 +20,7 @@ public class BoardServiceImpl implements BoardService {
 	
 	// 목록조회 
 	public BoardVO boardReadList(int pageNo) {
-		BoardVO outVo = new BoardVO();
+		BoardVO board = new BoardVO();
 		int endNumber = 0;
 		int startNumber = 0;
 		
@@ -33,12 +33,12 @@ public class BoardServiceImpl implements BoardService {
 			endNumber = pageNo * 10;
 		}
 		
-		List<BoardDTO> boards = boardMapper.boardReadList(endNumber, startNumber);
+		List<BoardDTO> boards = boardMapper.boardReadList(board);
 		int total = boardMapper.boardTotalcount();
 		
-		outVo.setTotalPages(total);
-		outVo.setBoardList(boards);
-		return outVo;
+		board.setTotalPages(total);
+		board.setBoardList(boards);
+		return board;
 	}
 	
 	
