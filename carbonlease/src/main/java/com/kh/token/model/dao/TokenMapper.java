@@ -11,4 +11,6 @@ public interface TokenMapper {
 	void saveTokens(RefreshToken token);
 	
 	TokenDTO findByToken(String refreshToken);
+	
+	int deleteByToken(String refreshToken);
 }

@@ -26,4 +26,12 @@
 		 WHERE
 		       TOKEN = #{refreshToken}
 	</select>
+	
+	<delete id="deleteByToken" parameterType="string">
+		DELETE
+		  FROM
+		       CL_TOKEN
+		 WHERE
+		       TOKEN = #{refreshToken}
+	</delete>
 </mapper>
