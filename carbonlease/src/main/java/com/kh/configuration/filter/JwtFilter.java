@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.kh.auth.model.vo.CustomUserDetails;
+import com.kh.exception.CustomAuthenticationException;
 import com.kh.member.model.dao.MemberMapper;
 import com.kh.member.model.dto.MemberDTO;
 import com.kh.token.util.JwtUtil;
@@ -60,7 +61,7 @@ public class JwtFilter extends OncePerRequestFilter{
 						.memberNo(member.getMemberNo())
 		                .username(member.getMemberId())
 		                .password(member.getMemberPwd())
-		                .nickname(member.getNickname())
+		                .nickname(member.getNickName())
 		                .email(member.getEmail())
 		                .addressLine1(member.getAddressLine1())
 		                .addressLine2(member.getAddressLine2())
@@ -80,7 +81,6 @@ public class JwtFilter extends OncePerRequestFilter{
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.setContentType("text/html; charset=UTF-8");
 			response.getWriter().write("토큰 만료");
-
 			return;
 
 		} catch(JwtException e) {
