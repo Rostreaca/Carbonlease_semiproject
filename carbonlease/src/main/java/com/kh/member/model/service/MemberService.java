@@ -9,5 +9,7 @@ public interface MemberService {
 	void signUp(MemberDTO member);
 
 	void updateMember(MemberDTO member);
+
+	void deleteMember(String memberPassword);
 	
 }

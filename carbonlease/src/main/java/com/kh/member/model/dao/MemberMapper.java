@@ -21,5 +21,7 @@ public interface MemberMapper {
 	void signUp(MemberVO member);
 
 	void updateMember(MemberDTO member);
+
+	void deleteMember(Long memberNo);
 	
 }
