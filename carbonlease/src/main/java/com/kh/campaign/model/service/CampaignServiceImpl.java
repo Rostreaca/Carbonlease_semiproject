@@ -43,9 +43,7 @@ public class CampaignServiceImpl implements CampaignService {
 		return response;
 	}
 	
-	/**
-	 * 상세 조회
-	 **/
+	
 	/**
 	 * 캠페인 상세 조회 (조회수 증가 포함)
 	 * @param searchDTO 캠페인 번호 정보
