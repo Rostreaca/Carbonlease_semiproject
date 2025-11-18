@@ -1,4 +1,6 @@
-package com.kh.token.model.dto;
+package com.kh.board.model.dto;
+
+import java.sql.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,8 +13,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class TokenDTO {
-	private String token;
-	private Long memberNo;
-	private Long expiration;
+public class BoardReplyDTO {
+
+	private int replyNo;
+	private String replyContent;
+	private Date enrollDate;
+	private char status;
 }
