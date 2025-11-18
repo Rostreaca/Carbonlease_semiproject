@@ -1,17 +1,17 @@
 package com.kh.token.model.service;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.kh.exception.CustomAuthenticationException;
 import com.kh.token.model.dao.TokenMapper;
+import com.kh.token.model.dto.TokenDTO;
 import com.kh.token.model.vo.RefreshToken;
 import com.kh.token.util.JwtUtil;
 
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,5 +53,29 @@ public class TokenServiceImpl implements TokenService{
 		tokenMapper.saveTokens(token);
 	}
 	
+	public Map<String, String> validateToken(String refreshToken){
+		
+		
+		TokenDTO tokenDTO = tokenMapper.findByToken(refreshToken);
+		
+		if(tokenDTO == null) {
+			throw new CustomAuthenticationException("토큰이 존재하지 않습니다.");
+		}
+		
+		//RefreshToken(VO)에 autoMapping을 시도해서 실패. 새롭게 DTO를 만들어서 매퍼에서 DTO로 매핑된 값을 RefreshToken에 담음 
+		RefreshToken token = RefreshToken.builder().token(tokenDTO.getToken()).memberNo(tokenDTO.getMemberNo()).expiration(tokenDTO.getExpiration()).build();
+		
+		if(token == null || token.getExpiration() < System.currentTimeMillis()) {
+			throw new CustomAuthenticationException("토큰이 존재하지 않거나 토큰 기한이 만료되었습니다.");
+		}
+		
+		//기존 토큰 삭제
+		tokenMapper.deleteByToken(refreshToken);
+		
+		Claims claims = tokenUtil.paresJwt(refreshToken);
+		String username = claims.getSubject();
+		
+		return generateToken(token.getMemberNo());
+	}
 	
 }
