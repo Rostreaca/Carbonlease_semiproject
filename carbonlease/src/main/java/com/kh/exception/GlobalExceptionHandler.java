@@ -45,4 +45,8 @@ public class GlobalExceptionHandler {
 		return createResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 	
+	@ExceptionHandler(InvalidValueException.class)
+	public ResponseEntity<Map<String, String>> handleInvalidValue(InvalidValueException e){
+		return createResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
 }

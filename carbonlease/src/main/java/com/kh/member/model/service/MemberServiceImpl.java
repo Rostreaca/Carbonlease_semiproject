@@ -1,10 +1,14 @@
 package com.kh.member.model.service;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.exception.EmailDuplicateException;
 import com.kh.exception.IdDuplicateException;
+import com.kh.exception.InvalidValueException;
 import com.kh.exception.NickNameDuplicateException;
 import com.kh.member.model.dao.MemberMapper;
 import com.kh.member.model.dto.MemberDTO;
@@ -20,13 +24,15 @@ public class MemberServiceImpl implements MemberService{
 
 	private final MemberMapper memberMapper;
 	private final PasswordEncoder passwordEncoder;
+	private final MemberValidator memberValidator;
 	
 	@Override
 	public void signUp(MemberDTO member) {
 		
-		checkId(member.getMemberId());
-		checkNickName(member.getNickName());
-		checkEmail(member.getEmail());
+		memberValidator.checkId(member.getMemberId());
+		memberValidator.checkBlank(member.getMemberPwd(),"비밀번호는 비어있을 수 없습니다.");
+		memberValidator.checkNickName(member.getNickName());
+		memberValidator.checkEmail(member.getEmail());
 		
 		String encodedPassword = passwordEncoder.encode(member.getMemberPwd());
 		
@@ -43,32 +49,35 @@ public class MemberServiceImpl implements MemberService{
 		memberMapper.signUp(memberBuilder);
 		
 	}
-
+	
 	@Override
-	public void checkId(String memberId) {
-		int count = memberMapper.countByMemberId(memberId);
+	public void updateMember(MemberDTO member) {
 		
-		if(count == 1) {
-			throw new IdDuplicateException("이미 존재하는 아이디입니다.");
+		memberValidator.checkBlank(member.getNickName(),"닉네임은 비어있을 수 없습니다.");
+		memberValidator.checkBlank(member.getEmail(),"이메일은 비어있을 수 없습니다.");
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		CustomUserDetails user = (CustomUserDetails)auth.getPrincipal();
+		
+		// 기존 사용했던 닉네임은 변경(유지) 가능
+		if(!member.getNickName().equals(user.getNickname())) {
+			memberValidator.checkNickName(member.getNickName());
 		}
+
+		// 기존 사용했던 이메일은 변경(유지) 가능
+		if(!member.getEmail().equals(user.getEmail())) {
+			memberValidator.checkEmail(member.getEmail());
+		}
+		
+		
+		member.setMemberNo(user.getMemberNo());		
+		
+		memberMapper.updateMember(member);
+		
 	}
 
-	@Override
-	public void checkNickName(String nickName) {
-		int count = memberMapper.countByNickName(nickName);
-		
-		if(count == 1) {
-			throw new NickNameDuplicateException("이미 존재하는 닉네임입니다.");
-		}
-	}
 
-	@Override
-	public void checkEmail(String email) {
-		int count = memberMapper.countByEmail(email);
-		
-		if(count == 1) {
-			throw new EmailDuplicateException("이미 존재하는 이메일입니다.");
-		}
-	}
+	
+
 	
 }

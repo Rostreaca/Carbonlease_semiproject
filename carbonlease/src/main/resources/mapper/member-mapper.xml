@@ -91,5 +91,18 @@
 		       )
 	</insert>
 	
+	<update id="updateMember" parameterType="com.kh.member.model.dto.MemberDTO">
+		UPDATE
+		       CL_MEMBER
+		   SET
+		       NICKNAME = #{nickName}
+		     , EMAIL = #{email}
+		     , ADDRESS_LINE_1 = #{addressLine1}
+		     , ADDRESS_LINE_2 = #{addressLine2}
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   
+	</update>
+	
 	
 </mapper>

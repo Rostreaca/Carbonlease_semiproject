@@ -26,9 +26,6 @@ public class TokenServiceImpl implements TokenService{
 	@Override
 	public Map<String, String> generateToken(Long memberNo) {
 		
-		//기존 토큰 삭제
-		tokenMapper.deleteToken(memberNo);
-		
 		Map<String, String> tokens = createTokens(memberNo);
 		
 		saveTokens(tokens.get("refreshToken"), memberNo);
