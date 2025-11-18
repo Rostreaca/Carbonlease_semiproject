@@ -54,6 +54,37 @@
 		    BY
 		       B.ACTIVITY_NO DESC      
 	</select>
+	
+	<select id="getTotalCount"
+			resultType="int">
+		SELECT
+			   COUNT(*)
+		  FROM
+		       CL_ACTIVITY_BOARD B
+		  JOIN
+		       CL_MEMBER M ON (B.MEMBER_NO = M.MEMBER_NO)
+		 WHERE
+		       B.STATUS = 'Y'
+	<if test="keyword != null and keyword != ''">
+		AND(
+			<choose>
+				<when test="filter == 'title'">
+					B.ACTIVITY_TITLE LIKE '%' || #{keyword} || '%'
+				</when>
+				<when test="filter == 'content'">
+					B.ACTIVITY_CONTENT LIKE '%' || #{keyword} || '%'
+				</when>
+				<when test="filter == 'nickname'">
+					M.NICKNAME LIKE '%' || #{keyword} || '%'
+				</when>
+				<otherwise>
+		        	B.ACTIVITY_TITLE LIKE '%' || #{keyword} || '%'
+		      	</otherwise>
+			</choose>
+			)
+	</if>	                   	   	
+		
+	</select>
 
 	
 	

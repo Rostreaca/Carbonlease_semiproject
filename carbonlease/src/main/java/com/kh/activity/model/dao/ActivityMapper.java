@@ -15,4 +15,7 @@ public interface ActivityMapper {
 										  @Param("keyword") String keyword,
 										  RowBounds rb);
 
+	int getTotalCount(@Param("filter") String filter,
+					  @Param("keyword") String keyword);
+
 }

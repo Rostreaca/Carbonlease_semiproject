@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.kh.activity.model.dao.ActivityMapper;
 import com.kh.activity.model.dto.ActivityListDTO;
+import com.kh.common.util.PageInfo;
+import com.kh.common.util.Pagination;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,15 +20,22 @@ import lombok.extern.slf4j.Slf4j;
 public class ActivityServiceImpl implements ActivityService{
 	
 	private final ActivityMapper activityMapper;
+	private final Pagination pagination;
 	
 	@Override
-	public List<ActivityListDTO> activityAllList(int page, String filter, String keyword){
-		if(page < 0) {
-			throw new InvalidParameterException("유효하지 않은 접근입니다.");
-		}
+	public PageInfo getPageInfo(int page, String filter, String keyword) {
+		int listCount = activityMapper.getTotalCount(filter, keyword);
+		int pageLimit = 5;
+		int boardLimit = 6;
 		
-		RowBounds rb = new RowBounds(page * 6, 6);
-		return activityMapper.activityAllList(keyword, filter, rb);
+		return pagination.getPageInfo(listCount, page, pageLimit, boardLimit);
 	}
-
+	
+	@Override
+	public List<ActivityListDTO> activityAllList(PageInfo pi, String filter, String keyword){
+		int offset = (pi.getCurrentPage() -1 ) * pi.getBoardLimit();
+		RowBounds rb = new RowBounds(offset, pi.getBoardLimit());
+		
+		return activityMapper.activityAllList(filter, keyword, rb);
+	}
 }
