@@ -32,6 +32,8 @@ public class BoardServiceImpl implements BoardService {
 			startNumber = 10 + (pageNo-1);
 			endNumber = pageNo * 10;
 		}
+		board.setStartNumber(startNumber);
+		board.setEndNumber(endNumber);
 		
 		List<BoardDTO> boards = boardMapper.boardReadList(board);
 		int total = boardMapper.boardTotalcount();
