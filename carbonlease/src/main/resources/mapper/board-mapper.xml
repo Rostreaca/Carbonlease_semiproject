@@ -9,7 +9,7 @@
  			*
 		 FROM  (
     			SELECT
-     				   ROWNUM AS RN
+     				   ROWNUM AS boardSeq
                      , TA. *
     			FROM 
     				   (
@@ -31,7 +31,7 @@
     						   ) TA
     					WHERE  ROWNUM &lt;= #{endNumber}
 						       ) 
-					    WHERE  RN &gt;= #{startNumber}
+					    WHERE  boardSeq &gt;= #{startNumber}
 	</select>
 	
 	<select id="boardTotalcount" resultType="int">
