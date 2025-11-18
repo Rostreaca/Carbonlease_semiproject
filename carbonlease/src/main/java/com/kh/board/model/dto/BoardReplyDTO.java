@@ -20,6 +20,7 @@ public class BoardReplyDTO {
 	private String replyContent;
 	private Date enrollDate;
 	private char status;
-	
+	private int boardNo;
+	private int memberNo;
 	
 }

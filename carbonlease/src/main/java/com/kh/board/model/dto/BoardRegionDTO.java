@@ -12,7 +12,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class BoardCategoryDTO {
+public class BoardRegionDTO {
 
 	private int regionNo;
 	private String regionName;

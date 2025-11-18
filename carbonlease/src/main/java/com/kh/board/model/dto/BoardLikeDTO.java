@@ -1,5 +1,7 @@
 package com.kh.board.model.dto;
 
+import java.sql.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,5 +16,8 @@ import lombok.ToString;
 public class BoardLikeDTO {
 
 	private int likeNo;
+	private int boardNo;
+	private int memberNo;
+	private Date createDate;
 	
 }

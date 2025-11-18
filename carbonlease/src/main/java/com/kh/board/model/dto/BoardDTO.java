@@ -1,6 +1,7 @@
 package com.kh.board.model.dto;
 
-import java.util.Date;
+
+import java.sql.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,5 +21,8 @@ public class BoardDTO {
 	private String boardContent;
 	private int viewCount;
 	private Date enrollDate;
+	private char status;
+	private int memberNo;
+	private int regionNo;
 	
 }
