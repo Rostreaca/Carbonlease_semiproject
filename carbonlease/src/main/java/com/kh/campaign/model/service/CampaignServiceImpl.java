@@ -27,9 +27,6 @@ public class CampaignServiceImpl implements CampaignService {
     //private final CampaignValidator campaignValidator;
 
 
-    /**
-	 * 전체 조회
-	 **/
 	/**
 	 * 캠페인 목록 조회 (페이징 포함)
 	 * @param searchDTO 검색 및 페이징 정보
