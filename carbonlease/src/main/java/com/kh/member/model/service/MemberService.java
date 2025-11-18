@@ -8,4 +8,10 @@ public interface MemberService {
 
 	void signUp(MemberDTO member);
 
+	void checkId(String memberId);
+	
+	void checkNickName(String nickName);
+	
+	void checkEmail(String email);
+	
 }

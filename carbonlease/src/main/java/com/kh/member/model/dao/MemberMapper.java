@@ -13,7 +13,11 @@ public interface MemberMapper {
 	MemberDTO loadUserByUserNo(Long userNo);
 
 	int countByMemberId(String memberId);
-
+	
+	int countByNickName(String nickName);
+	
+	int countByEmail(String email);
+	
 	void signUp(MemberVO member);
 	
 }
