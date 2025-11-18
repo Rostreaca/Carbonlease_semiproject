@@ -1,11 +1,13 @@
 package com.kh.notice.model.service;
 
-import java.util.List;
+import java.util.Map;
 
 import com.kh.notice.model.dto.NoticeDTO;
 
 public interface NoticeService {
 
-	List<NoticeDTO> findAll(int pageNo);
+	Map<String, Object> findAll(int pageNo);
+
+	NoticeDTO findByNo(Long noticeNo);
 
 }
