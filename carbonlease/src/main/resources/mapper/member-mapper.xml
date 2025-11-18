@@ -104,5 +104,15 @@
 		   
 	</update>
 	
+	<update id="deleteMember" parameterType="_long">
+		UPDATE
+		       CL_MEMBER
+		   SET
+		       STATUS = 'N'
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		
+	</update>
+	
 	
 </mapper>

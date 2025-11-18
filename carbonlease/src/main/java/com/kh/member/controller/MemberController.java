@@ -1,11 +1,15 @@
 package com.kh.member.controller;
 
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.member.model.dto.MemberDTO;
@@ -39,4 +43,17 @@ public class MemberController {
 		
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
+	
+	@DeleteMapping
+	public ResponseEntity<?> deleteMember(@RequestBody Map<String, String> request){
+
+		log.info("확인 {}",request);
+		
+		memberService.deleteMember(request.get("memberPwd"));
+		
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+	
+	
+	
 }
