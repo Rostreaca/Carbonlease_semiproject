@@ -5,7 +5,8 @@
 <mapper namespace="com.kh.notice.model.dao.NoticeMapper">
 
 	<select id="findAll"
-			resultType="NoticeDTO">
+			resultType="NoticeDTO"
+			parameterType="map">
 		SELECT
 				  NOTICE_NO noticeNo
 				, NOTICE_TITLE noticeTitle
@@ -18,6 +19,7 @@
 		ORDER
 		BY
 				NOTICE_NO DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 	
 	<select id="findAndCountAll"
