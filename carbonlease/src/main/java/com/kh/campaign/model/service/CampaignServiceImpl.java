@@ -27,7 +27,7 @@ public class CampaignServiceImpl implements CampaignService {
 	
 	private final CampaignMapper campaignMapper;
     private final Pagination pagination;
-    private final CampaignValidator campaignValidator;
+    //private final CampaignValidator campaignValidator;
 
 
     /**
