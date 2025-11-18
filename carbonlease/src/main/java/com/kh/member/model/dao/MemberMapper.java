@@ -19,5 +19,7 @@ public interface MemberMapper {
 	int countByEmail(String email);
 	
 	void signUp(MemberVO member);
+
+	void updateMember(MemberDTO member);
 	
 }
