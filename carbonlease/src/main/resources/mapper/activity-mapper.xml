@@ -3,6 +3,57 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.activity.model.dao.ActivityMapper">
+	
+	<select id="activityAllList"
+			resultType="com.kh.activity.model.dto.ActivityListDTO">
+		SELECT
+		       B.ACTIVITY_NO activityNo
+		     , B.ACTIVITY_TITLE activityTitle
+		     , B.ACTIVITY_CONTENT activityContent
+		     , B.VIEW_COUNT viewCount
+		     , B.ENROLL_DATE enrollDate
+		     , M.NICKNAME nickname
+		     , A.FILE_PATH thumbnailPath
+		     , (SELECT 
+		     		   COUNT(*) 
+		          FROM 
+		               CL_ACTIVITY_REPLY R
+		         WHERE
+		               R.ACTIVITY_BOARD_NO = B.ACTIVITY_NO
+		       )AS REPLY_COUNT	   
+		  FROM
+		       CL_ACTIVITY_BOARD B
+		  JOIN
+		  	   CL_MEMBER M ON (B.MEMBER_NO = M.MEMBER_NO)
+		  LEFT
+		  JOIN
+		       CL_ACTIVITY_ATTACHMENT A ON B.ACTIVITY_NO = A.REF_BNO
+		   AND
+		       A.THUMBNAIL_YN = 'Y'         
+		 WHERE
+		       B.STATUS = 'Y'
+		 <if test="keyword != null and keyword != ''">
+		  AND(
+			<choose>
+				<when test="filter == 'title'">
+					B.ACTIVITY_TITLE LIKE '%' || #{keyword} || '%'
+				</when>
+				<when test="filter == 'content'">
+					B.ACTIVITY_CONTENT LIKE '%' || #{keyword} || '%'
+				</when>
+				<when test="filter == 'nickname'">
+					M.NICKNAME LIKE '%' || #{keyword} || '%'
+				</when>
+				<otherwise>
+		        	B.ACTIVITY_TITLE LIKE '%' || #{keyword} || '%'
+		      	</otherwise>
+			</choose>
+			)
+		 </if>
+		 ORDER
+		    BY
+		       B.ACTIVITY_NO DESC      
+	</select>
 
 	
 	
