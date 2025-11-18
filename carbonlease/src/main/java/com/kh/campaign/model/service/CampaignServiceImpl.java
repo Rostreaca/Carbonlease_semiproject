@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.coyote.BadRequestException;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
 
@@ -18,26 +19,30 @@ import com.kh.common.util.Pagination;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class CampaignServiceImpl implements CampaignService {
-
-	private final CampaignMapper campaignMapper;
-	private final Pagination pagination;
 	
-	/**
+	
+	private final CampaignMapper campaignMapper;
+    private final Pagination pagination;
+    private final CampaignValidator campaignValidator;
+
+
+    /**
 	 * 전체 조회
 	 **/
-	@Override
-	public CampaignListResponseDTO selectCampaignList(int currentPage, Long memberNo) {
-		Map<String, Object> result = getCampaignList(currentPage, memberNo);
-		return CampaignListResponseDTO.builder()
-			.campaigns((List<CampaignDTO>) result.get("campaigns"))
-			.pageInfo((PageInfo) result.get("pageInfo"))
-			.build();
-	}
+    @Override
+    public CampaignListResponseDTO selectCampaignList(CampaignSearchDTO searchDTO) {
+        Map<String, Object> result = getCampaignList(searchDTO);
+        return CampaignListResponseDTO.builder()
+            .campaigns((List<CampaignDTO>) result.get("campaigns"))
+            .pageInfo((PageInfo) result.get("pageInfo"))
+            .build();
+    }
+
+	
 	
 	
 	/**
@@ -45,6 +50,11 @@ public class CampaignServiceImpl implements CampaignService {
 	 **/
 	@Override
 	public CampaignDTO selectByCampaignNo(CampaignSearchDTO searchDTO) {
+		
+		Long campaignNo = searchDTO.getCampaignNo();
+		
+		increaseViewCount(campaignNo);
+		
 		return getCampaignOrThrow(searchDTO);
 	}
 	
@@ -59,8 +69,9 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 		return campaign;
 	}
+	
 	/**
-	 * 공통 : 좋아요
+	 *  좋아요 토글
 	 **/
 	@Override
 	public void toggleLike(Long campaignNo, Long memberNo) {
@@ -79,7 +90,9 @@ public class CampaignServiceImpl implements CampaignService {
 	/**
 	 * 공통 페이징 처리 - 전체 캠페인 조회
 	 */
-	private Map<String, Object> getCampaignList(int currentPage, Long memberNo) {
+	private Map<String, Object> getCampaignList(CampaignSearchDTO searchDTO) {
+		int currentPage = searchDTO.getPageNo();
+		
 		if (currentPage < 1) {
 			throw new InvalidParameterException("유효하지 않은 페이지입니다.");
 		}
@@ -88,29 +101,32 @@ public class CampaignServiceImpl implements CampaignService {
 		PageInfo pageInfo = pagination.getPageInfo(listCount, currentPage, 5, 6);
 
 		List<CampaignDTO> campaigns = new ArrayList<>();
+		
 		if (listCount > 0) {
 			int offset = (currentPage - 1) * 6;
 			RowBounds rb = new RowBounds(offset, 6);
-			CampaignSearchDTO searchDTO = CampaignSearchDTO.builder()
-				.pageNo(currentPage - 1)
-				.memberNo(memberNo)
-				.build();
 			campaigns = campaignMapper.selectCampaignList(searchDTO, rb);
 		} else {
-			// 게시글이 없으면 PageInfo를 0값으로 새로 생성
 			pageInfo = new PageInfo(0, 0, 6, 10, 0, 0, 0);
 		}
 
-		log.info("[PageInfo] listCount={}, currentPage={}, boardLimit={}, pageLimit={}, maxPage={}, startPage={}, endPage={}",
-			pageInfo.getListCount(), pageInfo.getCurrentPage(), pageInfo.getBoardLimit(), pageInfo.getPageLimit(),
-			pageInfo.getMaxPage(), pageInfo.getStartPage(), pageInfo.getEndPage());
-		log.info("[Campaigns] size={}, data={}", campaigns.size(), campaigns);
+		// 테스트용
+		//log.info("[PageInfo] listCount={}, currentPage={}, boardLimit={}, pageLimit={}, maxPage={}, startPage={}, endPage={}",
+			//pageInfo.getListCount(), pageInfo.getCurrentPage(), pageInfo.getBoardLimit(), pageInfo.getPageLimit(),
+			//pageInfo.getMaxPage(), pageInfo.getStartPage(), pageInfo.getEndPage());
+		
+		//log.info("[Campaigns] size={}, data={}", campaigns.size(), campaigns);
+		
 		return Map.of("pageInfo", pageInfo, "campaigns", campaigns);
+		
 	}
 
 
-	/** 조회수 증가 (트랜잭션 검증 포함) */
-	private void increaseViewCount(Long campaignNo) {
+	/**
+	 * 조회수 증가
+	 **/
+	@Override
+	public void increaseViewCount(Long campaignNo) {
 		int result = campaignMapper.increaseViewCount(campaignNo);
 		if (result != 1) {
 			throw new InvalidParameterException("조회수 증가 중 오류 발생");

@@ -38,18 +38,20 @@ public class CampaignController {
 			@RequestParam(name = "page", defaultValue= "1") int currentPage,
 			@AuthenticationPrincipal CustomUserDetails user){
 		
-		Long memberNo = user != null ? user.getMemberNo() : null;
-		CampaignListResponseDTO response = campaignService.selectCampaignList(currentPage, memberNo);
+		CampaignSearchDTO searchDTO = CampaignSearchDTO.builder()
+			.pageNo(currentPage)
+			.memberNo(user != null ? user.getMemberNo() : null)
+			.build();
 		
+		CampaignListResponseDTO response = campaignService.selectCampaignList(searchDTO);
 		return ResponseEntity.ok(response);
-		
 	}
 	
 	
 	/**
 	 * 상세조회
 	 **/
-	@GetMapping("detail/{campaignNo}")
+	@GetMapping("/detail/{campaignNo}")
 	public ResponseEntity<CampaignDTO> selectByCampaignNo(
 			@PathVariable(name="campaignNo")
 			@Min(value=1, message="너무 작습니다.") Long campaignNo,
@@ -77,8 +79,11 @@ public class CampaignController {
 		if (user == null) {
 			return ResponseEntity.status(401).body("로그인 필요");
 		}
+		
 		campaignService.toggleLike(campaignNo, user.getMemberNo());
 		return ResponseEntity.ok().build();
 		
 	}
+	
+
 }

@@ -44,7 +44,9 @@ public interface CampaignMapper {
 	 **/
 	void deleteLike(LikeDTO likeDTO);
 
-	/** 조회수 증가 */
+	/**
+	 * 조회수 증가
+	 **/
 	int increaseViewCount(Long campaignNo);
 }
 

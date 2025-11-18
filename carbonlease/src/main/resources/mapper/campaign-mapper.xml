@@ -105,22 +105,42 @@
 	
 	<!-- 좋아요 존재 여부 -->
 	<select id="existsLike" parameterType="com.kh.campaign.model.dto.LikeDTO" resultType="int">
-	    SELECT COUNT(*) FROM CL_CAMPAIGN_LIKE
-	    WHERE CAMPAIGN_NO = #{campaignNo}
-	  AND MEMBER_NO = #{memberNo}
+	    SELECT 
+	           COUNT(*) 
+	      FROM 
+	           CL_CAMPAIGN_LIKE
+	     WHERE 
+	           CAMPAIGN_NO = #{campaignNo}
+	       AND 
+	           MEMBER_NO = #{memberNo}
 	</select>
 
 	<!-- 좋아요 추가 -->
 	<insert id="insertLike" parameterType="com.kh.campaign.model.dto.LikeDTO">
-	    INSERT INTO CL_CAMPAIGN_LIKE (LIKE_NO, CAMPAIGN_NO, MEMBER_NO)
-	    VALUES (SEQ_CL_CAMPAIGN_LIKE.NEXTVAL, #{campaignNo}, #{memberNo})
+	    INSERT 
+	      INTO 
+	           CL_CAMPAIGN_LIKE 
+	           (
+	           LIKE_NO
+	         , CAMPAIGN_NO
+	         , MEMBER_NO
+	           )
+	    VALUES 
+	           (
+	           SEQ_CL_CAMPAIGN_LIKE.NEXTVAL
+	         , #{campaignNo}, #{memberNo}
+	           )
 	</insert>
 
 	<!-- 좋아요 삭제 -->
 	<delete id="deleteLike" parameterType="com.kh.campaign.model.dto.LikeDTO">
-	    DELETE FROM CL_CAMPAIGN_LIKE
-	    WHERE CAMPAIGN_NO = #{campaignNo}
-	  AND MEMBER_NO = #{memberNo}
+	    DELETE 
+	      FROM 
+	           CL_CAMPAIGN_LIKE
+	     WHERE 
+	           CAMPAIGN_NO = #{campaignNo}
+	       AND 
+	           MEMBER_NO = #{memberNo}
 	</delete>
 
 
