@@ -30,4 +30,9 @@ public class GlobalExceptionHandler {
 		return createResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 	
+	@ExceptionHandler(IdDuplicateException.class)
+	public ResponseEntity<Map<String, String>> handleDuplicateId(IdDuplicateException e){
+		return createResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
+	
 }

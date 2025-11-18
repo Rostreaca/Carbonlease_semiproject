@@ -39,7 +39,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 								.memberNo(user.getMemberNo())
 				                .username(user.getMemberId())
 				                .password(user.getMemberPwd())
-				                .nickname(user.getNickname())
+				                .nickname(user.getNickName())
 				                .email(user.getEmail())
 				                .addressLine1(user.getAddressLine1())
 				                .addressLine2(user.getAddressLine2())

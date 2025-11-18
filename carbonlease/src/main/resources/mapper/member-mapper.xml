@@ -44,5 +44,34 @@
 		
 	</select>
 	
+	<select id="countByMemberId" parameterType="string">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       CL_MEMBER
+		 WHERE
+		       MEMBER_ID = #{memberId}
+		
+	</select>
+	
+	<insert id="signUp" parameterType="com.kh.member.model.vo.MemberVO">
+		INSERT
+		  INTO
+		       CL_MEMBER
+		VALUES
+		       (
+		       SEQ_MEMBER_NO.NEXTVAL
+		     , #{memberId}
+		     , #{memberPwd}
+		     , #{nickName}
+		     , #{email}
+		     , #{addressLine1}
+		     , #{addressLine2}
+		     , #{role}
+		     , SYSDATE
+		     , DEFAULT
+		       )
+	</insert>
+	
 	
 </mapper>
