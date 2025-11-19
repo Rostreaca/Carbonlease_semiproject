@@ -3,65 +3,45 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.board.model.dao.BoardMapper">
-
-<<<<<<< HEAD
-	<sql id="boardColumn">
-			SELECT
-				   BOARD_NO boardNo
-				 , BOARD_TITLE boardTitle
-				 , BOARD_CONTENT boardContent
-				 , ENROLL_DATE enrollDate
-				 , VIEW_COUNT viewCount
-				 , NICKNAME NICKNAME
-	</sql>
-
-	<select id="boardReadList" resultType="com.kh.board.model.dto.BoardDTO">
-		<include refid="boardColumn" />
-		    FROM
-		           CL_BOARD
-		    WHERE
-		           STATUS = 'Y'
-			ORDER 
-			   BY  BOARD_NO DESC
-=======
-	<select id="boardReadList" parameterType="_int" resultType="com.kh.board.model.dto.BoardDTO">
-		SELECT
- 			*
-		 FROM  (
-    			SELECT
-     				   ROWNUM AS RN
-                     , TA. *
-    			FROM 
-    				   (
-    					SELECT
-					           B.BOARD_NO   AS boardNo
-					         , B.BOARD_TITLE AS boardTitle
-					         , B.VIEW_COUNT  AS viewCount
-					         , B.ENROLL_DATE AS enrollDate
-					         , B.MEMBER_NO   AS memberNo
-					         , B.REGION_NO   AS regionNo
-					         , M.NICKNAME    AS nickname
-					    FROM
-					           CL_BOARD  B
-					         , CL_MEMBER M
-					    WHERE
-					           B.MEMBER_NO = M.MEMBER_NO
-   						ORDER 
-   						   BY  B.ENROLL_DATE DESC
-    						   ) TA
-    					WHERE  ROWNUM &lt;= #{endNumber}
-						       ) 
-					    WHERE  RN &gt;= #{startNumber}
-	</select>
 	
-	<select id="boardTotalcount" resultType="int">
+	<!-- 전체 목록 조회 -->
+	<select id="findAll" resultType="BoardDTO" parameterType="map">
 		SELECT 
-			   COUNT(*) AS TOTALCOUNT 
-		  FROM 
-		       CL_BOARD
->>>>>>> 6f476f43c7282884cea6bf2c703b8b0c2c98657e
+		       ROWNUM AS boardSeq, T.*
+		  FROM (
+		SELECT
+			   B.BOARD_NO AS boardNo,
+			   B.BOARD_TITLE AS boardTitle,
+			   B.BOARD_CONTENT AS boardContent,
+			   B.ENROLL_DATE AS enrollDate,
+			   B.VIEW_COUNT AS viewCount,
+			   M.NICKNAME AS nickname,
+			   COUNT(R.REPLY_NO) AS replyCount
+		  FROM
+		       CL_BOARD B
+		  JOIN
+		       CL_MEMBER M ON (B.MEMBER_NO = M.MEMBER_NO)
+		  LEFT 
+		  JOIN
+		   	   CL_BOARD_REPLY R ON (B.BOARD_NO = R.BOARD_NO)
+		 GROUP 
+		    BY
+			   B.BOARD_NO, B.BOARD_TITLE, B.BOARD_CONTENT, 
+			   B.ENROLL_DATE, B.VIEW_COUNT, M.NICKNAME
+		ORDER 
+		   BY
+		   	   B.BOARD_NO DESC) T
+		 OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 	
+	<select id="findAndCountAll" resultType="_int">
+		SELECT
+				COUNT(*)
+		FROM
+				CL_BOARD
+		WHERE
+				STATUS='Y'
+	</select>
 
 
 </mapper>

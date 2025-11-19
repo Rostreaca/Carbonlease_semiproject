@@ -1,6 +1,8 @@
 package com.kh.board.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -24,22 +26,17 @@ public class BoardController {
 	
 	private final BoardService boardService;
 	
-//	@GetMapping
-//	public BoardVO boardReadList(@RequestParam(name="page") int pageNo) {
-//		
-//		BoardVO board = boardService.boardReadList(pageNo);
-//
-//		return board;
-//	}
-	
 	// 전체 조회
-	@GetMapping
-	public ResponseEntity<List<BoardDTO>> boardReadList(@RequestParam(name="page", defaultValue="0") int pageNo) {
+	@GetMapping("")
+	public ResponseEntity<?> findAll(@RequestParam(name="pageNo", defaultValue = "1")int pageNo){
 		
-		List<BoardDTO> boards = boardService.boardReadList(pageNo);
+		Map<String, Object> map = new HashMap();
 		
-		return ResponseEntity.ok(boards);
+		log.info("몇으로옴?{}",pageNo);
 		
+		map = boardService.findAll(pageNo);
+		
+		return ResponseEntity.ok(map);
 	}
 	
 	

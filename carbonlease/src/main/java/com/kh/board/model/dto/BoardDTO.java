@@ -1,6 +1,7 @@
 package com.kh.board.model.dto;
 
 import java.sql.Date;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +26,8 @@ public class BoardDTO {
 	private int memberNo;
 	private int regionNo;
 	private String nickname;
+	private int replyCount;
+	private List<BoardReplyDTO> replyDTO;
 	
 	
 }
