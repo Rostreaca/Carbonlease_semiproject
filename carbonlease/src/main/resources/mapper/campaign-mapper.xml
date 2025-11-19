@@ -64,8 +64,9 @@
 	          P.STATUS = 'Y'
 	      AND 
 	          P.END_DATE >= SYSDATE
-	    ORDER 
-	       BY P.CAMPAIGN_NO DESC
+		ORDER 
+		   BY P.CAMPAIGN_NO DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 
 	

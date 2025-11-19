@@ -5,6 +5,7 @@
 <mapper namespace="com.kh.activity.model.dao.ActivityMapper">
 	
 	<select id="activityAllList"
+			parameterType="map"
 			resultType="com.kh.activity.model.dto.ActivityListDTO">
 		SELECT
 		       B.ACTIVITY_NO activityNo
@@ -55,18 +56,19 @@
 		       B.ACTIVITY_NO DESC      
 	</select>
 	
-	<select id="getTotalCount"
-			resultType="int">
-		SELECT
+	<select id="countActivity"
+	        parameterType="map"
+	        resultType="int">
+		SELECT 
 			   COUNT(*)
-		  FROM
+		  FROM 
 		       CL_ACTIVITY_BOARD B
-		  JOIN
+		  JOIN 
 		       CL_MEMBER M ON (B.MEMBER_NO = M.MEMBER_NO)
-		 WHERE
+		 WHERE 
 		       B.STATUS = 'Y'
-	<if test="keyword != null and keyword != ''">
-		AND(
+		<if test="keyword != null and keyword != ''">
+		  AND (
 			<choose>
 				<when test="filter == 'title'">
 					B.ACTIVITY_TITLE LIKE '%' || #{keyword} || '%'
@@ -85,7 +87,77 @@
 	</if>	                   	   	
 		
 	</select>
-
 	
+    <insert id="insertBoard" 
+    		parameterType="com.kh.activity.model.vo.ActivityBoard" 
+    		keyProperty="activityNo">
+    		<selectKey keyProperty="activityNo" resultType="int" order="BEFORE">
+        		SELECT SEQ_ACTIVITY_NO.NEXTVAL FROM DUAL
+    		</selectKey>
+    	INSERT 
+    	  INTO 
+    	       CL_ACTIVITY_BOARD 
+    	       (
+    	       ACTIVITY_NO
+    	     , ACTIVITY_TITLE
+    	     , ACTIVITY_CONTENT
+    	     , LAT
+    	     , LNG
+    	     , VIEW_COUNT
+    	     , STATUS
+    	     , ENROLL_DATE
+    	     , MEMBER_NO
+    	     , REGION_NO
+               ) 
+        VALUES 
+        	   (
+               #{activityNo}
+             , #{title}
+             , #{content}
+             , #{lat}
+             , #{lng}
+             , DEFAULT
+             , 'Y'
+             , SYSDATE
+             , #{memberNo}
+             , #{regionNo}
+    		   )
+	</insert>
+
+	<insert id="insertAttachment" 
+			parameterType="com.kh.activity.model.vo.ActivityAttachment">
+    	INSERT 
+    	  INTO 
+    	       CL_ACTIVITY_ATTACHMENT 
+    	       (
+               FILE_NO
+             , REF_BNO
+             , ORIGIN_NAME
+             , CHANGE_NAME
+             , FILE_PATH
+             , UPLOAD_DATE
+               ) 
+        VALUES 
+               (
+               SEQ_ACTIVITY_FILE_NO.NEXTVAL
+             , #{refBno}
+             , #{originName}
+             , #{changeName}
+             , #{filePath}
+             , SYSDATE
+    		   )
+	</insert>
+	
+	<insert id="insertCertification">
+	    INSERT INTO CL_ACTIVITY_CERTIFICATION (
+	        ACTIVITY_BOARD_NO,
+	        CERTIFICATION_NO
+	    ) VALUES (
+	        #{activityNo},
+	        #{certificationNo}
+	    )
+	</insert>
+
+
 	
 </mapper>

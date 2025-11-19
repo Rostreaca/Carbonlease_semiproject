@@ -1,14 +1,18 @@
 package com.kh.activity.model.service;
 
-import java.util.List;
+import java.util.Map;
 
-import com.kh.activity.model.dto.ActivityListDTO;
-import com.kh.common.util.PageInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ActivityService {
 
-	List<ActivityListDTO> activityAllList(PageInfo pi, String filter, String keyword);
 
-	PageInfo getPageInfo(int page, String filter, String keyword);
+	Map<String, Object> activityAllList(int page, String filter, String keyword);
+
+
+	void insertActivityBoard(String title, String content, String address, double lat, double lng, int certificationNo, int regionNo,
+			MultipartFile file, Long memberNo);
+
+
 
 }
