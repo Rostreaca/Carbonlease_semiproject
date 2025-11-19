@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.kh.admin.notice.model.dto.NoticeAdminDTO;
 import com.kh.notice.model.dto.NoticeDTO;
 
 @Mapper
@@ -15,5 +16,9 @@ public interface NoticeMapper {
 	List<NoticeDTO> findAll(Map<String, Object> params);
 
 	NoticeDTO findByNo(Long noticeNo);
+
+	int countAll();
+
+	List<NoticeAdminDTO> findAllByAdmin(Map<String, Object> params);
 
 }
