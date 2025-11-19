@@ -8,4 +8,6 @@ import com.kh.board.model.dto.BoardDTO;
 public interface BoardService {
 
 	Map<String, Object> findAll(int pageNo);
+	
+	BoardDTO boardDetail(Long boardNo);
 }

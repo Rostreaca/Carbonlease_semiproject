@@ -27,7 +27,7 @@ public class BoardDTO {
 	private int regionNo;
 	private String nickname;
 	private int replyCount;
-	private List<BoardReplyDTO> replyDTO;
+	private List<BoardReplyDTO> replyList;	// 댓글 목록
 	
 	
 }

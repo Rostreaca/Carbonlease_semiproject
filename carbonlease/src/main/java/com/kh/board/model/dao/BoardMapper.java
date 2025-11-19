@@ -15,5 +15,8 @@ public interface BoardMapper {
 
 	int findAndCountAll();
 
+	BoardDTO boardDetail(Long boardNo);
+	
+
 	
 }

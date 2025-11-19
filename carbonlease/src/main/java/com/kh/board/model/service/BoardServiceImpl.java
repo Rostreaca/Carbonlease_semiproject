@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.kh.board.model.dao.BoardMapper;
 import com.kh.board.model.dto.BoardDTO;
 import com.kh.common.util.Pagination;
+import com.kh.notice.model.dto.NoticeDTO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +55,32 @@ public class BoardServiceImpl implements BoardService {
 		int count = boardMapper.findAndCountAll();
 		
 		return count;
+	}
+	
+	
+	// 상세 조회
+	@Override
+	public BoardDTO boardDetail(Long boardNo) {
+
+		return getBoardOrThrow(boardNo);
+	}
+
+	private BoardDTO getBoardOrThrow(Long boardNo) {
+
+		// 번호가 유효한가?
+		if(boardNo < 1) {
+			throw new InvalidParameterException("유효하지 않은 접근입니다.");
+		}
+		
+		// 조회
+		BoardDTO board = boardMapper.boardDetail(boardNo);
+		
+		// 존재하는 게시물인가?
+		if(boardNo == null) {
+			throw new InvalidParameterException("유효하지 않은 접근입니다.");
+		}
+		
+		return board;
 	}
 	
 }
