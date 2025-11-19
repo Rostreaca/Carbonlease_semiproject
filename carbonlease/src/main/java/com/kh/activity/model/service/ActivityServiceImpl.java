@@ -79,7 +79,7 @@ public class ActivityServiceImpl implements ActivityService{
 	                .refBno(board.getActivityNo())
 	                .originName(original)
 	                .changeName(savedName)
-	                .filePath("/uploads/activity/images/" + savedName)
+	                .filePath("http://localhost:80/uploads/activity/images/" + savedName)
 	                .build();
 	        attach.setRefBno(bno);
 
