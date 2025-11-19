@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.RequestEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,5 +31,4 @@ public class BoardController {
 		
 		return bv;
 	}
-		
 }
