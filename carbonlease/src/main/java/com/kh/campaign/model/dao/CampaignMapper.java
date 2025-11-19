@@ -6,8 +6,6 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.kh.campaign.model.dto.CampaignDTO;
-import com.kh.campaign.model.dto.CampaignListResponseDTO;
-import com.kh.campaign.model.dto.CampaignSearchDTO;
 import com.kh.campaign.model.dto.LikeDTO;
 
 
