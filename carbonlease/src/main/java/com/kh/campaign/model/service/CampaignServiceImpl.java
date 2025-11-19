@@ -12,6 +12,7 @@ import com.kh.campaign.model.dto.CampaignListResponseDTO;
 import com.kh.campaign.model.dto.CampaignSearchDTO;
 import com.kh.common.util.PageInfo;
 import com.kh.common.util.Pagination;
+import com.kh.campaign.model.service.CampaignPagingSupport;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -99,17 +100,27 @@ public class CampaignServiceImpl implements CampaignService {
 	 * @return 캠페인 목록
 	 */
 	public List<CampaignDTO> getCampaignList(CampaignSearchDTO searchDTO) {
-		int currentPage = searchDTO.getPageNo();
-		if (currentPage < 1) throw new InvalidParameterException("유효하지 않은 페이지입니다.");
 
-		int listCount = campaignMapper.selectCampaignListCount();
-		int offset = (currentPage - 1) * 6;
-		int limit = 6;
+		int currentPage = searchDTO.getPageNo();
+
+		if (currentPage < 1) {
+			throw new InvalidParameterException("유효하지 않은 페이지입니다.");
+		}
+
+		int pageSize = 6;
+
+		int offset = (currentPage - 1) * pageSize;
+
 		searchDTO.setOffset(offset);
-		searchDTO.setLimit(limit);
-		return (listCount > 0)
-			? campaignMapper.selectCampaignList(searchDTO)
-			: new ArrayList<>();
+		
+		searchDTO.setLimit(pageSize);
+
+		List<CampaignDTO> campaignList = campaignMapper.selectCampaignList(searchDTO);
+
+		if (campaignList == null) {
+			return new ArrayList<>();
+		}
+		return campaignList;
 	}
 
 	/**
@@ -117,12 +128,11 @@ public class CampaignServiceImpl implements CampaignService {
 	 * @param searchDTO 검색 및 페이징 정보
 	 * @return 페이징 정보
 	 */
-	public PageInfo getPageInfo(CampaignSearchDTO searchDTO) {
+	private PageInfo getPageInfo(CampaignSearchDTO searchDTO) {
 		int listCount = campaignMapper.selectCampaignListCount();
 		int currentPage = searchDTO.getPageNo();
-		return pagination.getPageInfo(listCount, currentPage, 5, 6);
+		return CampaignPagingSupport.getPageInfo(listCount, currentPage, pagination);
 	}
-
 
 
 	/**

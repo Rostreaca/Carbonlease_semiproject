@@ -13,10 +13,6 @@ import com.kh.campaign.model.dto.LikeDTO;
 @Mapper
 public interface CampaignMapper {
 	
-	/**
-	 * 페이징 정보와 캠페인 목록을 DTO로 받아서 처리
-	 */
-	List<CampaignDTO> selectCampaignListWithPage(CampaignListResponseDTO response);
 	
 	/**
 	 * 전체조회
