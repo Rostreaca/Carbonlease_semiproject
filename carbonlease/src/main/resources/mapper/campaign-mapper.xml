@@ -3,7 +3,157 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.campaign.model.dao.CampaignMapper">
+	
+	<!-- ResultMap 정의 -->
+	<resultMap id="campaignResultMap" type="CampaignDTO">
+		<id property="campaignNo" column="CAMPAIGN_NO"/>
+		<result property="campaignTitle" column="CAMPAIGN_TITLE"/>
+		<result property="campaignContent" column="CAMPAIGN_CONTENT"/>
+		<result property="startDate" column="START_DATE"/>
+		<result property="endDate" column="END_DATE"/>
+		<result property="viewCount" column="VIEW_COUNT"/>
+		<result property="filePath" column="FILE_PATH"/>
+		<result property="changeName" column="CHANGE_NAME"/>
+		<result property="likeCount" column="LIKE_COUNT"/>
+		<result property="isLiked" column="IS_LIKED" javaType="boolean"/>
+		
+		<association property="category" javaType="CategoryVO">
+			<id property="categroyNo" column="CATEGORY_NO"/>
+			<result property="categoryName" column="CATEGORY_NAME"/>
+		</association>
+	</resultMap>
+	
+	
+	<sql id="campaignColumn">
+      SELECT
+	         P.CAMPAIGN_NO
+	       , P.CAMPAIGN_TITLE
+	       , P.CAMPAIGN_CONTENT
+	       , P.START_DATE
+	       , P.END_DATE
+	       , P.VIEW_COUNT
+	       , A.FILE_PATH
+	       , A.CHANGE_NAME
+	       , A.FILE_LEVEL
+	       , C.CATEGORY_NO
+	       , C.CATEGORY_NAME
+	       , (SELECT COUNT(*) FROM CL_CAMPAIGN_LIKE L WHERE L.CAMPAIGN_NO = P.CAMPAIGN_NO) AS LIKE_COUNT
+	       , CASE 
+	           WHEN #{memberNo} IS NULL THEN 0
+	           ELSE (SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+	                   FROM CL_CAMPAIGN_LIKE L
+	                  WHERE L.CAMPAIGN_NO = P.CAMPAIGN_NO
+	                    AND L.MEMBER_NO = #{memberNo})
+	         END AS IS_LIKED
+		FROM 
+		     CL_CAMPAIGN P
+		JOIN 
+		     CL_CAMPAIGN_CATEGORY C ON P.CATEGORY_NO = C.CATEGORY_NO
+		JOIN 
+		     CL_CAMPAIGN_ATTACHMENT A ON P.CAMPAIGN_NO = A.REF_BNO
+	</sql>
 
 	
 	
+	<!-- 전체조회 -->
+	<select id="selectCampaignList" resultMap="campaignResultMap">
+	    <include refid="campaignColumn"/>
+	    WHERE 
+	          A.FILE_LEVEL = 0
+	      AND 
+	          P.STATUS = 'Y'
+	      AND 
+	          P.END_DATE >= SYSDATE
+		ORDER 
+		   BY P.CAMPAIGN_NO DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+
+	
+	
+	<!-- 상세조회 -->
+	<select id="selectByCampaignNo" resultMap="campaignResultMap">
+	    <include refid="campaignColumn"/>
+	    WHERE 
+	          A.FILE_LEVEL = 1
+	      AND 
+	          P.STATUS = 'Y'
+	      AND 
+	          P.END_DATE >= SYSDATE
+	      AND 
+	          P.CAMPAIGN_NO = #{campaignNo}
+	    ORDER 
+	       BY P.CAMPAIGN_NO DESC
+	</select>
+
+	<!-- 전체 게시글 수 조회 (리스트 조회와 동일 조건) -->
+	<select id="selectCampaignListCount" resultType="int">
+		SELECT 
+			   COUNT(*)
+		 FROM   
+		       CL_CAMPAIGN P
+		 JOIN 
+		       CL_CAMPAIGN_CATEGORY C ON P.CATEGORY_NO = C.CATEGORY_NO
+		 JOIN 
+		       CL_CAMPAIGN_ATTACHMENT A ON P.CAMPAIGN_NO = A.REF_BNO
+		 WHERE 
+		       A.FILE_LEVEL = 0
+		  AND 
+		       P.STATUS = 'Y'
+		  AND 
+		       P.END_DATE >= SYSDATE
+	</select>
+	
+	<!-- 좋아요 존재 여부 -->
+	<select id="existsLike" parameterType="com.kh.campaign.model.dto.LikeDTO" resultType="int">
+	    SELECT 
+	           COUNT(*) 
+	      FROM 
+	           CL_CAMPAIGN_LIKE
+	     WHERE 
+	           CAMPAIGN_NO = #{campaignNo}
+	       AND 
+	           MEMBER_NO = #{memberNo}
+	</select>
+
+	<!-- 좋아요 추가 -->
+	<insert id="insertLike" parameterType="com.kh.campaign.model.dto.LikeDTO">
+	    INSERT 
+	      INTO 
+	           CL_CAMPAIGN_LIKE 
+	           (
+	           LIKE_NO
+	         , CAMPAIGN_NO
+	         , MEMBER_NO
+	           )
+	    VALUES 
+	           (
+	           SEQ_CL_CAMPAIGN_LIKE.NEXTVAL
+	         , #{campaignNo}, #{memberNo}
+	           )
+	</insert>
+
+	<!-- 좋아요 삭제 -->
+	<delete id="deleteLike" parameterType="com.kh.campaign.model.dto.LikeDTO">
+	    DELETE 
+	      FROM 
+	           CL_CAMPAIGN_LIKE
+	     WHERE 
+	           CAMPAIGN_NO = #{campaignNo}
+	       AND 
+	           MEMBER_NO = #{memberNo}
+	</delete>
+
+
+	<!-- 캠페인 조회수 증가 -->
+	<update id="increaseViewCount" parameterType="long">
+		UPDATE 
+		   	   CL_CAMPAIGN
+		   SET 
+		       VIEW_COUNT = VIEW_COUNT + 1
+		 WHERE 
+		       CAMPAIGN_NO = #{campaignNo}
+	</update>
+
+
 </mapper>

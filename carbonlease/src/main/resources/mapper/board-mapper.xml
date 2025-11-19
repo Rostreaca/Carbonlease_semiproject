@@ -4,6 +4,7 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.board.model.dao.BoardMapper">
 
+<<<<<<< HEAD
 	<sql id="boardColumn">
 			SELECT
 				   BOARD_NO boardNo
@@ -22,6 +23,43 @@
 		           STATUS = 'Y'
 			ORDER 
 			   BY  BOARD_NO DESC
+=======
+	<select id="boardReadList" parameterType="_int" resultType="com.kh.board.model.dto.BoardDTO">
+		SELECT
+ 			*
+		 FROM  (
+    			SELECT
+     				   ROWNUM AS RN
+                     , TA. *
+    			FROM 
+    				   (
+    					SELECT
+					           B.BOARD_NO   AS boardNo
+					         , B.BOARD_TITLE AS boardTitle
+					         , B.VIEW_COUNT  AS viewCount
+					         , B.ENROLL_DATE AS enrollDate
+					         , B.MEMBER_NO   AS memberNo
+					         , B.REGION_NO   AS regionNo
+					         , M.NICKNAME    AS nickname
+					    FROM
+					           CL_BOARD  B
+					         , CL_MEMBER M
+					    WHERE
+					           B.MEMBER_NO = M.MEMBER_NO
+   						ORDER 
+   						   BY  B.ENROLL_DATE DESC
+    						   ) TA
+    					WHERE  ROWNUM &lt;= #{endNumber}
+						       ) 
+					    WHERE  RN &gt;= #{startNumber}
+	</select>
+	
+	<select id="boardTotalcount" resultType="int">
+		SELECT 
+			   COUNT(*) AS TOTALCOUNT 
+		  FROM 
+		       CL_BOARD
+>>>>>>> 6f476f43c7282884cea6bf2c703b8b0c2c98657e
 	</select>
 	
 

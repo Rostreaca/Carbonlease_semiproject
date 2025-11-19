@@ -20,14 +20,17 @@ public class MemberDTO {
 
 	private Long memberNo;
 	@Pattern(regexp = "^[A-Za-z0-9]{4,20}$", message = "아이디는 4-20자 사이의 영어-숫자만 사용할 수 있습니다.")
-	@NotBlank(message = "아이디는 비어있을 수 없습니다.")
+	//@NotBlank(message = "아이디는 비어있을 수 없습니다.")
 	@Size(min = 4, max = 20, message = "아이디는 4-20자만 사용할 수 있습니다.")
 	private String memberId;
 	@Pattern(regexp = "^[A-Za-z0-9]{4,20}$", message = "비밀번호는 4-20자 사이의 영어-숫자만 사용할 수 있습니다.")
-	@NotBlank(message = "비밀번호는 비어있을 수 없습니다.")
+	//@NotBlank(message = "비밀번호는 비어있을 수 없습니다.")
 	@Size(min = 4, max = 20, message = "비밀번호는 4-20자만 사용할 수 있습니다.")
 	private String memberPwd;
-	private String nickname;
+	@Size(min = 2, max = 12, message = "닉네임은 2-12자 사이로만 사용 가능합니다.")
+	//@NotBlank(message = "닉네임은 비어있을 수 없습니다.")
+	private String nickName;
+	//@NotBlank(message = "이메일은 비어있을 수 없습니다.")
 	private String email;
 	private String addressLine1;
 	private String addressLine2;

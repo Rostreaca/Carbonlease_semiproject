@@ -2,6 +2,7 @@ package com.kh.auth.controller;
 
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,4 +34,13 @@ public class AuthController {
 		return ResponseEntity.ok(loginResponse);
 		
 	}
+	
+	@PostMapping("/refresh")
+	public ResponseEntity<?> refresh(@RequestBody Map<String, String> token){
+		String refreshToken = token.get("refreshToken");
+		Map<String, String> tokens = tokenService.validateToken(refreshToken);
+		
+		return ResponseEntity.status(HttpStatus.CREATED).body(tokens);
+	}
+	
 }

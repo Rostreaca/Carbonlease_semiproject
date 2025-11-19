@@ -1,21 +1,18 @@
 package com.kh.auth.model.service;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import com.kh.auth.model.vo.CustomUserDetails;
+import com.kh.exception.CustomAuthenticationException;
 import com.kh.member.model.dto.MemberDTO;
 import com.kh.token.model.service.TokenService;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
 			auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(member.getMemberId(),member.getMemberPwd()));
 		} catch(AuthenticationException e) {
 			// 예외 발생
-			throw new RuntimeException("로그인 실패", e);
+			throw new CustomAuthenticationException("로그인에 실패하였습니다. 아이디 또는 비밀번호를 확인해주세요.");
 		}
 		
 		CustomUserDetails user = (CustomUserDetails)auth.getPrincipal();

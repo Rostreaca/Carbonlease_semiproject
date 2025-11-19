@@ -44,5 +44,75 @@
 		
 	</select>
 	
+	<select id="countByMemberId" parameterType="string">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       CL_MEMBER
+		 WHERE
+		       MEMBER_ID = #{memberId}
+		
+	</select>
+	
+	<select id="countByNickName" parameterType="string">
+		SELECT
+		       COUNT(*)
+		  FROM 
+		       CL_MEMBER
+		 WHERE
+		       NICKNAME = #{nickName}
+	</select>
+	
+	<select id="countByEmail" parameterType="string">
+		SELECT
+		       COUNT(*)
+		  FROM
+		       CL_MEMBER
+		 WHERE
+		       EMAIL = #{email}
+	</select>
+	
+	<insert id="signUp" parameterType="com.kh.member.model.vo.MemberVO">
+		INSERT
+		  INTO
+		       CL_MEMBER
+		VALUES
+		       (
+		       SEQ_MEMBER_NO.NEXTVAL
+		     , #{memberId}
+		     , #{memberPwd}
+		     , #{nickName}
+		     , #{email}
+		     , #{addressLine1}
+		     , #{addressLine2}
+		     , #{role}
+		     , SYSDATE
+		     , DEFAULT
+		       )
+	</insert>
+	
+	<update id="updateMember" parameterType="com.kh.member.model.dto.MemberDTO">
+		UPDATE
+		       CL_MEMBER
+		   SET
+		       NICKNAME = #{nickName}
+		     , EMAIL = #{email}
+		     , ADDRESS_LINE_1 = #{addressLine1}
+		     , ADDRESS_LINE_2 = #{addressLine2}
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   
+	</update>
+	
+	<update id="deleteMember" parameterType="_long">
+		UPDATE
+		       CL_MEMBER
+		   SET
+		       STATUS = 'N'
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		
+	</update>
+	
 	
 </mapper>
