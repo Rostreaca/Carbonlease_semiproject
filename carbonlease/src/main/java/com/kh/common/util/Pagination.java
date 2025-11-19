@@ -34,6 +34,7 @@ public class Pagination {
 		Map<String, Object> map = new HashMap();
 		
 		int offset = (pageNo - 1) * size;
+		
 		int limit = size;
 		
 		map.put("offset", offset);
