@@ -43,9 +43,9 @@ public class BoardController {
 	
 	
 	// 상세 조회
-	@GetMapping("/{boardNo}")
+	@GetMapping("detail/{boardNo}")
 	public ResponseEntity<?> boardDetail(@PathVariable(name="boardNo") Long boardNo) {
-		
+		log.info("상세조회 : ", boardNo);
 		Map<String, Object> map = boardService.boardDetail(boardNo);
 		
 		log.info("왜 안나와 ? : {}", map);

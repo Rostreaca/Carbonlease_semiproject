@@ -61,7 +61,7 @@
 	</select>
 	
 	<!-- 댓글 조회 -->
-	<select id="replyList" parameterType="_int" resultType="BoardReplyDTO">
+	<select id="replyList" parameterType="long" resultType="BoardReplyDTO">
 		 SELECT
        		     R.REPLY_CONTENT replyContent
                , R.ENROLL_DATE enrollDate
