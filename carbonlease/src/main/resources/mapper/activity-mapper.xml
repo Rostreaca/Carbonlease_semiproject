@@ -5,6 +5,7 @@
 <mapper namespace="com.kh.activity.model.dao.ActivityMapper">
 	
 	<select id="activityAllList"
+			parameterType="map"
 			resultType="com.kh.activity.model.dto.ActivityListDTO">
 		SELECT
 		       B.ACTIVITY_NO activityNo
@@ -54,7 +55,87 @@
 		    BY
 		       B.ACTIVITY_NO DESC      
 	</select>
-
 	
+	<select id="countActivity"
+	        parameterType="map"
+	        resultType="int">
+		SELECT 
+			   COUNT(*)
+		  FROM 
+		       CL_ACTIVITY_BOARD B
+		  JOIN 
+		       CL_MEMBER M ON (B.MEMBER_NO = M.MEMBER_NO)
+		 WHERE 
+		       B.STATUS = 'Y'
+		<if test="keyword != null and keyword != ''">
+		  AND (
+			<choose>
+				<when test="filter == 'title'">
+					B.ACTIVITY_TITLE LIKE '%' || #{keyword} || '%'
+				</when>
+				<when test="filter == 'content'">
+					B.ACTIVITY_CONTENT LIKE '%' || #{keyword} || '%'
+				</when>
+				<when test="filter == 'nickname'">
+					M.NICKNAME LIKE '%' || #{keyword} || '%'
+				</when>
+				<otherwise>
+					B.ACTIVITY_TITLE LIKE '%' || #{keyword} || '%'
+				</otherwise>
+			</choose>
+		  )
+		</if>
+	</select>
+	
+    <insert id="insertBoard" 
+    		parameterType="com.kh.activity.model.vo.ActivityBoard" 
+    		useGeneratedKeys="true" 
+    		keyProperty="activityNo">
+    	INSERT 
+    	  INTO 
+    	       CL_ACTIVITY_BOARD 
+    	       (
+    	       ACTIVITY_NO
+    	     , ACTIVITY_TITLE
+    	     , ACTIVITY_CONTENT
+    	     , LAT
+    	     , LNG
+    	     , MEMBER_NO
+    	     , REGION_NO
+               ) 
+        VALUES 
+        	   (
+               SEQ_ACTIVITY_NO.NEXTVAL
+             , #{title}
+             , #{content}
+             , #{lat}
+             , #{lng}
+             , #{memberNo}
+             , #{regionNo}
+    		   )
+	</insert>
+
+	<insert id="insertAttachment" 
+			parameterType="com.kh.activity.model.vo.ActivityAttachment">
+    	INSERT 
+    	  INTO 
+    	       CL_ACTIVITY_ATTACHMENT 
+    	       (
+               FILE_NO
+             , REF_BNO
+             , ORIGIN_NAME
+             , CHANGE_NAME
+             , FILE_PATH
+               ) 
+        VALUES 
+               (
+               SEQ_ACTIVITY_FILE_NO.NEXTVAL
+             , #{refBno}
+             , #{originName}
+             , #{changeName}
+             , #{filePath}
+    		   )
+	</insert>
+
 	
 </mapper>
