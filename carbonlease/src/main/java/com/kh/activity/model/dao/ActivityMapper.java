@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.RowBounds;
 
 import com.kh.activity.model.dto.ActivityListDTO;
+import com.kh.activity.model.dto.ActivityUpdateDTO;
 import com.kh.activity.model.vo.ActivityAttachment;
 import com.kh.activity.model.vo.ActivityBoard;
 
@@ -29,6 +30,6 @@ public interface ActivityMapper {
 	    int insertAttachment(ActivityAttachment attachment);
 	    
 	    int insertCertification(@Param("activityNo") int activityNo, @Param("certificationNo") int certificationNo);
-;
 
+		ActivityUpdateDTO findById(int id);
 }

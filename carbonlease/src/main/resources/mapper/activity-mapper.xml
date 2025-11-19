@@ -108,6 +108,7 @@
     	     , ENROLL_DATE
     	     , MEMBER_NO
     	     , REGION_NO
+    	     , ADDRESS
                ) 
         VALUES 
         	   (
@@ -121,6 +122,7 @@
              , SYSDATE
              , #{memberNo}
              , #{regionNo}
+             , #{address}
     		   )
 	</insert>
 
@@ -157,6 +159,30 @@
 	        #{certificationNo}
 	    )
 	</insert>
+	
+	<select id="findById"
+			resultType="com.kh.activity.model.dto.ActivityUpdateDTO">
+		SELECT
+			   B.ACTIVITY_NO
+			 , B.ACTIVITY_TITLE
+			 , B.ACTIVITY_CONTENT
+			 , B.LAT
+			 , B.LNG
+			 , B.REGION_NO
+			 , C.CERTIFICATION_NO
+			 , A.FILE_PATH thumbnailPath
+			 , B.ADDRESS
+	      FROM
+	           CL_ACTIVITY_BOARD B
+	      LEFT
+	      JOIN
+	           CL_ACTIVITY_ATTACHMENT A ON B.ACTIVITY_NO = A.REF_BNO AND A.THUMBNAIL_YN = 'Y'
+	      LEFT
+	      JOIN
+	           CL_ACTIVITY_CERTIFICATION C ON B.ACTIVITY_NO = C.ACTIVITY_BOARD_NO
+	     WHERE
+	           B.ACTIVITY_NO = #{id}
+	</select>
 
 
 	

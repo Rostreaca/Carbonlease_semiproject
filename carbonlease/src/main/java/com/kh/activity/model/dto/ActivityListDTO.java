@@ -21,6 +21,7 @@ public class ActivityListDTO {
 	private int replyCount;
 	private String nickName;
 	private String thumbnailPath;
+	private String address;
 	
 
 }

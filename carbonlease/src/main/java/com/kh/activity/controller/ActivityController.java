@@ -55,7 +55,7 @@ public class ActivityController {
 	}
 	
 	@GetMapping("/updateForm/{id}")
-	public ResponseEntity<?> getActivityBoard(@PathVariable int id){
+	public ResponseEntity<?> getActivityBoard(@PathVariable("id") int id){
 		
 		Map<String, Object> result = activityService.findById(id);
 		

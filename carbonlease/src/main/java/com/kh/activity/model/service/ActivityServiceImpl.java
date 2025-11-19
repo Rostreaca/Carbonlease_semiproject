@@ -64,6 +64,7 @@ public class ActivityServiceImpl implements ActivityService{
 	            .lng(lng)
 	            .memberNo(memberNo)
 	            .regionNo(regionNo)
+	            .address(address)
 	            .build();
 
 	    activityMapper.insertBoard(board); // PK 채워짐
@@ -96,7 +97,16 @@ public class ActivityServiceImpl implements ActivityService{
 		if(us == null) throw new RuntimeException("게시글이 존재하지 않습니다.");
 		
 		Map<String, Object> result = new HashMap<>();
-		result.put("activityNo", us.);
+		result.put("activityNo", us.getActivityNo());
+		result.put("title", us.getTitle());
+		result.put("content", us.getContent());
+		result.put("address", us.getAddress());
+		result.put("lat", us.getLat());
+		result.put("regionNo", us.getRegionNo());
+		result.put("certificationNo", us.getCertificationNo());
+		result.put("thumbnailPath", us.getThumbnailPath());
+		
+		return result;
 	}
 	
 	
