@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.RowBounds;
 
 import com.kh.board.model.dto.BoardDTO;
+import com.kh.board.model.dto.BoardReplyDTO;
 
 @Mapper
 public interface BoardMapper {
@@ -17,6 +18,7 @@ public interface BoardMapper {
 
 	BoardDTO boardDetail(Long boardNo);
 	
+	List<BoardReplyDTO> replyList(Long boardNo);
 
 	
 }

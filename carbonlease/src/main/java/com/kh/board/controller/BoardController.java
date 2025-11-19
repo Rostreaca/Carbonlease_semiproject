@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.board.model.dto.BoardDTO;
+import com.kh.board.model.dto.BoardReplyDTO;
 import com.kh.board.model.service.BoardService;
 
 import jakarta.validation.constraints.Min;
@@ -45,14 +46,13 @@ public class BoardController {
 	@GetMapping("/{boardNo}")
 	public ResponseEntity<?> boardDetail(@PathVariable(name="boardNo") Long boardNo) {
 		
-		BoardDTO board = boardService.boardDetail(boardNo);
+		Map<String, Object> map = boardService.boardDetail(boardNo);
 		
-		log.info("왜 안나와 ? : {}", board);
+		log.info("왜 안나와 ? : {}", map);
 		
-		return ResponseEntity.ok(board);
+		return ResponseEntity.ok(map);
 		
 	}
-	
 	
 		
 }

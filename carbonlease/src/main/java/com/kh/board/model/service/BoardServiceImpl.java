@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.kh.board.model.dao.BoardMapper;
 import com.kh.board.model.dto.BoardDTO;
+import com.kh.board.model.dto.BoardReplyDTO;
 import com.kh.common.util.Pagination;
 import com.kh.notice.model.dto.NoticeDTO;
 
@@ -60,27 +61,19 @@ public class BoardServiceImpl implements BoardService {
 	
 	// 상세 조회
 	@Override
-	public BoardDTO boardDetail(Long boardNo) {
+	public Map<String, Object> boardDetail(Long boardNo) {
 
-		return getBoardOrThrow(boardNo);
-	}
-
-	private BoardDTO getBoardOrThrow(Long boardNo) {
-
-		// 번호가 유효한가?
-		if(boardNo < 1) {
-			throw new InvalidParameterException("유효하지 않은 접근입니다.");
-		}
+		Map<String, Object> map = new HashMap();
 		
-		// 조회
 		BoardDTO board = boardMapper.boardDetail(boardNo);
 		
-		// 존재하는 게시물인가?
-		if(boardNo == null) {
-			throw new InvalidParameterException("유효하지 않은 접근입니다.");
-		}
+		List<BoardReplyDTO> reply = boardMapper.replyList(boardNo);
 		
-		return board;
+		map.put("boardDetail", board);
+		map.put("replyList", reply);
+		
+		return map;
 	}
-	
+
 }
+	

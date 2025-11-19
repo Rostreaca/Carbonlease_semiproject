@@ -46,31 +46,37 @@
 	<!-- 게시글 상세 조회 -->
 	<select id="boardDetail" parameterType="long" resultType="BoardDTO">
 		 SELECT
-		        B.BOARD_NO AS boardNo,
-		        B.BOARD_TITLE AS boardTitle,
-		        B.BOARD_CONTENT AS boardContent,
-		        B.ENROLL_DATE AS enrollDate,
-		        B.VIEW_COUNT AS viewCount,
-		        M.NICKNAME AS nickname,
-		        R.REPLY_NO AS replyNo,
-		        R.REPLY_CONTENT AS replyContent,
-		        R.ENROLL_DATE AS enrollDate,
-		        RM.NICKNAME AS nickname
-		   FROM
-		        CL_BOARD B
-		   JOIN
-		        CL_MEMBER M ON B.MEMBER_NO = M.MEMBER_NO
+		        B.BOARD_NO AS boardNo
+		      , B.BOARD_TITLE AS boardTitle
+		      , B.BOARD_CONTENT AS boardContent
+		      , B.ENROLL_DATE AS enrollDate
+		      , B.VIEW_COUNT AS viewCount
+		      , M.NICKNAME AS nickname
+		   FROM 
+		   		CL_BOARD B
+		   JOIN 
+		   		CL_MEMBER M ON B.MEMBER_NO = M.MEMBER_NO
+		  WHERE 
+		  		B.BOARD_NO = #{boardNo}
+	</select>
+	
+	<!-- 댓글 조회 -->
+	<select id="replyList" parameterType="_int" resultType="BoardReplyDTO">
+		 SELECT
+       		     R.REPLY_CONTENT replyContent
+               , R.ENROLL_DATE enrollDate
+               , B.BOARD_NO boardNo
+               , R.MEMBER_NO memberNo
+               , M.NICKNAME nickname
+		   FROM 
+		         CL_BOARD B
+		   JOIN 
+		         CL_BOARD_REPLY R ON B.BOARD_NO = R.BOARD_NO
 		   LEFT 
-		   JOIN
-		        CL_BOARD_REPLY R ON B.BOARD_NO = R.BOARD_NO
-		   LEFT
-		   JOIN
-		        CL_MEMBER RM ON R.MEMBER_NO = RM.MEMBER_NO
-		  WHERE
-		        B.BOARD_NO = #{boardNo}
-		  ORDER
-		     BY
-		        R.REPLY_NO ASC
+		   JOIN  CL_MEMBER M ON R.MEMBER_NO = M.MEMBER_NO  
+		  WHERE  B.BOARD_NO = #{boardNo}
+		  ORDER 
+		     BY  R.ENROLL_DATE ASC
 	</select>
 
 </mapper>
