@@ -7,5 +7,5 @@ import com.kh.board.model.vo.BoardVO;
 
 public interface BoardService {
 
-	BoardVO boardReadList(int pageNo);
+	List<BoardDTO> boardReadList(int pageNo);
 }

@@ -1,6 +1,5 @@
 package com.kh.board.model.dto;
 
-
 import java.sql.Date;
 
 import lombok.AllArgsConstructor;

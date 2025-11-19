@@ -2,7 +2,7 @@ package com.kh.board.controller;
 
 import java.util.List;
 
-import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.board.model.dto.BoardDTO;
 import com.kh.board.model.service.BoardService;
-import com.kh.board.model.vo.BoardVO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,12 +24,24 @@ public class BoardController {
 	
 	private final BoardService boardService;
 	
+//	@GetMapping
+//	public BoardVO boardReadList(@RequestParam(name="page") int pageNo) {
+//		
+//		BoardVO board = boardService.boardReadList(pageNo);
+//
+//		return board;
+//	}
+	
+	// 전체 조회
 	@GetMapping
-	public BoardVO boardReadList(@RequestParam(name="page") int pageNo) {
+	public ResponseEntity<List<BoardDTO>> boardReadList(@RequestParam(name="page", defaultValue="0") int pageNo) {
 		
-		BoardVO board = boardService.boardReadList(pageNo);
-
-		return board;
+		List<BoardDTO> boards = boardService.boardReadList(pageNo);
+		
+		return ResponseEntity.ok(boards);
+		
 	}
+	
+	
 		
 }
