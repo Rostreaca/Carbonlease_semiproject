@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.activity.model.dao.ActivityMapper;
 import com.kh.activity.model.dto.ActivityListDTO;
+import com.kh.activity.model.dto.ActivityUpdateDTO;
 import com.kh.activity.model.vo.ActivityAttachment;
 import com.kh.activity.model.vo.ActivityBoard;
 import com.kh.common.util.FileUtil;
@@ -53,7 +54,7 @@ public class ActivityServiceImpl implements ActivityService{
 	
 	@Transactional
 	@Override
-	public void insertActivityBoard(String title, String content, String address, double lat, double lng,
+	public int insertActivityBoard(String title, String content, String address, double lat, double lng,
 	                           int certificationNo, int regionNo, MultipartFile file, Long memberNo) {
 
 	    ActivityBoard board = ActivityBoard.builder()
@@ -84,7 +85,18 @@ public class ActivityServiceImpl implements ActivityService{
 	        activityMapper.insertAttachment(attach);
 	    }
 
-	    activityMapper.insertCertification(bno , certificationNo);
+	    return bno;
+	}
+	
+	@Override
+	public Map<String, Object> findById(int id){
+		
+		ActivityUpdateDTO us = activityMapper.findById(id);
+		
+		if(us == null) throw new RuntimeException("게시글이 존재하지 않습니다.");
+		
+		Map<String, Object> result = new HashMap<>();
+		result.put("activityNo", us.);
 	}
 	
 	
