@@ -38,7 +38,7 @@ public class CampaignController {
 	 */
 	@GetMapping
 	public ResponseEntity<?> selectCampaignList(
-			@RequestParam(name = "page", defaultValue= "1") int pageNo){
+			@RequestParam(name = "pageNo", defaultValue= "1") int pageNo){
 		Map<String, Object> map = new HashMap();
 		map = campaignService.selectCampaignList(pageNo);
 		return ResponseEntity.ok(map);
@@ -49,7 +49,7 @@ public class CampaignController {
 	 * @param campaignNo
 	 * @return CampaignDTO : 캠페인 상세 정보
 	 */
-	@GetMapping("detail/{campaignNo}")
+	@GetMapping("/detail/{campaignNo}")
 	public ResponseEntity<CampaignDTO> selectByCampaignNo(
 			@PathVariable(name="campaignNo")
 			@Min(value=1, message="너무 작습니다.") Long campaignNo){
