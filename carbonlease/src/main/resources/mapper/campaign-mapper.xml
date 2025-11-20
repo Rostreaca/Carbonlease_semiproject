@@ -6,23 +6,35 @@
 	
 	<!-- ResultMap 정의 -->
 	<resultMap id="campaignResultMap" type="CampaignDTO">
-		<id property="campaignNo" column="CAMPAIGN_NO"/>
-		<result property="campaignTitle" column="CAMPAIGN_TITLE"/>
-		<result property="campaignContent" column="CAMPAIGN_CONTENT"/>
-		<result property="startDate" column="START_DATE"/>
-		<result property="endDate" column="END_DATE"/>
-		<result property="viewCount" column="VIEW_COUNT"/>
-		<result property="filePath" column="FILE_PATH"/>
-		<result property="changeName" column="CHANGE_NAME"/>
-		<result property="likeCount" column="LIKE_COUNT"/>
-		<result property="isLiked" column="IS_LIKED" javaType="boolean"/>
-		
-		<association property="category" javaType="CategoryVO">
-		    <id property="categoryNo" column="CATEGORY_NO"/>
-		    <result property="categoryName" column="CATEGORY_NAME"/>
-		</association>
-	</resultMap>
+
+	    <!-- 캠페인 기본 -->
+	    <id property="campaignNo" column="CAMPAIGN_NO"/>
+	    <result property="campaignTitle" column="CAMPAIGN_TITLE"/>
+	    <result property="campaignContent" column="CAMPAIGN_CONTENT"/>
+	    <result property="startDate" column="START_DATE"/>
+	    <result property="endDate" column="END_DATE"/>
+	    <result property="viewCount" column="VIEW_COUNT"/>
+	    <result property="status" column="STATUS"/>
+	    <result property="memberNo" column="MEMBER_NO"/>
 	
+	    <!-- 카테고리 -->
+	    <association property="category" javaType="com.kh.campaign.model.vo.CategoryVO">
+	        <result property="categoryNo" column="CATEGORY_NO"/>
+	        <result property="categoryName" column="CATEGORY_NAME"/>
+	    </association>
+	
+	    <!-- 첨부파일 목록 -->
+	    <collection property="attachments" ofType="com.kh.campaign.model.vo.AttachmentVO">
+	        <id property="fileNo" column="FILE_NO"/>
+	        <result property="refBno" column="REF_BNO"/>
+	        <result property="originName" column="ORIGIN_NAME"/>
+	        <result property="changeName" column="CHANGE_NAME"/>
+	        <result property="filePath" column="FILE_PATH"/>
+	        <result property="fileLevel" column="FILE_LEVEL"/>
+	        <result property="uploadDate" column="UPLOAD_DATE"/>
+	    </collection>
+	
+	</resultMap>
 	
 	<sql id="campaignColumn">
       SELECT
@@ -32,11 +44,17 @@
 	       , P.START_DATE
 	       , P.END_DATE
 	       , P.VIEW_COUNT
-	       , A.FILE_PATH
-	       , A.CHANGE_NAME
-	       , A.FILE_LEVEL
+	       , P.STATUS
+	       , P.MEMBER_NO
 	       , C.CATEGORY_NO
 	       , C.CATEGORY_NAME
+	       , A.FILE_NO
+	       , A.REF_BNO
+	       , A.ORIGIN_NAME
+	       , A.CHANGE_NAME
+	       , A.FILE_PATH
+	       , A.FILE_LEVEL
+	       , A.UPLOAD_DATE
 		FROM 
 		     CL_CAMPAIGN P
 		JOIN 

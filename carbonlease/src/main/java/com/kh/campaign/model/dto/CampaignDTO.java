@@ -35,9 +35,10 @@ public class CampaignDTO {
     private Long categoryNo;
 
     private List<AttachmentVO> attachments;
-    private String filePath;
-    private String changeName;
-    private Integer fileLevel;
+    private String filePath;   // 대표 이미지 URL
+    private String changeName; // 대표 이미지 변경명
+    private Integer fileLevel; // 대표 이미지 레벨
+  
     
     // Like 정보 (누가 눌렀는지, 총 좋아요수 등)
     private int likeCount;              // 총 좋아요 개수
