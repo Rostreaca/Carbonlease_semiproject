@@ -52,6 +52,7 @@
 		      , B.ENROLL_DATE AS enrollDate
 		      , B.VIEW_COUNT AS viewCount
 		      , M.NICKNAME AS nickname
+		      , B.REGION_NO AS regionNo
 		      , RC.REGION_NAME AS regionName
 		   FROM 
 		   		CL_BOARD B

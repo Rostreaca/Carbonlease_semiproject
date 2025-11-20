@@ -17,6 +17,5 @@ public class BoardRegionDTO {
 
 	private int regionNo;
 	private String regionName;
-	private List<BoardDTO> board;
 	
 }
