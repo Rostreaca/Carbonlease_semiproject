@@ -52,12 +52,17 @@
 		      , B.ENROLL_DATE AS enrollDate
 		      , B.VIEW_COUNT AS viewCount
 		      , M.NICKNAME AS nickname
+		      , RC.REGION_NAME AS regionName
 		   FROM 
 		   		CL_BOARD B
 		   JOIN 
 		   		CL_MEMBER M ON B.MEMBER_NO = M.MEMBER_NO
+		   LEFT 
+		   JOIN CL_REGION_CATEGORY RC ON B.REGION_NO = RC.REGION_NO 
 		  WHERE 
-		  		B.BOARD_NO = #{boardNo}
+		  		B.REGION_NO = RC.REGION_NO 
+		    AND
+		    	B.BOARD_NO = #{boardNo}
 	</select>
 	
 	<!-- 댓글 조회 -->
