@@ -32,24 +32,34 @@ public class ActivityServiceImpl implements ActivityService{
 	private final FileUtil fileUtil;
 	
 	@Override
-	public Map<String, Object> activityAllList(int page, String filter, String keyword){
+	public Map<String, Object> activityAllList(int pageNo, String filter, String keyword){
 	    
-	    if(page < 0) throw new InvalidParameterException("유효하지 않은 페이지 요청입니다.");
+	    if(pageNo < 0) throw new InvalidParameterException("유효하지 않은 페이지 요청입니다.");
 
-	    int boardLimit = 6;
-	    int pageLimit = 5;
+	    int listCount = findListCount(filter,keyword);
+	    
+	    
+	    Map<String, Object> params = pagination.pageRequest(pageNo, 6, listCount);
+	    params.put("keyword", keyword);
+	    params.put("filter", filter);
+	    List<ActivityListDTO> activityListDTO = activityMapper.activityAllList(params);
+	    
+	    Map<String, Object> map = new HashMap<>();
+	    map.put("pageInfo", params.get("pi"));
+	    map.put("activityListDTO", activityListDTO);
+	    
 
-	    int listCount = activityMapper.countActivity(keyword, filter);
-	    PageInfo pageInfo = pagination.getPageInfo(listCount, page + 1, pageLimit, boardLimit);
-
-	    RowBounds rowBounds = new RowBounds((pageInfo.getCurrentPage() - 1) * boardLimit, boardLimit);
-	    List<ActivityListDTO> list = activityMapper.activityAllList(keyword, filter, rowBounds);
-
-	    Map<String, Object> result = new HashMap<>();
-	    result.put("pageInfo", pageInfo);
-	    result.put("list", list);
-
-	    return result;
+	    return map;
+	}
+	
+	private int findListCount(String filter, String keyword) {
+		
+		Map<String, String> search = new HashMap();
+		search.put("filter", filter);
+		search.put("keyword", keyword);
+		int count = activityMapper.findListCount(search);
+		
+		return count;
 	}
 	
 	@Transactional

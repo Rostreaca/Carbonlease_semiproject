@@ -53,10 +53,11 @@
 		 </if>
 		 ORDER
 		    BY
-		       B.ACTIVITY_NO DESC      
+		       B.ACTIVITY_NO DESC
+		 OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY      
 	</select>
 	
-	<select id="countActivity"
+	<select id="findListCount"
 	        parameterType="map"
 	        resultType="int">
 		SELECT 

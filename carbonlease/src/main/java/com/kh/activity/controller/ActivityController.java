@@ -1,5 +1,6 @@
 package com.kh.activity.controller;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
@@ -31,11 +32,15 @@ public class ActivityController {
 	
 	@GetMapping
 	public ResponseEntity<Map<String, Object>> activityAllList(
-	        @RequestParam(name="page", defaultValue="1") int page,
+	        @RequestParam(name="pageNo", defaultValue="1") int pageNo,
 	        @RequestParam(name="filter", required=false) String filter,
-	        @RequestParam(name="keyword", required=false) String keyword){
+	        @RequestParam(name="keyword", required=false) String keyword
+	        ){
+		
+		Map<String, Object> result = new HashMap<>();
+		result = activityService.activityAllList(pageNo, filter, keyword);
 
-	    return ResponseEntity.ok(activityService.activityAllList(page, filter, keyword));
+	    return ResponseEntity.ok(result);
 	}
 	
 	@PostMapping(value = "/insertForm", consumes = "multipart/form-data")
