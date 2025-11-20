@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActivityUpdateDTO {
+public class ActivityFormDTO {
 	
 	private int activityNo;
 	private String title;

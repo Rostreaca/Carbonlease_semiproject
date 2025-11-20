@@ -12,12 +12,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.activity.model.dao.ActivityMapper;
 import com.kh.activity.model.dto.ActivityListDTO;
-import com.kh.activity.model.dto.ActivityUpdateDTO;
+import com.kh.activity.model.dto.ActivityFormDTO;
 import com.kh.activity.model.vo.ActivityAttachment;
 import com.kh.activity.model.vo.ActivityBoard;
-import com.kh.common.util.FileUtil;
+import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.common.util.PageInfo;
 import com.kh.common.util.Pagination;
+import com.kh.common.util.FileUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,45 +65,49 @@ public class ActivityServiceImpl implements ActivityService{
 	
 	@Transactional
 	@Override
-	public int insertActivityBoard(String title, String content, String address, double lat, double lng,
-	                           int certificationNo, int regionNo, MultipartFile file, Long memberNo) {
+	public int insertActivityBoard(ActivityFormDTO form,
+	                               MultipartFile files,
+	                               CustomUserDetails user) {
 
+	    // 파일 처리
+	    if (files != null && !files.isEmpty()) {
+	        String fileUrl = fileUtil.saveFile(files, "activity");
+	        form.setThumbnailPath(fileUrl);
+	    }
+
+	    // ActivityBoard 엔티티로 변환
 	    ActivityBoard board = ActivityBoard.builder()
-	            .title(title)
-	            .content(content)
-	            .lat(lat)
-	            .lng(lng)
-	            .memberNo(memberNo)
-	            .regionNo(regionNo)
-	            .address(address)
+	            .title(form.getTitle())
+	            .content(form.getContent())
+	            .address(form.getAddress())
+	            .lat(form.getLat())
+	            .lng(form.getLng())
+	            .memberNo(user.getMemberNo())
+	            .regionNo(form.getRegionNo())
 	            .build();
 
-	    activityMapper.insertBoard(board); // PK 채워짐
+	    activityMapper.insertBoard(board); // PK 생성됨
 	    int bno = board.getActivityNo();
 
-	    if (file != null && !file.isEmpty()) {
-	    	
-	        String original = file.getOriginalFilename();
-	        String savedName = fileUtil.saveFile(file, "activity"); // 저장 후 변경명 반환
-
-	        ActivityAttachment attach = ActivityAttachment.builder()
-	                .refBno(board.getActivityNo())
-	                .originName(original)
-	                .changeName(savedName)
-	                .filePath("http://localhost:80/uploads/activity/images/" + savedName)
+	    // 파일 있다면 첨부파일 insert
+	    if (form.getThumbnailPath() != null) {
+	        ActivityAttachment attachment = ActivityAttachment.builder()
+	                .refBno(bno)
+	                .originName(files.getOriginalFilename())
+	                .filePath(form.getThumbnailPath())
 	                .build();
-	        attach.setRefBno(bno);
 
-	        activityMapper.insertAttachment(attach);
+	        activityMapper.insertAttachment(attachment);
 	    }
 
 	    return bno;
 	}
+
 	
 	@Override
 	public Map<String, Object> findById(int id){
 		
-		ActivityUpdateDTO us = activityMapper.findById(id);
+		ActivityFormDTO us = activityMapper.findById(id);
 		
 		if(us == null) throw new RuntimeException("게시글이 존재하지 않습니다.");
 		

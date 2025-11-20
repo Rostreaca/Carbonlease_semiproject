@@ -4,17 +4,21 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.activity.model.dto.ActivityFormDTO;
+import com.kh.auth.model.vo.CustomUserDetails;
+
 public interface ActivityService {
 
 
 	Map<String, Object> activityAllList(int pageNo, String filter, String keyword);
 
 
-	int insertActivityBoard(String title, String content, String address, double lat, double lng, int certificationNo, int regionNo,
-			MultipartFile file, Long memberNo);
+	int insertActivityBoard(ActivityFormDTO form, MultipartFile files, CustomUserDetails user);
 
 
 	Map<String, Object> findById(int id);
+
+
 
 
 

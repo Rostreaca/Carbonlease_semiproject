@@ -1,28 +1,55 @@
 package com.kh.common.util;
 
-import java.io.File;
-import java.util.UUID;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-@Component
+@Service
 public class FileUtil {
 
-    public String saveFile(MultipartFile file, String folder) {
-        String path = System.getProperty("user.dir") + "/src/main/resources/static/upload/" + folder;
-        File dir = new File(path);
-        if(!dir.exists()) dir.mkdirs();
+    private final Path uploadRoot;
 
-        String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
-        String savedName = UUID.randomUUID().toString() + ext;
+    public FileUtil() {
+        this.uploadRoot = Paths.get("uploads").toAbsolutePath().normalize();
+    }
+
+    // 파일명 바꾸기
+    public String changeName(String origin) {
+
+        if (origin == null || origin.isEmpty()) return null;
+
+        String time = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        int rand = (int)(Math.random() * 900) + 100;
+
+        String ext = origin.substring(origin.lastIndexOf("."));
+
+        return "CL_" + time + "_" + rand + ext;
+    }
+
+    // 파일 저장 + URL 반환
+    public String saveFile(MultipartFile file, String folderName) {
+
+        String origin = file.getOriginalFilename();
+        String savedName = changeName(origin);
 
         try {
-            file.transferTo(new File(path + "/" + savedName));
-        } catch (Exception e) {
-            throw new RuntimeException("파일 저장 실패");
-        }
+            Path folder = uploadRoot.resolve(folderName).normalize();
+            Files.createDirectories(folder);
 
-        return savedName;
+            Path target = folder.resolve(savedName);
+            file.transferTo(target.toFile());
+
+            // ⭐ DB에 저장할 경로 (URL)
+            return "http://localhost:80/uploads/" + folderName + "/" + savedName;
+
+        } catch (IOException e) {
+            throw new RuntimeException("파일 저장 실패", e);
+        }
     }
 }

@@ -162,7 +162,7 @@
 	</insert>
 	
 	<select id="findById"
-			resultType="com.kh.activity.model.dto.ActivityUpdateDTO">
+			resultType="com.kh.activity.model.dto.ActivityFormDTO">
 		SELECT
 			   B.ACTIVITY_NO
 			 , B.ACTIVITY_TITLE

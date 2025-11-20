@@ -6,8 +6,8 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.kh.activity.model.dto.ActivityFormDTO;
 import com.kh.activity.model.dto.ActivityListDTO;
-import com.kh.activity.model.dto.ActivityUpdateDTO;
 import com.kh.activity.model.vo.ActivityAttachment;
 import com.kh.activity.model.vo.ActivityBoard;
 
@@ -24,7 +24,7 @@ public interface ActivityMapper {
 
 	int insertCertification(@Param("activityNo") int activityNo, @Param("certificationNo") int certificationNo);
 
-	ActivityUpdateDTO findById(int id);
+	ActivityFormDTO findById(int id);
 
 
 }
