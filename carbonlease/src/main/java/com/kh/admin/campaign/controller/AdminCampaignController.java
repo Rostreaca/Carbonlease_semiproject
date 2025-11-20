@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.admin.campaign.service.AdminCampaignService;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.campaign.model.dto.CampaignDTO;
+import com.kh.campaign.model.vo.CampaignVO;
 import com.kh.campaign.model.vo.CategoryVO;
 
 import jakarta.validation.Valid;
@@ -40,7 +41,7 @@ public class AdminCampaignController {
 	 */
 	@PostMapping("/insert")
 	public ResponseEntity<?> insertCampaign(
-	        @Valid CampaignDTO campaign,
+	        @Valid CampaignVO campaign,
 	        @RequestParam("thumbnail") MultipartFile thumbnail,
 	        @RequestParam("detailImage") MultipartFile detailImage,
 	        @AuthenticationPrincipal CustomUserDetails user) {

@@ -11,28 +11,29 @@
 	    <id property="campaignNo" column="CAMPAIGN_NO"/>
 	    <result property="campaignTitle" column="CAMPAIGN_TITLE"/>
 	    <result property="campaignContent" column="CAMPAIGN_CONTENT"/>
+	    <result property="viewCount" column="VIEW_COUNT"/>
 	    <result property="startDate" column="START_DATE"/>
 	    <result property="endDate" column="END_DATE"/>
-	    <result property="viewCount" column="VIEW_COUNT"/>
+	    <result property="enrollDate" column="ENROLL_DATE"/>
 	    <result property="status" column="STATUS"/>
 	    <result property="memberNo" column="MEMBER_NO"/>
-	
+	    
 	    <!-- 카테고리 -->
-	    <association property="category" javaType="com.kh.campaign.model.vo.CategoryVO">
+	    <association property="category" javaType="com.kh.campaign.model.dto.CategoryDTO">
 	        <result property="categoryNo" column="CATEGORY_NO"/>
 	        <result property="categoryName" column="CATEGORY_NAME"/>
 	    </association>
 	
 	    <!-- 첨부파일 목록 -->
-	    <collection property="attachments" ofType="com.kh.campaign.model.vo.AttachmentVO">
-	        <id property="fileNo" column="FILE_NO"/>
-	        <result property="refBno" column="REF_BNO"/>
-	        <result property="originName" column="ORIGIN_NAME"/>
-	        <result property="changeName" column="CHANGE_NAME"/>
-	        <result property="filePath" column="FILE_PATH"/>
-	        <result property="fileLevel" column="FILE_LEVEL"/>
-	        <result property="uploadDate" column="UPLOAD_DATE"/>
-	    </collection>
+	    <collection property="attachments" ofType="com.kh.campaign.model.dto.AttachmentDTO">
+		    <id property="fileNo" column="FILE_NO"/>
+		    <result property="refBno" column="REF_BNO"/>
+		    <result property="originName" column="ORIGIN_NAME"/>
+		    <result property="changeName" column="CHANGE_NAME"/>
+		    <result property="fileLevel" column="FILE_LEVEL"/>
+		    <result property="filePath" column="FILE_PATH"/>
+		    <result property="uploadDate" column="UPLOAD_DATE"/>
+		</collection>
 	
 	</resultMap>
 	
@@ -43,6 +44,7 @@
 	       , P.CAMPAIGN_CONTENT
 	       , P.START_DATE
 	       , P.END_DATE
+	       , P.ENROLL_DATE
 	       , P.VIEW_COUNT
 	       , P.STATUS
 	       , P.MEMBER_NO
@@ -67,7 +69,7 @@
 	
 	
 	<!-- 전체조회 -->
-	<select id="selectCampaignList" resultMap="campaignResultMap">
+	<select id="selectCampaignList" resultMap="campaignResultMap" parameterType="map">
 	    <include refid="campaignColumn"/>
 	    WHERE 
 	          A.FILE_LEVEL = 0

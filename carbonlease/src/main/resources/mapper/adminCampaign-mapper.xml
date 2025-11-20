@@ -5,48 +5,14 @@
 <mapper namespace="com.kh.admin.campaign.model.dao.AdminCampaignMapper">
 	
 	
-	 <!-- 등록/관리 전용 ResultMap -->
-    <resultMap id="campaignResultMap" type="CampaignDTO">
-
-        <!-- 캠페인 기본 -->
-        <id property="campaignNo" column="CAMPAIGN_NO" />
-        <result property="campaignTitle" column="CAMPAIGN_TITLE" />
-        <result property="campaignContent" column="CAMPAIGN_CONTENT" />
-        <result property="startDate" column="START_DATE" />
-        <result property="endDate" column="END_DATE" />
-        <result property="viewCount" column="VIEW_COUNT" />
-        <result property="status" column="STATUS" />
-        <result property="memberNo" column="MEMBER_NO" />
-
-        <!-- 카테고리 -->
-        <association property="category" javaType="com.kh.campaign.model.vo.CategoryVO">
-            <result property="categoryNo" column="CATEGORY_NO" />
-            <result property="categoryName" column="CATEGORY_NAME" />
-        </association>
-
-        <!-- 첨부파일 목록 -->
-        <collection property="attachments" ofType="com.kh.campaign.model.vo.AttachmentVO">
-            <id property="fileNo" column="FILE_NO" />
-            <result property="refBno" column="REF_BNO" />
-            <result property="originName" column="ORIGIN_NAME" />
-            <result property="changeName" column="CHANGE_NAME" />
-            <result property="filePath" column="FILE_PATH" />
-            <result property="fileLevel" column="FILE_LEVEL" />
-            <result property="uploadDate" column="UPLOAD_DATE" />
-        </collection>
-
-    </resultMap>
-
-	
 	<!-- 캠페인 등록 -->
-    <insert id="insertCampaign" parameterType="CampaignDTO">
+    <insert id="insertCampaign">
 
         <selectKey keyProperty="campaignNo"
                    resultType="long"
                    order="BEFORE">
             SELECT SEQ_CAMPAIGN_NO.NEXTVAL FROM DUAL
         </selectKey>
-
         INSERT 
           INTO 
                CL_CAMPAIGN 
@@ -72,44 +38,49 @@
     </insert>
 	
 	<!-- 첨부파일 등록 -->
-    <insert id="insertAttachments">
-          INSERT 
-             ALL
-        <foreach collection="list" item="file">
-            INTO 
-                 CL_CAMPAIGN_ATTACHMENT
-            	 (
-                 FILE_NO
-               , REF_BNO
-               , ORIGIN_NAME
-               , CHANGE_NAME
-               , FILE_LEVEL
-               , FILE_PATH
-               , UPLOAD_DATE
-            	 ) 
-          VALUES
-            	 (
-                 SEQ_CAMPAIGN_FILE_NO.NEXTVAL
-               , #{file.refBno}
-               , #{file.originName}
-               , #{file.changeName}
-               , #{file.fileLevel}
-               , #{file.filePath}
-               , SYSDATE
-                 )
-        </foreach>
-          SELECT * FROM DUAL
-    </insert>
+    <insert id="insertAttachments" parameterType="java.util.List">
+		<foreach collection="list" item="item" separator=";">
+	    INSERT 
+	      INTO 
+	           CL_CAMPAIGN_ATTACHMENT
+	    	   (
+	           FILE_NO
+	         , REF_BNO
+	         , ORIGIN_NAME
+	         , CHANGE_NAME
+	         , FILE_LEVEL
+	         , FILE_PATH
+	         , UPLOAD_DATE
+	           )
+	   VALUES
+	           (
+	           SEQ_CAMPAIGN_FILE_NO.NEXTVAL
+	         , #{item.refBno}
+	         , #{item.originName}
+	         , #{item.changeName}
+	         , #{item.fileLevel}
+	         , #{item.filePath}
+	         , SYSDATE
+	           )
+	     </foreach>
+	</insert>
+	
+	
+	<resultMap id="categoryResultMap" type="com.kh.campaign.model.vo.CategoryVO">
+	    <id property="categoryNo" column="CATEGORY_NO"/>
+	    <result property="categoryName" column="CATEGORY_NAME"/>
+	</resultMap>
 	
 	<!-- 카테고리 조회 -->
-    <select id="getCategories" resultType="com.kh.campaign.model.vo.CategoryVO"  parameterType="CampaignDTO">
-        SELECT 
-               CATEGORY_NO		categoryNo
-             , CATEGORY_NAME	categoryName
-          FROM 
-               CL_CAMPAIGN_CATEGORY
-         ORDER 
-            BY CATEGORY_NO
-    </select>
+    <select id="getCategories" resultMap="categoryResultMap">
+	    SELECT
+	           CATEGORY_NO,
+	           CATEGORY_NAME
+	     FROM
+	       	   CL_CAMPAIGN_CATEGORY
+	    ORDER 
+	       BY 
+	           CATEGORY_NO
+	</select>
 
 </mapper>

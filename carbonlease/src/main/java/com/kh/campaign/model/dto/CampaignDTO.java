@@ -3,8 +3,6 @@ package com.kh.campaign.model.dto;
 import java.sql.Date;
 import java.util.List;
 
-import com.kh.campaign.model.vo.AttachmentVO;
-import com.kh.campaign.model.vo.CategoryVO;
 import com.kh.campaign.model.vo.LikeVO;
 
 import lombok.AllArgsConstructor;
@@ -31,18 +29,17 @@ public class CampaignDTO {
     private Long memberNo;
 
     // Category (카테고리 객체 포함)
-    private CategoryVO category;
-    private Long categoryNo;
-
-    private List<AttachmentVO> attachments;
+    private CategoryDTO category;
+    
+    private List<AttachmentDTO> attachments;
     private String filePath;   // 대표 이미지 URL
     private String changeName; // 대표 이미지 변경명
-    private Integer fileLevel; // 대표 이미지 레벨
+    private int fileLevel; // 대표 이미지 레벨
   
     
     // Like 정보 (누가 눌렀는지, 총 좋아요수 등)
     private int likeCount;              // 총 좋아요 개수
     private boolean isLiked;            // 특정 유저가 좋아요 했는지 여부
-    private List<LikeVO> likeList;      // 필요하다면 목록도 가능
+    private List<LikeDTO> likeList;      // 필요하다면 목록도 가능
     
 }

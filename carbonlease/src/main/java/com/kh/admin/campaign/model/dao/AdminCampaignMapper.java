@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.vo.AttachmentVO;
+import com.kh.campaign.model.vo.CampaignVO;
 import com.kh.campaign.model.vo.CategoryVO;
 
 @Mapper
@@ -15,7 +16,7 @@ public interface AdminCampaignMapper {
 	 * 캠페인 게시글 등록
 	 * @param campaign
 	 */
-	void insertCampaign(CampaignDTO campaign);
+	void insertCampaign(CampaignVO campaign);
 	
 	/**
 	 * 첨부파일 등록
