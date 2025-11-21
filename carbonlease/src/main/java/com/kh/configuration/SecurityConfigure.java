@@ -40,7 +40,6 @@ public class SecurityConfigure {
 						   .csrf(AbstractHttpConfigurer::disable)
 						   .cors(Customizer.withDefaults())
 						   .authorizeHttpRequests(requests -> {
-							   requests.requestMatchers(HttpMethod.POST, "/members","/auth/login", "/login/admin", "/auth/refresh", "/admin/notices/**").permitAll(); // TODO: test용 "/admin/notices"추가, pr할떄 이 문구가 보이면 최준영 바보라고 해주세요
 							   requests.requestMatchers(HttpMethod.POST, "/boards", "/activityBoards", "/notices", "/campaigns").authenticated();
 							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/**").authenticated();
 							   requests.requestMatchers(HttpMethod.POST, "/campaigns/*/like").authenticated(); // 좋아요 인증 필요

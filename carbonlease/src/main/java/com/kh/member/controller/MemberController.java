@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.member.model.dto.MemberDTO;
 import com.kh.member.model.service.MemberService;
+import com.kh.member.model.service.MemberValidator;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberController {
 
 	private final MemberService memberService;
+	private final MemberValidator memberValidator;
 	
 	@PostMapping
 	public ResponseEntity<?> signUp(@Valid @RequestBody MemberDTO member){
@@ -53,6 +56,39 @@ public class MemberController {
 		
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
+	
+	
+	@PostMapping("/checkId")
+	public ResponseEntity<?> checkId(@Valid @RequestBody MemberDTO member){
+	//RequestBody를 Map으로 받거나 MemberDTO로 받던지 2중 1택
+	//Map으로 받을 경우 memberValidator.checkId()에 정규표현식 검증이 한번 더 들어가야함
+	//memberDTO를 사용하는 다른 메소드가 memberValidator.checkId()를 호출할 경우 중복된 내용으로 인해 리소스 낭비가 발생할 것을 우려
+	//MemberDTO로 요청을 받기로 함
+		
+		log.info("일단 잘 오나 {}", member.getMemberId());
+		
+		memberValidator.checkId(member.getMemberId());
+		
+		return ResponseEntity.status(HttpStatus.OK).build();
+		
+	}
+	@PostMapping("/checkNickName")
+	public ResponseEntity<?> checkNickName(@Valid @RequestBody MemberDTO member){
+		
+		memberValidator.checkNickName(member.getNickName());
+		
+		return ResponseEntity.status(HttpStatus.OK).build();
+		
+	}
+	@PostMapping("/checkEmail")
+	public ResponseEntity<?> checkEmail(@Valid @RequestBody MemberDTO member){
+		
+		memberValidator.checkEmail(member.getEmail());
+		
+		return ResponseEntity.status(HttpStatus.OK).build();
+		
+	}
+	
 	
 	
 	
