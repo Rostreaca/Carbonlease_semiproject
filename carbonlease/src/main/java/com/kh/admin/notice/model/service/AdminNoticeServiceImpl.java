@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.admin.notice.model.dto.NoticeAdminDTO;
 import com.kh.common.util.Pagination;
 import com.kh.notice.model.dao.NoticeMapper;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,5 +51,15 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		
 		return noticeMapper.countAll();
 	}
+
+
+	@Override
+	public void insert(@Valid NoticeAdminDTO notice, MultipartFile file) {
+
+		log.info("noticeeeee {}", notice);
+	}
+
+	
+	
 
 }

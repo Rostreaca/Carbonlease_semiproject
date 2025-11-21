@@ -80,4 +80,14 @@
 		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 	
+	<select id="insertNotice">
+		INSERT
+		INTO
+				CL_NOTICE
+		VALUES
+				(
+				
+				)
+	</select>
+	
 </mapper>
