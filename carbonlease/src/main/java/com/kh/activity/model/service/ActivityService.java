@@ -1,21 +1,25 @@
 package com.kh.activity.model.service;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.kh.activity.model.dto.ActivityListDTO;
+import com.kh.activity.model.dto.ActivityFormDTO;
+import com.kh.auth.model.vo.CustomUserDetails;
 
 public interface ActivityService {
 
-	Map<String, Object> activityAllList(int page, String filter, String keyword);
+
+	Map<String, Object> activityAllList(int pageNo, String filter, String keyword);
 
 
-	void insertActivityBoard(String title, String content, String address, double lat, double lng, int certificationNo, int regionNo,
-			MultipartFile file, Long long1);
+	int insertActivityBoard(ActivityFormDTO form, MultipartFile files, CustomUserDetails user);
 
-	
+
+	Map<String, Object> findById(int id);
+
+
+
 
 
 }

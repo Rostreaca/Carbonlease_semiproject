@@ -53,10 +53,11 @@
 		 </if>
 		 ORDER
 		    BY
-		       B.ACTIVITY_NO DESC      
+		       B.ACTIVITY_NO DESC
+		 OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY      
 	</select>
 	
-	<select id="countActivity"
+	<select id="findListCount"
 	        parameterType="map"
 	        resultType="int">
 		SELECT 
@@ -80,17 +81,20 @@
 					M.NICKNAME LIKE '%' || #{keyword} || '%'
 				</when>
 				<otherwise>
-					B.ACTIVITY_TITLE LIKE '%' || #{keyword} || '%'
-				</otherwise>
+		        	B.ACTIVITY_TITLE LIKE '%' || #{keyword} || '%'
+		      	</otherwise>
 			</choose>
-		  )
-		</if>
+			)
+	</if>	                   	   	
+		
 	</select>
 	
     <insert id="insertBoard" 
     		parameterType="com.kh.activity.model.vo.ActivityBoard" 
-    		useGeneratedKeys="true" 
     		keyProperty="activityNo">
+    		<selectKey keyProperty="activityNo" resultType="int" order="BEFORE">
+        		SELECT SEQ_ACTIVITY_NO.NEXTVAL FROM DUAL
+    		</selectKey>
     	INSERT 
     	  INTO 
     	       CL_ACTIVITY_BOARD 
@@ -100,18 +104,26 @@
     	     , ACTIVITY_CONTENT
     	     , LAT
     	     , LNG
+    	     , VIEW_COUNT
+    	     , STATUS
+    	     , ENROLL_DATE
     	     , MEMBER_NO
     	     , REGION_NO
+    	     , ADDRESS
                ) 
         VALUES 
         	   (
-               SEQ_ACTIVITY_NO.NEXTVAL
+               #{activityNo}
              , #{title}
              , #{content}
              , #{lat}
              , #{lng}
+             , DEFAULT
+             , 'Y'
+             , SYSDATE
              , #{memberNo}
              , #{regionNo}
+             , #{address}
     		   )
 	</insert>
 
@@ -126,6 +138,7 @@
              , ORIGIN_NAME
              , CHANGE_NAME
              , FILE_PATH
+             , UPLOAD_DATE
                ) 
         VALUES 
                (
@@ -134,8 +147,44 @@
              , #{originName}
              , #{changeName}
              , #{filePath}
+             , SYSDATE
     		   )
 	</insert>
+	
+	<insert id="insertCertification">
+	    INSERT INTO CL_ACTIVITY_CERTIFICATION (
+	        ACTIVITY_BOARD_NO,
+	        CERTIFICATION_NO
+	    ) VALUES (
+	        #{activityNo},
+	        #{certificationNo}
+	    )
+	</insert>
+	
+	<select id="findById"
+			resultType="com.kh.activity.model.dto.ActivityFormDTO">
+		SELECT
+			   B.ACTIVITY_NO
+			 , B.ACTIVITY_TITLE
+			 , B.ACTIVITY_CONTENT
+			 , B.LAT
+			 , B.LNG
+			 , B.REGION_NO
+			 , C.CERTIFICATION_NO
+			 , A.FILE_PATH thumbnailPath
+			 , B.ADDRESS
+	      FROM
+	           CL_ACTIVITY_BOARD B
+	      LEFT
+	      JOIN
+	           CL_ACTIVITY_ATTACHMENT A ON B.ACTIVITY_NO = A.REF_BNO AND A.THUMBNAIL_YN = 'Y'
+	      LEFT
+	      JOIN
+	           CL_ACTIVITY_CERTIFICATION C ON B.ACTIVITY_NO = C.ACTIVITY_BOARD_NO
+	     WHERE
+	           B.ACTIVITY_NO = #{id}
+	</select>
+
 
 	
 </mapper>
