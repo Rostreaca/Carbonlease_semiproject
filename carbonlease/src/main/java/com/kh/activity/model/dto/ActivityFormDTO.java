@@ -11,17 +11,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActivityListDTO {
+public class ActivityFormDTO {
 	
 	private int activityNo;
-	private String activitytitle;
-	private String activityContent;
-	private Date enrollDate;
-	private int viewCount;
-	private int replyCount;
-	private String nickName;
-	private String thumbnailPath;
+	private String title;
+	private String content;
 	private String address;
-	
+	private double lat;
+	private double lng;
+	private int regionNo;
+	private int certificationNo;
+	private String thumbnailPath;
 
 }

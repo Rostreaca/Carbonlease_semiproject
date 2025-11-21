@@ -18,8 +18,8 @@
 		<result property="isLiked" column="IS_LIKED" javaType="boolean"/>
 		
 		<association property="category" javaType="CategoryVO">
-			<id property="categroyNo" column="CATEGORY_NO"/>
-			<result property="categoryName" column="CATEGORY_NAME"/>
+		    <id property="categoryNo" column="CATEGORY_NO"/>
+		    <result property="categoryName" column="CATEGORY_NAME"/>
 		</association>
 	</resultMap>
 	
@@ -37,18 +37,11 @@
 	       , A.FILE_LEVEL
 	       , C.CATEGORY_NO
 	       , C.CATEGORY_NAME
-	       , (SELECT COUNT(*) FROM CL_CAMPAIGN_LIKE L WHERE L.CAMPAIGN_NO = P.CAMPAIGN_NO) AS LIKE_COUNT
-	       , CASE 
-	           WHEN #{memberNo} IS NULL THEN 0
-	           ELSE (SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
-	                   FROM CL_CAMPAIGN_LIKE L
-	                  WHERE L.CAMPAIGN_NO = P.CAMPAIGN_NO
-	                    AND L.MEMBER_NO = #{memberNo})
-	         END AS IS_LIKED
 		FROM 
 		     CL_CAMPAIGN P
 		JOIN 
 		     CL_CAMPAIGN_CATEGORY C ON P.CATEGORY_NO = C.CATEGORY_NO
+		LEFT
 		JOIN 
 		     CL_CAMPAIGN_ATTACHMENT A ON P.CAMPAIGN_NO = A.REF_BNO
 	</sql>
@@ -87,7 +80,7 @@
 	</select>
 
 	<!-- 전체 게시글 수 조회 (리스트 조회와 동일 조건) -->
-	<select id="findListCount" resultType="int">
+	<select id="findListCount" resultType="_int">
        	SELECT
 				COUNT(*)
 		 FROM
@@ -99,7 +92,7 @@
 	</select>
 	
 	<!-- 좋아요 존재 여부 -->
-	<select id="existsLike" parameterType="com.kh.campaign.model.dto.LikeDTO" resultType="int">
+	<select id="existsLike" parameterType="com.kh.campaign.model.dto.LikeDTO" resultType="_int">
 	    SELECT 
 	           COUNT(*) 
 	      FROM 
@@ -148,6 +141,6 @@
 		 WHERE 
 		       CAMPAIGN_NO = #{campaignNo}
 	</update>
-
-
+	
+	
 </mapper>
