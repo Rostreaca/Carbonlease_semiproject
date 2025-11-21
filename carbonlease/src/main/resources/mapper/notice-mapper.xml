@@ -80,14 +80,25 @@
 		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 	
-	<select id="insertNotice">
+	<insert id="insertNotice"
+			parameterType="AdminNoticeVO">
 		INSERT
 		INTO
 				CL_NOTICE
 		VALUES
 				(
-				
+				  SEQ_NOTICE_NO.NEXTVAL
+				, #{noticeWriter}
+				, #{noticeTitle}
+				, #{noticeContent}
+				, DEFAULT
+				, SYSDATE
+				, 'Y'
+				, #{fix}
 				)
-	</select>
+	</insert>
+	
+	
+	
 	
 </mapper>
