@@ -31,6 +31,14 @@
 		WHERE
 				STATUS='Y'
 	</select>
+				
+	<select id="countAll"
+			resultType="_int">
+		SELECT
+				COUNT(*)
+		FROM
+				CL_NOTICE
+	</select>
 	
 	<select id="findByNo"
 			parameterType="long"
@@ -47,5 +55,50 @@
 		AND
 				NOTICE_NO = #{noticeNo}
 	</select>
+	
+	<select id="findAllByAdmin"
+			parameterType="map"
+			resultType="NoticeAdminDTO"
+			>
+		SELECT
+				  N.NOTICE_NO noticeNo
+				, M.MEMBER_ID noticeWriter
+				, N.NOTICE_TITLE noticeTitle
+				, N.ENROLL_DATE createDate
+				, N.VIEW_COUNT viewCount
+				, N.STATUS status
+				, N.FIX fix
+		FROM
+				CL_NOTICE N
+		JOIN
+				CL_MEMBER M
+		ON
+				(N.MEMBER_NO = M.MEMBER_NO)
+		ORDER
+		BY
+				NOTICE_NO DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
+	<insert id="insertNotice"
+			parameterType="AdminNoticeVO">
+		INSERT
+		INTO
+				CL_NOTICE
+		VALUES
+				(
+				  SEQ_NOTICE_NO.NEXTVAL
+				, #{noticeWriter}
+				, #{noticeTitle}
+				, #{noticeContent}
+				, DEFAULT
+				, SYSDATE
+				, 'Y'
+				, #{fix}
+				)
+	</insert>
+	
+	
+	
 	
 </mapper>

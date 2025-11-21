@@ -69,7 +69,7 @@ public class JwtFilter extends OncePerRequestFilter{
 		                .authorities(Collections.singletonList(new SimpleGrantedAuthority(member.getRole())))
 		                .status(member.getStatus())
 		                .build();
-			
+			log.info("권한 : {}", user.getAuthorities());
 			UsernamePasswordAuthenticationToken authentication
 				= new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 			authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -85,6 +85,7 @@ public class JwtFilter extends OncePerRequestFilter{
 
 		} catch(JwtException e) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.setContentType("text/html; charset=UTF-8");
 			response.getWriter().write("유효하지 않은 토큰입니다.");
 			return;
 		}
