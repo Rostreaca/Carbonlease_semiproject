@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.admin.campaign.model.dao.AdminCampaignMapper;
+import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.campaign.model.dto.CampaignDTO;
+import com.kh.campaign.model.service.CampaignService;
 import com.kh.campaign.model.vo.AttachmentVO;
 import com.kh.campaign.model.vo.CampaignVO;
 import com.kh.campaign.model.vo.CategoryVO;
@@ -28,41 +30,52 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
     private final AdminCampaignMapper adminCampaignMapper;
 
     @Override
-    public void insertCampaign(CampaignVO  campaign,
-                               MultipartFile thumbnail,
-                               MultipartFile detailImage,
-                               Long memberNo) {
-
+    public void insertCampaign(
+            CampaignDTO dto,
+            MultipartFile thumbnail,
+            MultipartFile detailImage,
+            Long memberNo) {
     	
     	
-        // 1) 로그인한 사용자 번호 담기
-        campaign.setMemberNo(memberNo);
-  
-        // 2) MyBatis selectKey로 PK 자동 세팅 (campaignNo 세팅됨)
-        adminCampaignMapper.insertCampaign(campaign);
+    	// 1) campaignVO로 변환 (DB insert용)
+        CampaignVO campaignVO = CampaignVO.builder()
+                .campaignTitle(dto.getCampaignTitle())
+                .campaignContent(dto.getCampaignContent())
+                .startDate(dto.getStartDate())
+                .endDate(dto.getEndDate())
+                .memberNo(memberNo)
+                .categoryNo(dto.getCategory().getCategoryNo())
+                .memberNo(memberNo)
+                .status("Y")
+                .build();
+    	
+    	
+        // 2) 캠페인 저장 (PK 자동 생성)
+        adminCampaignMapper.insertCampaign(campaignVO);
+        Long campaignNo = campaignVO.getCampaignNo();
+
+        // 3) 첨부파일 처리
+        List<AttachmentVO> files = new ArrayList<>();
+
+        if (thumbnail != null && !thumbnail.isEmpty()) {
+            files.add(saveAttachment(thumbnail, campaignNo, 0));
+        }
+        if (detailImage != null && !detailImage.isEmpty()) {
+            files.add(saveAttachment(detailImage, campaignNo, 1));
+        }
+
+        if (!files.isEmpty()) {
+            adminCampaignMapper.insertAttachments(files);
+        }
+
+        log.info("캠페인 등록 완료 — campaignNo: {}", campaignNo);
         
         
-        Long campaignNo = campaign.getCampaignNo();
-
-        // 3) 첨부파일 저장 로직
-        List<AttachmentVO> attachments = new ArrayList<>();
-
-        if (!thumbnail.isEmpty()) {
-            attachments.add(saveAttachment(thumbnail, campaignNo, 0));  // 썸네일
-        }
-
-        if (!detailImage.isEmpty()) {
-            attachments.add(saveAttachment(detailImage, campaignNo, 1));  // 상세
-        }
-
-        // 4) 첨부파일 DB insert
-        if (!attachments.isEmpty()) {
-            adminCampaignMapper.insertAttachments(attachments);
-        }
     }
 
-    
-    /**
+
+
+	/**
      * 파일명 생성 & 절대경로 생성
      */
     private Map<String, String> setAttachmentNamePath(MultipartFile file) {
@@ -111,7 +124,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 
         String fileUrl = "http://localhost:80/uploads/campaign/images" + changeName;
 
-        return AttachmentVO.builder()
+        return AttachmentVO.builder()                                                    
                 .refBno(refBno)
                 .originName(file.getOriginalFilename())
                 .changeName(changeName)

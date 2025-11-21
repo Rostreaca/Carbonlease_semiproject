@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.campaign.model.dto.CampaignDTO;
-import com.kh.campaign.model.vo.CampaignVO;
 import com.kh.campaign.model.vo.CategoryVO;
 
 public interface AdminCampaignService {
@@ -18,7 +17,7 @@ public interface AdminCampaignService {
 	 * @param memberNo 작성자 번호
 	 */
 	void insertCampaign(
-			CampaignVO campaign,
+			CampaignDTO campaign,
 			MultipartFile thumbnail,
 			MultipartFile detailImage,
 			Long memberNo);

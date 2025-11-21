@@ -22,4 +22,5 @@ public class CampaignVO {
     private int viewCount;          	// 조회수
     private String status;          	// 상태 (Y:진행, N:삭제)
     private Long memberNo;
+    private Long categoryNo;
 }

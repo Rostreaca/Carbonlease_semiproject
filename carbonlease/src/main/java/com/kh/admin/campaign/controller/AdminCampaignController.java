@@ -41,7 +41,7 @@ public class AdminCampaignController {
 	 */
 	@PostMapping("/insert")
 	public ResponseEntity<?> insertCampaign(
-	        @Valid CampaignVO campaign,
+	        @Valid CampaignDTO campaign,
 	        @RequestParam("thumbnail") MultipartFile thumbnail,
 	        @RequestParam("detailImage") MultipartFile detailImage,
 	        @AuthenticationPrincipal CustomUserDetails user) {

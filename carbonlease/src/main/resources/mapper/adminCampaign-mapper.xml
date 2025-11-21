@@ -20,26 +20,28 @@
                CAMPAIGN_NO
              , CAMPAIGN_TITLE
              , CAMPAIGN_CONTENT
-             , CATEGORY_NO
              , START_DATE
              , END_DATE
              , MEMBER_NO
+             , CATEGORY_NO
+             , STATUS
         	   ) 
         VALUES 
         	   (
                #{campaignNo}
              , #{campaignTitle}
              , #{campaignContent}
-             , #{categoryNo}
              , #{startDate}
              , #{endDate}
              , #{memberNo}
+             , #{categoryNo}
+             , #{status}
         	   )
     </insert>
 	
 	<!-- 첨부파일 등록 -->
-    <insert id="insertAttachments" parameterType="java.util.List">
-		<foreach collection="list" item="item" separator=";">
+    <insert id="insertAttachments">
+		
 	    INSERT 
 	      INTO 
 	           CL_CAMPAIGN_ATTACHMENT
@@ -53,13 +55,14 @@
 	         , UPLOAD_DATE
 	           )
 	   VALUES
+	   <foreach collection="list" item="f" separator=",">
 	           (
 	           SEQ_CAMPAIGN_FILE_NO.NEXTVAL
-	         , #{item.refBno}
-	         , #{item.originName}
-	         , #{item.changeName}
-	         , #{item.fileLevel}
-	         , #{item.filePath}
+	         , #{f.refBno}
+	         , #{f.originName}
+	         , #{f.changeName}
+	         , #{f.fileLevel}
+	         , #{f.filePath}
 	         , SYSDATE
 	           )
 	     </foreach>

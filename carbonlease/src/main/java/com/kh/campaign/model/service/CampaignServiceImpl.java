@@ -12,6 +12,7 @@ import com.kh.common.util.Pagination;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import com.kh.campaign.model.dto.LikeDTO;
 
 @Slf4j
 @Service
@@ -21,8 +22,6 @@ public class CampaignServiceImpl implements CampaignService {
 	
 	private final CampaignMapper campaignMapper;
 	private final Pagination pagination;
-    //private final CampaignValidator campaignValidator;
-
 
 	/**
 	 * 캠페인 목록 조회 (페이징 포함)
@@ -32,14 +31,14 @@ public class CampaignServiceImpl implements CampaignService {
 	@Override
 	public Map<String, Object> selectCampaignList(int pageNo) {
 
-		if (pageNo < 0) { 
+		if (pageNo < 0) { // 다시 
 	        throw new InvalidParameterException("유효하지 않은 접근입니다.");
 	    }
 		
 	    int listCount = findListCount();
-	    
+	    							// 다시
 	    Map<String, Object> params = pagination.pageRequest(pageNo, 6, listCount);
-	    List<CampaignDTO> campaigns = campaignMapper.selectCampaignList(params);
+	    List<CampaignDTO> campaigns = campaignMapper.selectCampaignList(params); // 다시
 	    
 	    params.put("pageInfo", params.get("pi"));
 	    params.put("campaigns", campaigns);
@@ -49,12 +48,12 @@ public class CampaignServiceImpl implements CampaignService {
 	
 	
 	/**
+	 * [책임분리]
 	 * 전체게시글 조회
 	 * @return int 전체게시글 수
 	 */
 	private int findListCount() {
-		int listCount = campaignMapper.findListCount();
-		return listCount;
+		return campaignMapper.findListCount();
 	}
 
 	
@@ -112,7 +111,6 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 	
 	
-	
 	/**
 	 * 좋아요 토글 (등록/삭제)
 	 * @param campaignNo 캠페인 번호
@@ -120,18 +118,20 @@ public class CampaignServiceImpl implements CampaignService {
 	 */
 	@Override
 	public void toggleLike(Long campaignNo, Long memberNo) {
-		com.kh.campaign.model.dto.LikeDTO likeDTO = com.kh.campaign.model.dto.LikeDTO.builder()
-			.campaignNo(campaignNo)
-			.memberNo(memberNo)
-			.build();
-		int exists = campaignMapper.existsLike(likeDTO);
-		if (exists > 0) {
-			campaignMapper.deleteLike(likeDTO);
-		} else {
-			campaignMapper.insertLike(likeDTO);
-		}
+
+	    LikeDTO likeDTO = LikeDTO.builder()
+	            .campaignNo(campaignNo)
+	            .memberNo(memberNo)
+	            .build();
+
+	    int exists = campaignMapper.existsLike(likeDTO);
+
+	    if (exists > 0) {
+	        campaignMapper.deleteLike(likeDTO);
+	    } else {
+	        campaignMapper.insertLike(likeDTO);
+	    }
 	}
-	
 
 
 }

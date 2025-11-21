@@ -22,7 +22,7 @@ public interface AdminCampaignMapper {
 	 * 첨부파일 등록
 	 * @param attachment
 	 */
-	int insertAttachments(List<AttachmentVO> list);
+	int insertAttachments(List<AttachmentVO> files);
 	
 	
 	/**
