@@ -19,6 +19,8 @@ public interface BoardMapper {
 	BoardDTO boardDetail(Long boardNo);
 	
 	List<BoardReplyDTO> replyList(Long boardNo);
+	
+	Long boardUpdateForm();
 
 	
 }

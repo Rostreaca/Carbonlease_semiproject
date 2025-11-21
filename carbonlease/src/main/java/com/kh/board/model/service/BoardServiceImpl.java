@@ -74,6 +74,14 @@ public class BoardServiceImpl implements BoardService {
 		
 		return map;
 	}
+	
+	
+	// 글 수정하기
+	@Override
+	public Long boardUpdateForm() {
+		
+		return null;
+	}
 
 }
 	
