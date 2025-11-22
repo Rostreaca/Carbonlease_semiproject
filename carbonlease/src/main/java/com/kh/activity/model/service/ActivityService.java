@@ -7,17 +7,14 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.activity.model.dto.ActivityFormDTO;
 import com.kh.auth.model.vo.CustomUserDetails;
 
+import jakarta.validation.Valid;
+
 public interface ActivityService {
 
 
 	Map<String, Object> activityAllList(int pageNo, String filter, String keyword);
 
-
-	int insertActivityBoard(ActivityFormDTO form, MultipartFile files, CustomUserDetails user);
-
-
-	Map<String, Object> findById(int id);
-
+	int activityInsert(ActivityFormDTO activity, MultipartFile file, Long memberNo);
 
 
 
