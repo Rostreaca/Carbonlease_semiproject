@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.activity.model.dto.ActivityDetailDTO;
 import com.kh.activity.model.dto.ActivityFormDTO;
 import com.kh.auth.model.vo.CustomUserDetails;
 
@@ -16,7 +17,8 @@ public interface ActivityService {
 
 	int activityInsert(ActivityFormDTO activity, MultipartFile file, Long memberNo);
 
+	ActivityDetailDTO selectDetail(int activityNo, Long loginMemberNo);
 
-
+	int activityDelete(int activityNo, Long memberNo);
 
 }

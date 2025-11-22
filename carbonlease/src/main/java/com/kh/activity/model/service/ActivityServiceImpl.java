@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.activity.model.dao.ActivityMapper;
 import com.kh.activity.model.dto.ActivityListDTO;
+import com.kh.activity.model.dto.ActivityDetailDTO;
 import com.kh.activity.model.dto.ActivityFormDTO;
 import com.kh.activity.model.vo.ActivityAttachment;
 import com.kh.activity.model.vo.ActivityBoard;
@@ -91,6 +92,29 @@ public class ActivityServiceImpl implements ActivityService{
 		
 		return activityNo;
 	}
+	
+	@Override
+	public ActivityDetailDTO selectDetail(int activityNo, Long loginMemberNo) {
+		
+		ActivityDetailDTO detail = activityMapper.selectDetail(activityNo, loginMemberNo);
+		
+		if (detail == null) return null;
+		
+		List<String> image = activityMapper.selectDetailImage(activityNo);
+		detail.setImages(image);
+		
+		return detail;
+	}
 
 
+	@Override
+	public int activityDelete(int activityNo, Long memberNo) {
+		
+		ActivityBoard board = activityMapper.findBoardOwner(activityNo);
+		
+		if(board == null) throw new RuntimeException("게시글 없음");
+		if(board.getMemberNo() != memberNo) throw new RuntimeException("권한 없음");
+		
+		return activityMapper.activityDelete(activityNo);
+	}
 }
