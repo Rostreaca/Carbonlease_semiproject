@@ -44,7 +44,7 @@ public class SecurityConfigure {
 							   requests.requestMatchers(HttpMethod.POST, "/boards", "/activityBoards", "/notices", "/campaigns").authenticated();
 							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/**").authenticated();
 							   requests.requestMatchers(HttpMethod.POST, "/campaigns/*/like").authenticated(); // 좋아요 인증 필요
-							   requests.requestMatchers(HttpMethod.GET,"/members/**", "/boards/**","/activityBoards/**", "/images/**", "/notices/**", "/campaigns/**").permitAll();
+							   requests.requestMatchers(HttpMethod.GET,"/members/**", "/boards/**","/activityBoards/**", "/images/**", "/notices/**", "/campaigns/**", "/uploads/**" ).permitAll();
 							   requests.requestMatchers(HttpMethod.PUT,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
 							   requests.requestMatchers(HttpMethod.DELETE,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
 							   requests.requestMatchers("/admin/**").hasRole("ADMIN");
@@ -59,14 +59,16 @@ public class SecurityConfigure {
 	
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-		configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
-		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-		configuration.setAllowCredentials(true);
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
+	    CorsConfiguration configuration = new CorsConfiguration();
+	    configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+	    configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
+	    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type","Accept","Origin","Access-Control-Request-Headers","Access-Control-Request-Method","X-Requested-With"));
+	    configuration.setExposedHeaders(Arrays.asList("Authorization"));
+	    configuration.setAllowCredentials(true);
+
+	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	    source.registerCorsConfiguration("/**", configuration);
+	    return source;
 	}
 	
 	@Bean

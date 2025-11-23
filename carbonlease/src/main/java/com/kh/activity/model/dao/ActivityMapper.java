@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.kh.activity.model.dto.ActivityDetailDTO;
 import com.kh.activity.model.dto.ActivityFormDTO;
 import com.kh.activity.model.dto.ActivityListDTO;
 import com.kh.activity.model.vo.ActivityAttachment;
@@ -18,13 +19,25 @@ public interface ActivityMapper {
 
 	int findListCount(Map<String, String> search);
 
-	int insertBoard(ActivityBoard board);
+	void insertBoard(ActivityBoard board);
 
-	int insertAttachment(ActivityAttachment attachment);
+	void insertAttachment(ActivityAttachment at);
 
-	int insertCertification(@Param("activityNo") int activityNo, @Param("certificationNo") int certificationNo);
+	void insertCertification(Map<String, Integer> of);
+	
+	ActivityDetailDTO selectDetail(@Param("activityNo")int activityNo, @Param("loginMemberNo")Long loginMemberNo);
 
-	ActivityFormDTO findById(int id);
+	List<String> selectDetailImage(int activityNo);
 
+	ActivityBoard findBoardOwner(int activityNo);
+
+	
+	int checkLike(@Param("activityNo") int activityNo, @Param("memberNo") Long memberNo);
+	
+	int insertLike(@Param("activityNo") int activityNo, @Param("memberNo") Long memberNo);
+
+	int deleteLike(@Param("activityNo") int activityNo, @Param("memberNo") Long memberNo);
+
+	int activityDelete(@Param("activityNo") int activityNo);
 
 }
