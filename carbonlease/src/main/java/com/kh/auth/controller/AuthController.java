@@ -47,6 +47,9 @@ public class AuthController {
 	public ResponseEntity<Map<String, String>> adminLogin(@Valid @RequestBody MemberDTO member){
 		
 		Map<String, String> loginResponse = authService.adminLogin(member);
+		
+		log.info("check");
+		
 		return ResponseEntity.ok(loginResponse);
 	}
 	
