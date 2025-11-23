@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.admin.campaign.model.dao.AdminCampaignMapper">
+	
+	
+	<!-- 캠페인 등록 -->
+    <insert id="insertCampaign">
+
+        <selectKey keyProperty="campaignNo"
+                   resultType="long"
+                   order="BEFORE">
+            SELECT SEQ_CAMPAIGN_NO.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT 
+          INTO 
+               CL_CAMPAIGN 
+               (
+               CAMPAIGN_NO
+             , CAMPAIGN_TITLE
+             , CAMPAIGN_CONTENT
+             , START_DATE
+             , END_DATE
+             , MEMBER_NO
+             , CATEGORY_NO
+             , STATUS
+        	   ) 
+        VALUES 
+        	   (
+               #{campaignNo}
+             , #{campaignTitle}
+             , #{campaignContent}
+             , #{startDate}
+             , #{endDate}
+             , #{memberNo}
+             , #{categoryNo}
+             , #{status}
+        	   )
+    </insert>
+	
+	<!-- 첨부파일 등록 -->
+    <insert id="insertAttachments">
+		
+	    INSERT 
+	      INTO 
+	           CL_CAMPAIGN_ATTACHMENT
+	    	   (
+	           FILE_NO
+	         , REF_BNO
+	         , ORIGIN_NAME
+	         , CHANGE_NAME
+	         , FILE_LEVEL
+	         , FILE_PATH
+	         , UPLOAD_DATE
+	           )
+	   VALUES
+	   <foreach collection="list" item="f" separator=",">
+	           (
+	           SEQ_CAMPAIGN_FILE_NO.NEXTVAL
+	         , #{f.refBno}
+	         , #{f.originName}
+	         , #{f.changeName}
+	         , #{f.fileLevel}
+	         , #{f.filePath}
+	         , SYSDATE
+	           )
+	     </foreach>
+	</insert>
+	
+	
+	<resultMap id="categoryResultMap" type="com.kh.campaign.model.vo.CategoryVO">
+	    <id property="categoryNo" column="CATEGORY_NO"/>
+	    <result property="categoryName" column="CATEGORY_NAME"/>
+	</resultMap>
+	
+	<!-- 카테고리 조회 -->
+    <select id="getCategories" resultMap="categoryResultMap">
+	    SELECT
+	           CATEGORY_NO,
+	           CATEGORY_NAME
+	     FROM
+	       	   CL_CAMPAIGN_CATEGORY
+	    ORDER 
+	       BY 
+	           CATEGORY_NO
+	</select>
+
+</mapper>

@@ -46,7 +46,9 @@ public class SecurityConfigure {
 							   requests.requestMatchers(HttpMethod.GET,"/members/**", "/boards/**","/activityBoards/**", "/images/**", "/notices/**", "/campaigns/**").permitAll();
 							   requests.requestMatchers(HttpMethod.PUT,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
 							   requests.requestMatchers(HttpMethod.DELETE,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
-							   requests.requestMatchers("/admin/**").hasRole("ADMIN");
+							   requests.requestMatchers("/admin/campaigns/categories").permitAll();
+//							   requests.requestMatchers("/admin/**").hasRole("ADMIN");
+							   requests.requestMatchers("/admin/**").permitAll();
 						   })
 							.sessionManagement(manager ->
 							manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

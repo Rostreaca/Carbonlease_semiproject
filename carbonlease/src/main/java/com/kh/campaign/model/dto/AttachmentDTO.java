@@ -1,14 +1,17 @@
-package com.kh.campaign.model.vo;
+package com.kh.campaign.model.dto;
 
 import java.sql.Date;
 
-import lombok.Builder;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Value
-@Builder
-public class AttachmentVO {
-	
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class AttachmentDTO {
 	
 	private Long fileNo;        // PK
     private Long refBno;        // FK (이벤트 번호)
@@ -18,5 +21,5 @@ public class AttachmentVO {
     private int fileLevel;      // 0 = 썸네일, 1 = 상세 이미지
     private Date uploadDate;	// 업로드날짜
     private String status;      // 사용 여부 (Y/N)
-	
+
 }
