@@ -74,6 +74,7 @@
                , B.BOARD_NO boardNo
                , R.MEMBER_NO memberNo
                , M.NICKNAME nickname
+               , R.REPLY_NO as replyNo
 		   FROM 
 		         CL_BOARD B
 		   JOIN 
@@ -83,6 +84,19 @@
 		  WHERE  B.BOARD_NO = #{boardNo}
 		  ORDER 
 		     BY  R.ENROLL_DATE ASC
+	</select>
+	
+	<!-- 댓글 건수 페이지처리 -->
+	<select id="replyCount" parameterType="long" resultType="_int">
+		SELECT
+				COUNT(R.REPLY_NO)
+		FROM
+				CL_BOARD B
+		JOIN	CL_BOARD_REPLY R ON B.BOARD_NO = R.BOARD_NO 
+		WHERE
+				B.STATUS='Y'
+		  AND
+		  	    B.BOARD_NO = #{boardNo}
 	</select>
 	
 	<!-- 글 수정 하기 -->

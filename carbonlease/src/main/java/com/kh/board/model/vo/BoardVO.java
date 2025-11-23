@@ -24,4 +24,5 @@ public class BoardVO {
 	private int endNumber;	   // 마지막 페이지
 	private int perPageNum;	   // 보여줄 게시글 개수
 	private List<BoardDTO> boardList;
+
 }

@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import com.kh.board.model.dao.BoardMapper;
 import com.kh.board.model.dto.BoardDTO;
 import com.kh.board.model.dto.BoardReplyDTO;
+import com.kh.board.model.vo.ReplyInsertVO;
 import com.kh.common.util.Pagination;
-import com.kh.notice.model.dto.NoticeDTO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -69,11 +69,28 @@ public class BoardServiceImpl implements BoardService {
 		
 		List<BoardReplyDTO> reply = boardMapper.replyList(boardNo);
 		
+		int replyCount = boardMapper.replyCount(boardNo);
+		
+		Map<String, Object> params = pagination.pageRequest(1, 5, replyCount);
+		
 		map.put("boardDetail", board);
 		map.put("replyList", reply);
+		map.put("replyCount", params.get("pi"));
 		
 		return map;
 	}
+	
+	
+	// 댓글 등록
+	@Override
+	public int boardReplyInsert(ReplyInsertVO riVO) {
+		
+		return 0;
+	}
+	
+	
+	
+	
 	
 	
 	// 글 수정하기

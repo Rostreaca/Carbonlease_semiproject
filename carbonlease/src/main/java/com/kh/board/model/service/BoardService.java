@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.kh.board.model.dto.BoardDTO;
 import com.kh.board.model.dto.BoardReplyDTO;
+import com.kh.board.model.vo.ReplyInsertVO;
 
 public interface BoardService {
 
@@ -13,6 +14,8 @@ public interface BoardService {
 	Map<String, Object> boardDetail(Long boardNo);
 
 	Long boardUpdateForm();
+	
+	int boardReplyInsert(ReplyInsertVO riVO);
 	
 	
 	

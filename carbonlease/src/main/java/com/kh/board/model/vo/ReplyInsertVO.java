@@ -1,6 +1,4 @@
-package com.kh.board.model.dto;
-
-import java.sql.Date;
+package com.kh.board.model.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,12 +11,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class BoardReplyDTO {
+public class ReplyInsertVO {
 
-	private int replyNo;
-	private int memberNo;
+	private long memberNo;
+	private long boardNo;
 	private String replyContent;
-	private Date enrollDate;
-	private char status;
-	private String nickname;
+	
 }
