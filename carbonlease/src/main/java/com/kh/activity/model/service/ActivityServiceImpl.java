@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.activity.model.dao.ActivityMapper;
 import com.kh.activity.model.dto.ActivityListDTO;
+import com.kh.activity.model.dto.ReplyDTO;
 import com.kh.activity.model.dto.ActivityDetailDTO;
 import com.kh.activity.model.dto.ActivityFormDTO;
 import com.kh.activity.model.vo.ActivityBoard;
@@ -136,5 +137,55 @@ public class ActivityServiceImpl implements ActivityService{
 
 	    return activityMapper.activityDelete(activityNo);
 	}
+	
+	@Override
+	public Map<String, Object> selectReplies(int activityNo, int pageNo) {
+	    
+
+		int replyCount = activityMapper.countReplies(activityNo);
+		
+		Map<String, Object> params = pagination.pageRequest(pageNo, 5, replyCount);
+		params.put("activityBoardNo",activityNo);
+		
+		List<ReplyDTO> replyList = activityMapper.selectReplies(params);
+		
+		Map<String, Object> result = new HashMap<>();
+		result.put("replies", replyList);
+		result.put("pageInfo", params.get("pi"));
+
+		return result;
+	}
+
+	@Override
+	public int insertReply(String content, int activityNo, Long memberNo) {
+	    Map<String, Object> map = new HashMap<>();
+	    map.put("replyContent", content);
+	    map.put("activityBoardNo", activityNo);
+	    map.put("memberNo", memberNo);
+	    return activityMapper.insertReply(map);
+	}
+
+	@Override
+	public int deleteReply(int replyNo) {
+	    return activityMapper.deleteReply(replyNo);
+	}
+	
+	@Override
+	public int updateReply(int replyNo, String content, Long writerNo) {
+	    Map<String, Object> map = new HashMap<>();
+	    map.put("replyNo", replyNo);
+	    map.put("replyContent", content);
+	    map.put("memberNo", writerNo);
+
+	    return activityMapper.updateReply(map);
+	}
+	
+	@Override
+	public void increaseViewCount(int activityNo) {
+	    activityMapper.updateViewCount(activityNo);
+	}
+
+
+
 
 }

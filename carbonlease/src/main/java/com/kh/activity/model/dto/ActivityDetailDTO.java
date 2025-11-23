@@ -20,5 +20,7 @@ public class ActivityDetailDTO {
     private int likeCount;        
     private boolean isLiked;      
     private List<String> images; 
+    private int certificationCount;
+    private int carbonSave;
 
 }

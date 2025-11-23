@@ -21,7 +21,7 @@
 		               CL_ACTIVITY_REPLY R
 		         WHERE
 		               R.ACTIVITY_BOARD_NO = B.ACTIVITY_NO
-		       )AS REPLY_COUNT	   
+		       )AS replyCount	   
 		  FROM
 		       CL_ACTIVITY_BOARD B
 		  JOIN
@@ -186,46 +186,51 @@
 	</select>
 	
 	<select id="selectDetail"
-			resultType="com.kh.activity.model.dto.ActivityDetailDTO">
-		SELECT
-			   B.ACTIVITY_NO AS activityNo
-			 , B.ACTIVITY_TITLE AS activityTitle
-			 , B.ACTIVITY_CONTENT AS activityContent
-			 , TO_CHAR(B.ENROLL_DATE, 'YYYY-MM-DD') AS enrollDate
-			 , B.VIEW_COUNT AS viewCount
-			 , B.LAT AS lat
-			 , B.LNG AS lng
-			 , B.ADDRESS AS address
-			 , M.NICKNAME AS nickName
-			 , M.MEMBER_NO
-			 , (SELECT
-			           COUNT(*)
-			      FROM
-			           CL_ACTIVITY_LIKE L
-			     WHERE
-			           L.ACTIVITY_BOARD_NO = B.ACTIVITY_NO
-			   ) AS likeCount
-			 , 
-	   		   CASE WHEN EXISTS
-	    	   (SELECT
-	    	           1
-	    	      FROM
-	    	           CL_ACTIVITY_LIKE L2
-	    	     WHERE
-	    	           L2.ACTIVITY_BOARD_NO = B.ACTIVITY_NO
-	    	       AND
-	    	           L2.MEMBER_NO = #{loginMemberNo}
-	    	    )
-	    		THEN 1 ELSE 0 END AS isLiked
-	     FROM
-	          CL_ACTIVITY_BOARD B
-	     JOIN
-	          CL_MEMBER M ON (B.MEMBER_NO = M.MEMBER_NO)
-	    WHERE
-	          B.ACTIVITY_NO = #{activityNo}
-	      AND
-	          B.STATUS = 'Y'
+        resultType="com.kh.activity.model.dto.ActivityDetailDTO">
+
+		    SELECT
+		           B.ACTIVITY_NO AS activityNo
+		         , B.ACTIVITY_TITLE AS activityTitle
+		         , B.ACTIVITY_CONTENT AS activityContent
+		         , TO_CHAR(B.ENROLL_DATE, 'YYYY-MM-DD') AS enrollDate
+		         , B.VIEW_COUNT AS viewCount
+		         , B.LAT AS lat
+		         , B.LNG AS lng
+		         , B.ADDRESS AS address
+		         , M.NICKNAME AS nickName
+		         , M.MEMBER_NO AS memberNo
+		         , (SELECT COUNT(*)
+		              FROM CL_ACTIVITY_BOARD B2
+		             WHERE B2.MEMBER_NO = M.MEMBER_NO
+		               AND B2.STATUS = 'Y'
+		           ) AS certificationCount
+		         , (SELECT NVL(SUM(CC.CARBON_ACCUM), 0)
+		              FROM CL_ACTIVITY_BOARD B3
+		              JOIN CL_ACTIVITY_CERTIFICATION C
+		                ON B3.ACTIVITY_NO = C.ACTIVITY_BOARD_NO
+		              JOIN CL_ACTIVITY_CERTIFICATION_CATEGORY CC
+		                ON C.CERTIFICATION_NO = CC.CERTIFICATION_NO
+		             WHERE B3.MEMBER_NO = M.MEMBER_NO
+		               AND B3.STATUS = 'Y'
+		           ) AS carbonSave
+		         , (SELECT COUNT(*)
+		              FROM CL_ACTIVITY_LIKE L
+		             WHERE L.ACTIVITY_BOARD_NO = B.ACTIVITY_NO
+		           ) AS likeCount
+		         ,
+		           CASE WHEN EXISTS
+		                 (SELECT 1
+		                    FROM CL_ACTIVITY_LIKE L2
+		                   WHERE L2.ACTIVITY_BOARD_NO = B.ACTIVITY_NO
+		                     AND L2.MEMBER_NO = #{loginMemberNo})
+		           THEN 1 ELSE 0 END AS isLiked
+		
+		    FROM CL_ACTIVITY_BOARD B
+		    JOIN CL_MEMBER M ON (B.MEMBER_NO = M.MEMBER_NO)
+		    WHERE B.ACTIVITY_NO = #{activityNo}
+		      AND B.STATUS = 'Y'
 	</select>
+
 	
 	<select id="selectDetailImage"
 			resultType="string">
@@ -300,6 +305,97 @@
 		 WHERE
 		       ACTIVITY_NO = #{activityNo}
 	</update>
+	
+	<select id="selectReplies"
+        parameterType="map"
+        resultType="com.kh.activity.model.dto.ReplyDTO">
+
+    	SELECT 
+        	   R.REPLY_NO AS replyNo
+        	 , R.REPLY_CONTENT AS replyContent
+        	 , TO_CHAR(R.ENROLL_DATE, 'YYYY-MM-DD HH24:MI') AS enrollDate
+        	 , R.ACTIVITY_BOARD_NO AS activityBoardNo
+        	 , R.MEMBER_NO AS memberNo
+        	 , M.NICKNAME AS writer
+    	  FROM 
+        	   CL_ACTIVITY_REPLY R
+    	  JOIN 
+        	   CL_MEMBER M ON R.MEMBER_NO = M.MEMBER_NO
+    	 WHERE 
+        	   R.ACTIVITY_BOARD_NO = #{activityBoardNo}
+           AND 
+           	   R.STATUS = 'Y'
+    	 ORDER 
+    	 	BY 
+        	   R.REPLY_NO DESC
+    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
+	<insert id="insertReply">
+	    INSERT 
+	      INTO 
+	      	   CL_ACTIVITY_REPLY 
+	      	   (
+	           REPLY_NO
+	         , REPLY_CONTENT
+	         , ENROLL_DATE
+	         , STATUS
+	         , ACTIVITY_BOARD_NO
+	         , MEMBER_NO
+	           ) 
+	    VALUES 
+	    	   (
+	           SEQ_ACTIVITY_REPLY_NO.NEXTVAL
+	         , #{replyContent}
+	         , SYSDATE
+	         , 'Y'
+	         , #{activityBoardNo}
+	         , #{memberNo}
+	    	   )
+	</insert>
+	
+	<update id="deleteReply">
+	    UPDATE 
+	    	   CL_ACTIVITY_REPLY
+	       SET 
+	       	   STATUS = 'N'
+	     WHERE 
+	     	   REPLY_NO = #{replyNo}
+	</update>
+
+	<select id="countReplies" resultType="int">
+    	SELECT 
+    		   COUNT(*)
+    	  FROM 
+    	  	   CL_ACTIVITY_REPLY
+    	 WHERE 
+    	 	   ACTIVITY_BOARD_NO = #{activityNo}
+      	   AND 
+      	   	   STATUS = 'Y'
+	</select>
+	
+	<update id="updateReply">
+    	UPDATE 
+    		   CL_ACTIVITY_REPLY
+    	   SET 
+    	   	   REPLY_CONTENT = #{replyContent}
+    	 WHERE 
+    	 	   REPLY_NO = #{replyNo}
+      	   AND 
+      	   	   MEMBER_NO = #{memberNo}
+      	   AND 
+      	       STATUS = 'Y'
+	</update>
+	
+	<update id="updateViewCount">
+    	UPDATE 
+    	       CL_ACTIVITY_BOARD
+    	   SET 
+    	   	   VIEW_COUNT = VIEW_COUNT + 1
+    	 WHERE 
+    	 	   ACTIVITY_NO = #{activityNo}
+	</update>
+
 
 
 	

@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import com.kh.activity.model.dto.ActivityDetailDTO;
 import com.kh.activity.model.dto.ActivityFormDTO;
 import com.kh.activity.model.dto.ActivityListDTO;
+import com.kh.activity.model.dto.ReplyDTO;
 import com.kh.activity.model.vo.ActivityAttachment;
 import com.kh.activity.model.vo.ActivityBoard;
 
@@ -39,5 +40,20 @@ public interface ActivityMapper {
 	int deleteLike(@Param("activityNo") int activityNo, @Param("memberNo") Long memberNo);
 
 	int activityDelete(@Param("activityNo") int activityNo);
+	
+	List<ReplyDTO> selectReplies(Map<String, Object> params);
+	
+	int insertReply(Map<String, Object> map);
+	
+	int deleteReply(int replyNo);
+
+	int countReplies(int activityNo);
+
+	int updateReply(Map<String, Object> map);
+
+	void updateViewCount(int activityNo);
+
+
+
 
 }
