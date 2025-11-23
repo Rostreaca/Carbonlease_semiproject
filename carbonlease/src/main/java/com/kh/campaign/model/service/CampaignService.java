@@ -10,7 +10,7 @@ public interface CampaignService {
 	/**
 	 * 전체조회
 	 * @param PageNo
-	 * @return Map<String, Object> : pageInfo(페이징 정보), notices(캠페인 목록)
+	 * @return Map<String, Object> : pageInfo(페이징 정보), campaigns(캠페인 목록)
 	 */
 	Map<String, Object> findAll(int PageNo);
 	
