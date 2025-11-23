@@ -84,5 +84,11 @@
 		  ORDER 
 		     BY  R.ENROLL_DATE ASC
 	</select>
+	
+	<!-- 글 수정 하기 -->
+	<insert id="boardUpdateForm" parameterType="long">
+		
+	</insert>
+	
 
 </mapper>

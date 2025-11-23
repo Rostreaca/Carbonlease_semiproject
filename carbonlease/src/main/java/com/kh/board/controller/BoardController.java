@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,6 +55,16 @@ public class BoardController {
 		return ResponseEntity.ok(map);
 		
 	}
+	
+	
+	// 글 수정 하기
+	@PostMapping("/updateForm/{boardNo}")
+	public ResponseEntity<?> boardUpdateForm(@RequestParam(name="boardNo") Long boardNo) {
+		
+		return ResponseEntity.ok(null);
+	
+	}
+	
 	
 		
 }

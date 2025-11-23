@@ -11,5 +11,9 @@ public interface BoardService {
 	Map<String, Object> findAll(int pageNo);
 	
 	Map<String, Object> boardDetail(Long boardNo);
+
+	Long boardUpdateForm();
+	
+	
 	
 }
