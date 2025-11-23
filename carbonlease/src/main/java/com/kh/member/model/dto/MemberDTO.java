@@ -29,8 +29,10 @@ public class MemberDTO {
 	private String memberPwd;
 	@Size(min = 2, max = 12, message = "닉네임은 2-12자 사이로만 사용 가능합니다.")
 	//@NotBlank(message = "닉네임은 비어있을 수 없습니다.")
+	@Pattern(regexp = "^[A-Za-z0-9ㄱ-ㅎㅏ-ㅣ가-힣]{2,12}$", message = "닉네임은 공백없이 2-12자 사이로만 사용할 수 있습니다.")
 	private String nickName;
 	//@NotBlank(message = "이메일은 비어있을 수 없습니다.")
+	@Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$" , message = "잘못된 이메일 형식입니다.")
 	private String email;
 	private String addressLine1;
 	private String addressLine2;

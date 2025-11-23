@@ -5,6 +5,7 @@
 <mapper namespace="com.kh.activity.model.dao.ActivityMapper">
 	
 	<select id="activityAllList"
+			parameterType="map"
 			resultType="com.kh.activity.model.dto.ActivityListDTO">
 		SELECT
 		       B.ACTIVITY_NO activityNo
@@ -52,9 +53,138 @@
 		 </if>
 		 ORDER
 		    BY
-		       B.ACTIVITY_NO DESC      
+		       B.ACTIVITY_NO DESC
+		 OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY      
+	</select>
+	
+	<select id="findListCount"
+	        parameterType="map"
+	        resultType="int">
+		SELECT 
+			   COUNT(*)
+		  FROM 
+		       CL_ACTIVITY_BOARD B
+		  JOIN 
+		       CL_MEMBER M ON (B.MEMBER_NO = M.MEMBER_NO)
+		 WHERE 
+		       B.STATUS = 'Y'
+		<if test="keyword != null and keyword != ''">
+		  AND (
+			<choose>
+				<when test="filter == 'title'">
+					B.ACTIVITY_TITLE LIKE '%' || #{keyword} || '%'
+				</when>
+				<when test="filter == 'content'">
+					B.ACTIVITY_CONTENT LIKE '%' || #{keyword} || '%'
+				</when>
+				<when test="filter == 'nickname'">
+					M.NICKNAME LIKE '%' || #{keyword} || '%'
+				</when>
+				<otherwise>
+		        	B.ACTIVITY_TITLE LIKE '%' || #{keyword} || '%'
+		      	</otherwise>
+			</choose>
+			)
+	</if>	                   	   	
+		
+	</select>
+	
+    <insert id="insertBoard" 
+    		parameterType="com.kh.activity.model.vo.ActivityBoard" 
+    		keyProperty="activityNo">
+    		<selectKey keyProperty="activityNo" resultType="int" order="BEFORE">
+        		SELECT SEQ_ACTIVITY_NO.NEXTVAL FROM DUAL
+    		</selectKey>
+    	INSERT 
+    	  INTO 
+    	       CL_ACTIVITY_BOARD 
+    	       (
+    	       ACTIVITY_NO
+    	     , ACTIVITY_TITLE
+    	     , ACTIVITY_CONTENT
+    	     , LAT
+    	     , LNG
+    	     , VIEW_COUNT
+    	     , STATUS
+    	     , ENROLL_DATE
+    	     , MEMBER_NO
+    	     , REGION_NO
+    	     , ADDRESS
+               ) 
+        VALUES 
+        	   (
+               #{activityNo}
+             , #{title}
+             , #{content}
+             , #{lat}
+             , #{lng}
+             , DEFAULT
+             , 'Y'
+             , SYSDATE
+             , #{memberNo}
+             , #{regionNo}
+             , #{address}
+    		   )
+	</insert>
+
+	<insert id="insertAttachment" 
+			parameterType="com.kh.activity.model.vo.ActivityAttachment">
+    	INSERT 
+    	  INTO 
+    	       CL_ACTIVITY_ATTACHMENT 
+    	       (
+               FILE_NO
+             , REF_BNO
+             , ORIGIN_NAME
+             , CHANGE_NAME
+             , FILE_PATH
+             , UPLOAD_DATE
+               ) 
+        VALUES 
+               (
+               SEQ_ACTIVITY_FILE_NO.NEXTVAL
+             , #{refBno}
+             , #{originName}
+             , #{changeName}
+             , #{filePath}
+             , SYSDATE
+    		   )
+	</insert>
+	
+	<insert id="insertCertification">
+	    INSERT INTO CL_ACTIVITY_CERTIFICATION (
+	        ACTIVITY_BOARD_NO,
+	        CERTIFICATION_NO
+	    ) VALUES (
+	        #{activityNo},
+	        #{certificationNo}
+	    )
+	</insert>
+	
+	<select id="findById"
+			resultType="com.kh.activity.model.dto.ActivityFormDTO">
+		SELECT
+			   B.ACTIVITY_NO
+			 , B.ACTIVITY_TITLE
+			 , B.ACTIVITY_CONTENT
+			 , B.LAT
+			 , B.LNG
+			 , B.REGION_NO
+			 , C.CERTIFICATION_NO
+			 , A.FILE_PATH thumbnailPath
+			 , B.ADDRESS
+	      FROM
+	           CL_ACTIVITY_BOARD B
+	      LEFT
+	      JOIN
+	           CL_ACTIVITY_ATTACHMENT A ON B.ACTIVITY_NO = A.REF_BNO AND A.THUMBNAIL_YN = 'Y'
+	      LEFT
+	      JOIN
+	           CL_ACTIVITY_CERTIFICATION C ON B.ACTIVITY_NO = C.ACTIVITY_BOARD_NO
+	     WHERE
+	           B.ACTIVITY_NO = #{id}
 	</select>
 
-	
+
 	
 </mapper>

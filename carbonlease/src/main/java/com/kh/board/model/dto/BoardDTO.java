@@ -1,7 +1,7 @@
 package com.kh.board.model.dto;
 
-
 import java.sql.Date;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,8 +16,7 @@ import lombok.ToString;
 @ToString
 public class BoardDTO {
 
-	private int totalPages; // 일반 게시판 총 건수
-	private int currentPage;   // 현재 페이지
+	private int boardSeq;  // 게시글순번
 	private int boardNo;
 	private String boardTitle;
 	private String boardContent;
@@ -27,6 +26,8 @@ public class BoardDTO {
 	private int memberNo;
 	private int regionNo;
 	private String nickname;
+	private int replyCount;
+	private List<BoardReplyDTO> replyList;	// 댓글 목록
 	
 	
 }
