@@ -20,5 +20,6 @@ public class ActivityBoard {
     private double lng;
     private Long memberNo;
     private int regionNo;
+    private String address;
 }
 

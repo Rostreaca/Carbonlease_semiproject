@@ -14,7 +14,7 @@ public interface CampaignMapper {
 	
 	/**
 	 * 전체조회
-	 * @param params
+	 * @param
 	 * @return
 	 */
 	List<CampaignDTO> selectCampaignList(Map<String, Object> params);

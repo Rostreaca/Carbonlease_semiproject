@@ -32,13 +32,15 @@ public class CampaignServiceImpl implements CampaignService {
 	@Override
 	public Map<String, Object> selectCampaignList(int pageNo) {
 
-		if (pageNo < 0) {
+		if (pageNo < 0) { 
 	        throw new InvalidParameterException("유효하지 않은 접근입니다.");
 	    }
+		
 	    int listCount = findListCount();
+	    
 	    Map<String, Object> params = pagination.pageRequest(pageNo, 6, listCount);
 	    List<CampaignDTO> campaigns = campaignMapper.selectCampaignList(params);
-
+	    
 	    params.put("pageInfo", params.get("pi"));
 	    params.put("campaigns", campaigns);
 
