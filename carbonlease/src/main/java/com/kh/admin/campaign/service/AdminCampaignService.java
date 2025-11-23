@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.campaign.model.dto.CampaignDTO;
-import com.kh.campaign.model.vo.CategoryVO;
+import com.kh.campaign.model.dto.CategoryDTO;
 
 public interface AdminCampaignService {
 	
@@ -26,6 +26,6 @@ public interface AdminCampaignService {
 	 * 카테고리 목록 조회
 	 * @return 카테고리 목록
 	 */
-	List<CategoryVO> getCategories();
+	List<CategoryDTO> getCategories();
 
 }

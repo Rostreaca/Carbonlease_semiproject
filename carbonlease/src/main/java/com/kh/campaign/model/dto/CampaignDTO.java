@@ -30,6 +30,7 @@ public class CampaignDTO {
 
     // Category (카테고리 객체 포함)
     private CategoryDTO category;
+    private Long categoryNo;
     
     
     private List<AttachmentDTO> attachments;

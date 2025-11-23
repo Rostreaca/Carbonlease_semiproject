@@ -2,7 +2,6 @@ package com.kh.admin.campaign.service;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12,12 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.admin.campaign.model.dao.AdminCampaignMapper;
-import com.kh.auth.model.vo.CustomUserDetails;
+import com.kh.campaign.model.dto.AttachmentDTO;
 import com.kh.campaign.model.dto.CampaignDTO;
-import com.kh.campaign.model.service.CampaignService;
-import com.kh.campaign.model.vo.AttachmentVO;
-import com.kh.campaign.model.vo.CampaignVO;
-import com.kh.campaign.model.vo.CategoryVO;
+import com.kh.campaign.model.dto.CategoryDTO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,42 +31,33 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
             MultipartFile thumbnail,
             MultipartFile detailImage,
             Long memberNo) {
-    	
-    	
-    	// 1) campaignVO로 변환 (DB insert용)
-        CampaignVO campaignVO = CampaignVO.builder()
+        // 1) campaignDTO로 변환 (DB insert용)
+        CampaignDTO campaignDTO = CampaignDTO.builder()
                 .campaignTitle(dto.getCampaignTitle())
                 .campaignContent(dto.getCampaignContent())
                 .startDate(dto.getStartDate())
                 .endDate(dto.getEndDate())
                 .memberNo(memberNo)
-                .categoryNo(dto.getCategory().getCategoryNo())
-                .memberNo(memberNo)
+                .categoryNo(dto.getCategoryNo())
                 .status("Y")
                 .build();
-    	
-    	
+
         // 2) 캠페인 저장 (PK 자동 생성)
-        adminCampaignMapper.insertCampaign(campaignVO);
-        Long campaignNo = campaignVO.getCampaignNo();
+        adminCampaignMapper.insertCampaign(campaignDTO);
+        Long campaignNo = campaignDTO.getCampaignNo();
 
-        // 3) 첨부파일 처리
-        List<AttachmentVO> files = new ArrayList<>();
 
+        // 3) 첨부파일 처리 (각각 한 번씩만 insert)
         if (thumbnail != null && !thumbnail.isEmpty()) {
-            files.add(saveAttachment(thumbnail, campaignNo, 0));
+            AttachmentDTO thumbDto = saveAttachment(thumbnail, campaignNo, 0);
+            adminCampaignMapper.insertAttachment(thumbDto);
         }
         if (detailImage != null && !detailImage.isEmpty()) {
-            files.add(saveAttachment(detailImage, campaignNo, 1));
-        }
-
-        if (!files.isEmpty()) {
-            adminCampaignMapper.insertAttachments(files);
+            AttachmentDTO detailDto = saveAttachment(detailImage, campaignNo, 1);
+            adminCampaignMapper.insertAttachment(detailDto);
         }
 
         log.info("캠페인 등록 완료 — campaignNo: {}", campaignNo);
-        
-        
     }
 
 
@@ -108,23 +95,18 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
     /**
      * 파일 저장 + AttachmentVO 생성
      */
-    private AttachmentVO saveAttachment(MultipartFile file, Long refBno, int fileLevel) {
-
+    private AttachmentDTO saveAttachment(MultipartFile file, Long refBno, int fileLevel) {
         Map<String, String> info = setAttachmentNamePath(file);
-
         String changeName = info.get("changeName");
         String savePath = info.get("savePath");
         String fullPath = savePath + changeName;
-
         try {
             file.transferTo(new File(fullPath));
         } catch (Exception e) {
             throw new RuntimeException("파일 저장 실패", e);
         }
-
-        String fileUrl = "http://localhost:80/uploads/campaign/images" + changeName;
-
-        return AttachmentVO.builder()                                                    
+        String fileUrl = "http://localhost:80/uploads/campaign/images/" + changeName;
+        return AttachmentDTO.builder()
                 .refBno(refBno)
                 .originName(file.getOriginalFilename())
                 .changeName(changeName)
@@ -139,7 +121,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
     * 카테고리 조회
     */
     @Override
-    public List<CategoryVO> getCategories() {
+    public List<CategoryDTO> getCategories() {
         return adminCampaignMapper.getCategories();
     }
     

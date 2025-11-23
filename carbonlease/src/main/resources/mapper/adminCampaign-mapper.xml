@@ -40,36 +40,33 @@
     </insert>
 	
 	<!-- 첨부파일 등록 -->
-    <insert id="insertAttachments">
-		
-	    INSERT 
-	      INTO 
-	           CL_CAMPAIGN_ATTACHMENT
-	    	   (
-	           FILE_NO
-	         , REF_BNO
-	         , ORIGIN_NAME
-	         , CHANGE_NAME
-	         , FILE_LEVEL
-	         , FILE_PATH
-	         , UPLOAD_DATE
-	           )
-	   VALUES
-	   <foreach collection="list" item="f" separator=",">
-	           (
-	           SEQ_CAMPAIGN_FILE_NO.NEXTVAL
-	         , #{f.refBno}
-	         , #{f.originName}
-	         , #{f.changeName}
-	         , #{f.fileLevel}
-	         , #{f.filePath}
-	         , SYSDATE
-	           )
-	     </foreach>
-	</insert>
+    <insert id="insertAttachment" parameterType="com.kh.campaign.model.dto.AttachmentDTO">
+        INSERT 
+		  INTO 
+		       CL_CAMPAIGN_ATTACHMENT 
+			   (
+			   FILE_NO
+          	 , REF_BNO
+          	 , ORIGIN_NAME
+          	 , CHANGE_NAME
+          	 , FILE_LEVEL
+          	 , FILE_PATH
+          	 , UPLOAD_DATE
+        	   ) 
+	   VALUES 
+	          (
+			  SEQ_CAMPAIGN_FILE_NO.NEXTVAL
+          	, #{refBno}
+          	, #{originName}
+          	, #{changeName}
+          	, #{fileLevel}
+          	, #{filePath}
+          	, SYSDATE
+        	  )
+    </insert>
 	
 	
-	<resultMap id="categoryResultMap" type="com.kh.campaign.model.vo.CategoryVO">
+	<resultMap id="categoryResultMap" type="com.kh.campaign.model.dto.CategoryDTO">
 	    <id property="categoryNo" column="CATEGORY_NO"/>
 	    <result property="categoryName" column="CATEGORY_NAME"/>
 	</resultMap>

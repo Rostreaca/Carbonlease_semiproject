@@ -16,8 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.admin.campaign.service.AdminCampaignService;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.campaign.model.dto.CampaignDTO;
-import com.kh.campaign.model.vo.CampaignVO;
-import com.kh.campaign.model.vo.CategoryVO;
+import com.kh.campaign.model.dto.CategoryDTO;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -53,14 +52,14 @@ public class AdminCampaignController {
 	            user.getMemberNo()
 	    );
 
-	    return ResponseEntity.status(HttpStatus.CREATED).build();
+	    return ResponseEntity.status(HttpStatus.CREATED).body("success");
 	}
 
 	
 	// 카테고리 목록 조회
     @GetMapping("/categories")
-    public ResponseEntity<List<CategoryVO>> getCategories() {
-        List<CategoryVO> categories = adminCampaignService.getCategories();
+    public ResponseEntity<List<CategoryDTO>> getCategories() {
+        List<CategoryDTO> categories = adminCampaignService.getCategories();
         return ResponseEntity.ok(categories);
     }
 	
