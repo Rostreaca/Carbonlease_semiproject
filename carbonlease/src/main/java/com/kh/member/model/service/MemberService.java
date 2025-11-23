@@ -12,4 +12,10 @@ public interface MemberService {
 
 	void deleteMember(String memberPassword);
 	
+	void checkId(String memberId);
+	
+	void checkNickName(String nickName);
+	
+	void checkEmail(String email);
+	
 }

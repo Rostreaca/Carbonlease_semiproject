@@ -43,6 +43,7 @@ public class SecurityConfigure {
 							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/*/view").permitAll(); // 조회수
 							   requests.requestMatchers(HttpMethod.GET, "/activityBoards/*/replies").permitAll(); // 댓글
 							   requests.requestMatchers(HttpMethod.POST, "/members/**","/auth/login", "/login/admin", "/auth/refresh").permitAll();
+							   requests.requestMatchers(HttpMethod.POST, "/members/**","/auth/login", "/auth/adminLogin", "/auth/refresh").permitAll();
 							   requests.requestMatchers(HttpMethod.POST, "/boards", "/activityBoards", "/notices", "/campaigns").authenticated();
 							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/**").authenticated();
 							   requests.requestMatchers(HttpMethod.POST, "/campaigns/*/like").authenticated(); // 좋아요 인증 필요
