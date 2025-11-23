@@ -21,4 +21,6 @@ public interface ActivityService {
 
 	int activityDelete(int activityNo, Long memberNo);
 
+	boolean toggleLike(int activityNo, Long memberNo);
+
 }

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.session.RowBounds;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,11 +14,9 @@ import com.kh.activity.model.dao.ActivityMapper;
 import com.kh.activity.model.dto.ActivityListDTO;
 import com.kh.activity.model.dto.ActivityDetailDTO;
 import com.kh.activity.model.dto.ActivityFormDTO;
-import com.kh.activity.model.vo.ActivityAttachment;
 import com.kh.activity.model.vo.ActivityBoard;
-import com.kh.auth.model.vo.CustomUserDetails;
-import com.kh.common.util.PageInfo;
 import com.kh.common.util.Pagination;
+import com.kh.exception.CustomAuthenticationException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -105,16 +103,38 @@ public class ActivityServiceImpl implements ActivityService{
 		
 		return detail;
 	}
+	
+	@Override
+	@Transactional
+	public boolean toggleLike(int activityNo, Long memberNo) {
+		
+		Integer exists = activityMapper.checkLike(activityNo, memberNo);
+		
+		if (exists != null && exists > 0) {
+			activityMapper.deleteLike(activityNo, memberNo);
+			return false;
+		} else {
+			activityMapper.insertLike(activityNo, memberNo);
+			return true;
+		}
+	}
 
 
 	@Override
-	public int activityDelete(int activityNo, Long memberNo) {
-		
-		ActivityBoard board = activityMapper.findBoardOwner(activityNo);
-		
-		if(board == null) throw new RuntimeException("게시글 없음");
-		if(board.getMemberNo() != memberNo) throw new RuntimeException("권한 없음");
-		
-		return activityMapper.activityDelete(activityNo);
+	@Transactional
+	public int activityDelete(int activityNo, Long loginMemberNo) {
+
+	    ActivityBoard owner = activityMapper.findBoardOwner(activityNo);
+
+	    if(owner == null){
+	        throw new CustomAuthenticationException("존재하지 않는 게시물입니다.");
+	    }
+
+	    if (owner.getMemberNo() == null || !owner.getMemberNo().equals(loginMemberNo)) {
+	        throw new AccessDeniedException("삭제 권한이 없습니다.");
+	    }
+
+	    return activityMapper.activityDelete(activityNo);
 	}
+
 }

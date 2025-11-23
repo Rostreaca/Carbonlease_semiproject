@@ -240,11 +240,52 @@
 		       FILE_NO ASC
 	</select>
 	
+	<select id="checkLike"
+			resultType="int">
+		SELECT
+			   COUNT(*)
+		  FROM
+		       CL_ACTIVITY_LIKE
+		 WHERE
+		       ACTIVITY_BOARD_NO = #{activityNo}
+		   AND
+		       MEMBER_NO = #{memberNo}
+	</select>
+	
+	<insert id="insertLike">
+		INSERT
+		  INTO
+		       CL_ACTIVITY_LIKE
+			   (
+			   LIKE_NO
+			 , ACTIVITY_BOARD_NO
+			 , MEMBER_NO
+			 , CREATE_DATE  
+			   )
+		VALUES
+			   (
+			   SEQ_ACTIVITY_LIKE_NO.NEXTVAL
+			 , #{activityNo}
+			 , #{memberNo}
+			 , SYSDATE
+			   )
+	</insert>
+	
+	<delete id="deleteLike">
+		DELETE
+		  FROM
+		       CL_ACTIVITY_LIKE
+		 WHERE
+		       ACTIVITY_BOARD_NO = #{activityNo}
+		   AND
+		       MEMBER_NO = #{memberNo}
+	</delete>
+	
 	<select id="findBoardOwner"
 			resultType="com.kh.activity.model.vo.ActivityBoard">
 		SELECT
-		       ACTIVITY_NO
-		     , MEMBER_NO
+		       ACTIVITY_NO AS activityNo
+		     , MEMBER_NO AS memberNo
 		  FROM
 		       CL_ACTIVITY_BOARD
 		 WHERE

@@ -59,24 +59,46 @@ public class ActivityController {
 	
 	@GetMapping("/{activityNo}")
 	public ActivityDetailDTO selectDetail(@PathVariable("activityNo") int activityNo
-										 ,@RequestHeader(value = "memberNo"
-										 			   , required = false
-										 			   , defaultValue = "0") Long loginMemberNo
-										 ) {
-		return activityService.selectDetail(activityNo, loginMemberNo);
+										 ,@AuthenticationPrincipal CustomUserDetails loginUser){
+	    Long memberNo = (loginUser != null ? loginUser.getMemberNo() : 0L);
+	    return activityService.selectDetail(activityNo, memberNo);
+	}
+
+	
+	@PostMapping("/{activityNo}/like")
+	public ResponseEntity<?> toggleLike(@PathVariable("activityNo") int activityNo
+									   ,@AuthenticationPrincipal CustomUserDetails loginUser){
+		
+		if (loginUser == null) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("로그인이 필요합니다!");
+		}
+		
+		boolean result = activityService.toggleLike(activityNo, loginUser.getMemberNo());
+		
+		return ResponseEntity.ok(Map.of("liked", result));
 	}
 	
 	@DeleteMapping("/{activityNo}")
-	public ResponseEntity<?> activityDelete(@PathVariable int activityNo
-										   ,@RequestParam(required = false, defaultValue = "0") int memberNo
-										   ,@AuthenticationPrincipal CustomUserDetails loginUser){
-		try {
-			int result = activityService.activityDelete(activityNo, loginUser.getMemberNo());
-			return ResponseEntity.ok("success");
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
-		}
+	public ResponseEntity<?> activityDelete(@PathVariable("activityNo") int activityNo,
+	                                        @AuthenticationPrincipal CustomUserDetails loginUser) {
+
+	    if(loginUser == null){
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다");
+	    }
+
+	    log.info("삭제 요청 = activityNo: {}, memberNo: {}", activityNo, loginUser.getMemberNo());
+
+	    try {
+	        int result = activityService.activityDelete(activityNo, loginUser.getMemberNo());
+	        return ResponseEntity.ok("success");
+	    } catch (Exception e) {
+	        log.error("삭제 실패", e);
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
+	    }
 	}
+
+
+
 	
 
 }

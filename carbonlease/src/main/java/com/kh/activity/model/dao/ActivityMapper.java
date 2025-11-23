@@ -31,7 +31,13 @@ public interface ActivityMapper {
 
 	ActivityBoard findBoardOwner(int activityNo);
 
-	int activityDelete(int activityNo);
+	
+	int checkLike(@Param("activityNo") int activityNo, @Param("memberNo") Long memberNo);
+	
+	int insertLike(@Param("activityNo") int activityNo, @Param("memberNo") Long memberNo);
 
+	int deleteLike(@Param("activityNo") int activityNo, @Param("memberNo") Long memberNo);
+
+	int activityDelete(@Param("activityNo") int activityNo);
 
 }
