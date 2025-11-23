@@ -1,6 +1,7 @@
 package com.kh.admin.campaign.service;
 
 import java.io.File;
+import java.security.InvalidParameterException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import com.kh.campaign.model.dto.AttachmentDTO;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
 import com.kh.campaign.model.service.CampaignService;
+import com.kh.common.util.Pagination;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +28,37 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 
     private final AdminCampaignMapper adminCampaignMapper;
     private final CampaignService campaignService; 
-    
+    private final Pagination pagination;
+
+
+    @Override
+    public Map<String, Object> findAll(int pageNo){
+        if(pageNo < 0){
+            throw new InvalidParameterException("유효하지 않은 접근입니다.");
+        }
+
+        int listCount = listCountAll();
+
+        Map<String, Object> params = pagination.pageRequest(pageNo, 6, listCount);
+	    List<CampaignDTO> campaigns = adminCampaignMapper.findAll(params);
+	    
+	    params.put("pageInfo", params.get("pi"));
+	    params.put("campaigns", campaigns);
+
+	    return params;
+    }
+
+    /**
+	 * [책임분리]
+	 * 전체게시글 조회
+	 * @return int 전체게시글 수
+	 */
+	private int listCountAll() {
+		return adminCampaignMapper.findAndCountAll();
+	}
+
+
+
     @Override
     public CampaignDTO save(
             CampaignDTO dto,

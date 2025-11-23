@@ -2,6 +2,7 @@ package com.kh.admin.campaign.service;
 
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -10,6 +11,9 @@ import com.kh.campaign.model.dto.CategoryDTO;
 
 public interface AdminCampaignService {
 	
+
+	Map<String, Object> findAll(int PageNo);
+
 	/**
 	 * 캠페인 등록
 	 * @param campaign 캠페인 정보
