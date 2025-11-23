@@ -139,6 +139,7 @@
              , CHANGE_NAME
              , FILE_PATH
              , UPLOAD_DATE
+             , THUMBNAIL_YN
                ) 
         VALUES 
                (
@@ -148,6 +149,7 @@
              , #{changeName}
              , #{filePath}
              , SYSDATE
+             , DEFAULT
     		   )
 	</insert>
 	
