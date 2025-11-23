@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 
 import com.kh.campaign.model.dao.CampaignMapper;
 import com.kh.campaign.model.dto.CampaignDTO;
+import com.kh.campaign.model.dto.LikeDTO;
 import com.kh.common.util.Pagination;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import com.kh.campaign.model.dto.LikeDTO;
 
 @Slf4j
 @Service
@@ -29,16 +29,16 @@ public class CampaignServiceImpl implements CampaignService {
 	 * @return Map<String, Object> 캠페인 목록 및 페이징 정보
 	 */
 	@Override
-	public Map<String, Object> selectCampaignList(int pageNo) {
+	public Map<String, Object> findAll(int pageNo) {
 
 		if (pageNo < 0) { // 다시 
 	        throw new InvalidParameterException("유효하지 않은 접근입니다.");
 	    }
 		
-	    int listCount = findListCount();
+	    int listCount = listCountAll();
 	    							// 다시
 	    Map<String, Object> params = pagination.pageRequest(pageNo, 6, listCount);
-	    List<CampaignDTO> campaigns = campaignMapper.selectCampaignList(params); // 다시
+	    List<CampaignDTO> campaigns = campaignMapper.findAll(params); // 다시
 	    
 	    params.put("pageInfo", params.get("pi"));
 	    params.put("campaigns", campaigns);
@@ -52,8 +52,8 @@ public class CampaignServiceImpl implements CampaignService {
 	 * 전체게시글 조회
 	 * @return int 전체게시글 수
 	 */
-	private int findListCount() {
-		return campaignMapper.findListCount();
+	private int listCountAll() {
+		return campaignMapper.findAndCountAll();
 	}
 
 	
@@ -78,7 +78,7 @@ public class CampaignServiceImpl implements CampaignService {
 	 * @return CampaignDTO 캠페인 정보
 	 */
 	@Override
-	public CampaignDTO selectByCampaignNo(Long campaignNo) {
+	public CampaignDTO findByNo(Long campaignNo) {
 		increaseViewCount(campaignNo);
 		return getCampaignOrThrow(campaignNo);
 	}
@@ -98,7 +98,7 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 		
 		// 조회
-		CampaignDTO campaign = campaignMapper.selectByCampaignNo(campaignNo);
+		CampaignDTO campaign = campaignMapper.findByNo(campaignNo);
 		
 		
 		// 존재하는 게시물인가?

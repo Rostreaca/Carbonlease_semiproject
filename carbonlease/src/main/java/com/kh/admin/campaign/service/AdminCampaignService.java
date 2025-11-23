@@ -18,7 +18,7 @@ public interface AdminCampaignService {
 	 * @param memberNo 작성자 번호
 	 * @return 등록된 캠페인 정보
 	 */
-	CampaignDTO insertCampaign(
+	CampaignDTO save(
 		CampaignDTO campaign,
 		MultipartFile thumbnail,
 		MultipartFile detailImage,

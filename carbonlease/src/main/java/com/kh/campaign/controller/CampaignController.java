@@ -48,13 +48,12 @@ public class CampaignController {
 	 * @return ResponseEntity<Map<String, Object>> 캠페인 목록, 페이징 정보 포함(200 OK)
 	 */
 	@GetMapping	// 변수 타입 반환 형? 뭔지 모르니 미리 써놨는데 지금은 아니깐 Map으로 ...
-	public ResponseEntity<Map<String, Object>> selectCampaignList(
+	public ResponseEntity<Map<String, Object>> findAll(
 			@RequestParam(name = "pageNo", defaultValue= "1") int pageNo){
-		
 		// Map은 (설계도 == 인터페이스이고 : put()/get()/size()), HashMap은 그 인터페이스를 구현한 실제 객체(구현체, key-value 저장, 순서 보장 x, 해시 기반 탐색(조회) 빠름) 이다.
 		// 즉, Map 타입으로 선언 + HashMap으로 생성
 		Map<String, Object> map = new HashMap();
-		map = campaignService.selectCampaignList(pageNo);
+		map = campaignService.findAll(pageNo);
 		return ResponseEntity.ok(map);
 	}
 	
@@ -65,10 +64,10 @@ public class CampaignController {
 	 * @return ResponseEntity<CampaignDTO> 캠페인 상세 정보(200 OK)
 	 */
 	@GetMapping("/detail/{campaignNo}")
-	public ResponseEntity<CampaignDTO> selectByCampaignNo(
+	public ResponseEntity<CampaignDTO> findByNo(
 			@PathVariable(name="campaignNo")
 			@Min(value=1, message="너무 작습니다.") Long campaignNo){
-		CampaignDTO campaign = campaignService.selectByCampaignNo(campaignNo);
+		CampaignDTO campaign = campaignService.findByNo(campaignNo);
 		return ResponseEntity.ok(campaign);
 	}
 	

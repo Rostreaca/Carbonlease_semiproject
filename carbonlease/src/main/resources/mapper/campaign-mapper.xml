@@ -69,7 +69,7 @@
 	
 	
 	<!-- 전체조회 -->
-	<select id="selectCampaignList" resultMap="campaignResultMap" parameterType="map">
+	<select id="findAll" resultMap="campaignResultMap" parameterType="map">
 	    <include refid="campaignColumn"/>
 	    WHERE 
 	          A.FILE_LEVEL = 0
@@ -85,7 +85,7 @@
 	
 	
 	<!-- 상세조회 -->
-	<select id="selectByCampaignNo" resultMap="campaignResultMap">
+	<select id="findByNo" resultMap="campaignResultMap">
 	    <include refid="campaignColumn"/>
 	    WHERE 
 	          A.FILE_LEVEL = 1
@@ -100,7 +100,7 @@
 	</select>
 
 	<!-- 전체 게시글 수 조회 (리스트 조회와 동일 조건) -->
-	<select id="findListCount" resultType="_int">
+	<select id="findAndCountAll" resultType="_int">
        	SELECT
 		       COUNT(*)
 		  FROM 

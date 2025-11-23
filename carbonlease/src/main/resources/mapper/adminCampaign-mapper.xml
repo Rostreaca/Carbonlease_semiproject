@@ -6,7 +6,7 @@
 	
 	
 	<!-- 캠페인 등록 -->
-    <insert id="insertCampaign">
+    <insert id="save">
 
         <selectKey keyProperty="campaignNo"
                    resultType="long"

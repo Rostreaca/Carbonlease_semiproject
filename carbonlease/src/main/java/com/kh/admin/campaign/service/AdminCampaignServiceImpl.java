@@ -28,7 +28,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
     private final CampaignService campaignService; 
     
     @Override
-    public CampaignDTO insertCampaign(
+    public CampaignDTO save(
             CampaignDTO dto,
             MultipartFile thumbnail,
             MultipartFile detailImage,
@@ -45,7 +45,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
                 .build();
 
         // 2) 캠페인 저장 (PK 자동 생성)
-        adminCampaignMapper.insertCampaign(campaignDTO);
+        adminCampaignMapper.save(campaignDTO);
         Long campaignNo = campaignDTO.getCampaignNo();
 
 
@@ -61,7 +61,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 
         log.info("캠페인 등록 완료 — campaignNo: {}", campaignNo);
         // 등록 후 상세조회하여 최신 CampaignDTO 반환
-        return campaignService.selectByCampaignNo(campaignNo);
+        return campaignService.findByNo(campaignNo);
     }
 
 

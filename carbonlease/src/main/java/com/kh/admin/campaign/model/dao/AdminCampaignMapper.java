@@ -15,7 +15,7 @@ public interface AdminCampaignMapper {
 	 * 캠페인 게시글 등록
 	 * @param campaign
 	 */
-	void insertCampaign(CampaignDTO campaign);
+	void save(CampaignDTO campaign);
 	
 
 	/**

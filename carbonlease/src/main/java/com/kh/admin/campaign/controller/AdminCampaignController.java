@@ -44,14 +44,14 @@ public class AdminCampaignController {
 	     * @return ResponseEntity<CampaignDTO> 201(CREATED) + 등록된 캠페인 객체(첨부파일 포함)
 	     */
 	@PostMapping("/insert")
-	public ResponseEntity<CampaignDTO> insertCampaign(
+	public ResponseEntity<CampaignDTO> save(
 		    @Valid CampaignDTO campaign,
 		    @RequestParam("thumbnail") MultipartFile thumbnail,
 		    @RequestParam("detailImage") MultipartFile detailImage,
 		    @AuthenticationPrincipal CustomUserDetails user) {
 
 		// 캠페인 및 첨부파일 등록, 등록된 캠페인 객체 반환
-		CampaignDTO saved = adminCampaignService.insertCampaign(
+		CampaignDTO saved = adminCampaignService.save(
 			campaign,
 			thumbnail,
 			detailImage,

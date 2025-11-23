@@ -17,13 +17,13 @@ public interface CampaignMapper {
 	 * @param
 	 * @return
 	 */
-	List<CampaignDTO> selectCampaignList(Map<String, Object> params);
+	List<CampaignDTO> findAll(Map<String, Object> params);
 	
 	/**
 	 * 전체 게시글 수 조회
 	 * @return
 	 */
-	int findListCount();
+	int findAndCountAll();
 	
 	
 	/**
@@ -31,7 +31,7 @@ public interface CampaignMapper {
 	 * @param campaignNo
 	 * @return
 	 */
-	CampaignDTO selectByCampaignNo(Long campaignNo);
+	CampaignDTO findByNo(Long campaignNo);
 
 	
 	/**
