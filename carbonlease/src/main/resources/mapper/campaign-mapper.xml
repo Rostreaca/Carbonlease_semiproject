@@ -76,7 +76,7 @@
 	      AND 
 	          P.STATUS = 'Y'
 	      AND 
-	          P.END_DATE >= SYSDATE
+	          (P.END_DATE IS NULL OR P.END_DATE >= SYSDATE)
 		ORDER 
 		   BY P.CAMPAIGN_NO DESC
 		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
@@ -92,23 +92,30 @@
 	      AND 
 	          P.STATUS = 'Y'
 	      AND 
-	          P.END_DATE >= SYSDATE
+	          (P.END_DATE IS NULL OR P.END_DATE >= SYSDATE)
 	      AND 
 	          P.CAMPAIGN_NO = #{campaignNo}
 	    ORDER 
-	       BY P.CAMPAIGN_NO DESC
+	       BY A.FILE_LEVEL ASC
 	</select>
 
 	<!-- 전체 게시글 수 조회 (리스트 조회와 동일 조건) -->
 	<select id="findListCount" resultType="_int">
        	SELECT
-				COUNT(*)
-		 FROM
-				CL_CAMPAIGN
-		WHERE
-				STATUS='Y'
-		  AND
-		        END_DATE >= SYSDATE
+		       COUNT(*)
+		  FROM 
+		       CL_CAMPAIGN P
+		  JOIN 
+		       CL_CAMPAIGN_CATEGORY C ON P.CATEGORY_NO = C.CATEGORY_NO
+          LEFT 
+		  JOIN 
+		       CL_CAMPAIGN_ATTACHMENT A ON P.CAMPAIGN_NO = A.REF_BNO
+		 WHERE
+		       A.FILE_LEVEL = 0
+		   AND
+			   P.STATUS = 'Y'
+		   AND
+		       (P.END_DATE IS NULL OR P.END_DATE >= SYSDATE)
 	</select>
 	
 	<!-- 좋아요 존재 여부 -->
