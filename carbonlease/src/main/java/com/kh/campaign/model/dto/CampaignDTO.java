@@ -3,8 +3,6 @@ package com.kh.campaign.model.dto;
 import java.sql.Date;
 import java.util.List;
 
-import com.kh.campaign.model.vo.LikeVO;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,9 +38,8 @@ public class CampaignDTO {
     private int fileLevel;
     
     // Like 정보 (누가 눌렀는지, 총 좋아요수 등)
-    //private int likeCount;              // 총 좋아요 개수
-    //private boolean isLiked;            // 특정 유저가 좋아요 했는지 여부
-    //private List<LikeDTO> likeList;      // 필요하다면 목록도 가능
-    
+    private int likeCount;              // 총 좋아요 개수
+    private boolean isLiked;            // 특정 유저가 좋아요 했는지 여부
+    private List<LikeDTO> likeList;      // 필요하다면 목록도 가능
     
 }

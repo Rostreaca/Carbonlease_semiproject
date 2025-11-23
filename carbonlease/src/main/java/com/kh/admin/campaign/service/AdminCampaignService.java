@@ -13,14 +13,16 @@ public interface AdminCampaignService {
 	/**
 	 * 캠페인 등록
 	 * @param campaign 캠페인 정보
-	 * @param thumbnail, detailImage (썸네일, 상세이미지)
+	 * @param thumbnail 썸네일 이미지 파일
+	 * @param detailImage 상세 이미지 파일
 	 * @param memberNo 작성자 번호
+	 * @return 등록된 캠페인 정보
 	 */
-	void insertCampaign(
-			CampaignDTO campaign,
-			MultipartFile thumbnail,
-			MultipartFile detailImage,
-			Long memberNo);
+	CampaignDTO insertCampaign(
+		CampaignDTO campaign,
+		MultipartFile thumbnail,
+		MultipartFile detailImage,
+		Long memberNo);
 
 	/**
 	 * 카테고리 목록 조회

@@ -42,10 +42,11 @@ public class CampaignController {
 
 	
 	/**
-	 * 전체조회
-	 * @param pageNo
-	 * @return Map<String, Object> 캠페인 목록 및 페이징 정보
-	 */		
+	 * 캠페인 전체 목록 및 페이징 정보 조회
+	 *
+	 * @param pageNo 조회할 페이지 번호 (기본값: 1)
+	 * @return ResponseEntity<Map<String, Object>> 캠페인 목록, 페이징 정보 포함(200 OK)
+	 */
 	@GetMapping	// 변수 타입 반환 형? 뭔지 모르니 미리 써놨는데 지금은 아니깐 Map으로 ...
 	public ResponseEntity<Map<String, Object>> selectCampaignList(
 			@RequestParam(name = "pageNo", defaultValue= "1") int pageNo){
@@ -58,9 +59,10 @@ public class CampaignController {
 	}
 	
 	/**
-	 * 상세조회
-	 * @param campaignNo
-	 * @return CampaignDTO : 캠페인 상세 정보
+	 * 캠페인 상세 정보 조회
+	 *
+	 * @param campaignNo 조회할 캠페인 번호 (1 이상)
+	 * @return ResponseEntity<CampaignDTO> 캠페인 상세 정보(200 OK)
 	 */
 	@GetMapping("/detail/{campaignNo}")
 	public ResponseEntity<CampaignDTO> selectByCampaignNo(
@@ -72,10 +74,11 @@ public class CampaignController {
 	
 	
 	/**
-	 * 좋아요 토글
-	 * @param campaignNo
-	 * @param user
-	 * @return void
+	 * 캠페인 좋아요 토글 (로그인 필요)
+	 *
+	 * @param campaignNo 좋아요 토글할 캠페인 번호
+	 * @param user 인증된 사용자 정보
+	 * @return ResponseEntity<?> 성공 시 200 OK, 미인증 시 401
 	 */
 	@PostMapping("/{campaignNo}/like")
 	public ResponseEntity<?> toggleLike(

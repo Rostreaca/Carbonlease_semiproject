@@ -14,6 +14,7 @@ import com.kh.admin.campaign.model.dao.AdminCampaignMapper;
 import com.kh.campaign.model.dto.AttachmentDTO;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
+import com.kh.campaign.model.service.CampaignService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +25,10 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminCampaignServiceImpl implements AdminCampaignService {
 
     private final AdminCampaignMapper adminCampaignMapper;
-
+    private final CampaignService campaignService; 
+    
     @Override
-    public void insertCampaign(
+    public CampaignDTO insertCampaign(
             CampaignDTO dto,
             MultipartFile thumbnail,
             MultipartFile detailImage,
@@ -58,6 +60,8 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
         }
 
         log.info("캠페인 등록 완료 — campaignNo: {}", campaignNo);
+        // 등록 후 상세조회하여 최신 CampaignDTO 반환
+        return campaignService.selectByCampaignNo(campaignNo);
     }
 
 
