@@ -100,6 +100,7 @@ public class ActivityServiceImpl implements ActivityService{
 	        activityMapper.insertAttachment(attachment);
 	    }
 
+	    
 	    return bno;
 	}
 
