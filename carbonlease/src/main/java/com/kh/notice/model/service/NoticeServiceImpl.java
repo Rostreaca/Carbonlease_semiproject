@@ -25,7 +25,7 @@ public class NoticeServiceImpl implements NoticeService{
 	@Override
 	public Map<String, Object> findAll(int pageNo) {
 		
-		// 유효성 검사
+		// 유효성 검사 (분리필요)
 		if( pageNo < 0){
 			throw new InvalidParameterException("유효하지 않은 접근입니다.");
 		}

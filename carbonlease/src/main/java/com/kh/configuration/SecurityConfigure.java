@@ -40,14 +40,19 @@ public class SecurityConfigure {
 						   .csrf(AbstractHttpConfigurer::disable)
 						   .cors(Customizer.withDefaults())
 						   .authorizeHttpRequests(requests -> {
+<<<<<<< HEAD
 							   requests.requestMatchers(HttpMethod.POST, "/members/**","/auth/login", "/login/admin", "/auth/refresh", "/boards/detail/replyInsert").permitAll();
+=======
+							   requests.requestMatchers(HttpMethod.POST, "/members/**","/auth/login", "/auth/refresh", "/auth/adminLogin").permitAll();
+>>>>>>> 3db7ca5584b4f9869e6bc7fdf415e7b2388a0cd5
 							   requests.requestMatchers(HttpMethod.POST, "/boards", "/activityBoards", "/notices", "/campaigns").authenticated();
 							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/**").authenticated();
 							   requests.requestMatchers(HttpMethod.POST, "/campaigns/*/like").authenticated(); // 좋아요 인증 필요
 							   requests.requestMatchers(HttpMethod.GET,"/members/**", "/boards/**","/activityBoards/**", "/images/**", "/notices/**", "/campaigns/**").permitAll();
 							   requests.requestMatchers(HttpMethod.PUT,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
 							   requests.requestMatchers(HttpMethod.DELETE,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
-							   requests.requestMatchers("/admin/**").hasRole("ADMIN");
+							   requests.requestMatchers(HttpMethod.GET, "/admin/**").hasAuthority("ROLE_ADMIN");
+							   requests.requestMatchers(HttpMethod.POST, "/admin/**").hasAuthority("ROLE_ADMIN");
 						   })
 							.sessionManagement(manager ->
 							manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
