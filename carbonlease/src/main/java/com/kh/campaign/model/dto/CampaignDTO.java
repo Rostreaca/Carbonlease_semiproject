@@ -33,7 +33,7 @@ public class CampaignDTO {
     private Long categoryNo;
     
     
-    private List<AttachmentDTO> attachments;
+    private List<CampaignAttachmentDTO> attachments;
     
     private String filePath;
     private String changeName;

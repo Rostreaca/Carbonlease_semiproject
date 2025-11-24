@@ -14,11 +14,12 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.admin.campaign.model.dao.AdminCampaignMapper;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.campaign.model.dao.CampaignMapper;
-import com.kh.campaign.model.dto.AttachmentDTO;
+import com.kh.campaign.model.dto.CampaignAttachmentDTO;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
 import com.kh.campaign.model.service.CampaignService;
 import com.kh.common.util.Pagination;
+//import com.kh.exception.CustomAuthenticationException;
 import com.kh.exception.CustomAuthenticationException;
 
 import lombok.RequiredArgsConstructor;
@@ -79,11 +80,11 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 
 		// 3) 첨부파일 처리 (각각 한 번씩만 insert)
 		if (thumbnail != null && !thumbnail.isEmpty()) {
-			AttachmentDTO thumbDto = saveAttachment(thumbnail, campaignNo, 0);
+			CampaignAttachmentDTO thumbDto = saveAttachment(thumbnail, campaignNo, 0);
 			adminCampaignMapper.insertAttachment(thumbDto);
 		}
 		if (detailImage != null && !detailImage.isEmpty()) {
-			AttachmentDTO detailDto = saveAttachment(detailImage, campaignNo, 1);
+			CampaignAttachmentDTO detailDto = saveAttachment(detailImage, campaignNo, 1);
 			adminCampaignMapper.insertAttachment(detailDto);
 		}
 
@@ -123,7 +124,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	/**
 	 * 파일 저장 + AttachmentVO 생성
 	 */
-	private AttachmentDTO saveAttachment(MultipartFile file, Long refBno, int fileLevel) {
+	private CampaignAttachmentDTO saveAttachment(MultipartFile file, Long refBno, int fileLevel) {
 		Map<String, String> info = setAttachmentNamePath(file);
 		String changeName = info.get("changeName");
 		String savePath = info.get("savePath");
@@ -134,8 +135,8 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 			throw new RuntimeException("파일 저장 실패", e);
 		}
 		String fileUrl = "http://localhost:80/uploads/campaign/images/" + changeName;
-		return AttachmentDTO.builder().refBno(refBno).originName(file.getOriginalFilename()).changeName(changeName)
-				.filePath(fileUrl).fileLevel(fileLevel).status("Y").build();
+		return CampaignAttachmentDTO.builder().refBno(refBno).originName(file.getOriginalFilename())
+				.changeName(changeName).filePath(fileUrl).fileLevel(fileLevel).status("Y").build();
 	}
 
 	/**
@@ -164,11 +165,11 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		campaign.setCampaignNo(campaignNo);
 		// 3) 첨부파일 처리 (각각 한 번씩만 insert)
 		if (thumbnail != null && !thumbnail.isEmpty()) {
-			AttachmentDTO thumbDto = saveAttachment(thumbnail, campaignNo, 0);
+			CampaignAttachmentDTO thumbDto = saveAttachment(thumbnail, campaignNo, 0);
 			adminCampaignMapper.insertAttachment(thumbDto);
 		}
 		if (detailImage != null && !detailImage.isEmpty()) {
-			AttachmentDTO detailDto = saveAttachment(detailImage, campaignNo, 1);
+			CampaignAttachmentDTO detailDto = saveAttachment(detailImage, campaignNo, 1);
 			adminCampaignMapper.insertAttachment(detailDto);
 		}
 
@@ -185,10 +186,13 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	 * @param user
 	 */
 	private void validateBoard(Long campaignNo, CustomUserDetails user) {
-		CampaignDTO c = campaignService.getCampaignOnly(campaignNo);
-
-		if (!c.getMemberNo().equals(user.getUsername())) {
-			throw new CustomAuthenticationException("게시글 작성자가 아닙니다");
+		if (user == null || user.getAuthorities() == null) {
+			throw new CustomAuthenticationException("로그인 또는 권한 정보가 없습니다.");
+		}
+		boolean isAdmin = user.getAuthorities().stream()
+			.anyMatch(auth -> "ROLE_ADMIN".equals(auth.getAuthority()));
+		if (!isAdmin) {
+			throw new CustomAuthenticationException("관리자만 접근 가능합니다");
 		}
 	}
 

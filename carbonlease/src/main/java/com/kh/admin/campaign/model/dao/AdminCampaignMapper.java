@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.kh.campaign.model.dto.AttachmentDTO;
+import com.kh.campaign.model.dto.CampaignAttachmentDTO;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
 
@@ -35,7 +35,7 @@ public interface AdminCampaignMapper {
 	 * 첨부파일 등록 (단일)
 	 * @param attachment
 	 */
-	int insertAttachment(AttachmentDTO attachment);
+	int insertAttachment(CampaignAttachmentDTO attachment);
 	
 	
 	/**

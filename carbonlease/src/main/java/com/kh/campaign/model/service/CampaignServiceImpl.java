@@ -1,6 +1,6 @@
 package com.kh.campaign.model.service;
 
-import java.security.InvalidParameterException;
+import com.kh.exception.CustomInvalidParameterException;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +32,7 @@ public class CampaignServiceImpl implements CampaignService {
 	public Map<String, Object> findAll(int pageNo) {
 
 		if (pageNo < 0) { // 다시 
-	        throw new InvalidParameterException("유효하지 않은 접근입니다.");
+			throw new CustomInvalidParameterException("유효하지 않은 접근입니다.");
 	    }
 		
 	    int listCount = listCountAll();
@@ -67,7 +67,7 @@ public class CampaignServiceImpl implements CampaignService {
 	public void increaseViewCount(Long campaignNo) {
 		int result = campaignMapper.increaseViewCount(campaignNo);
 		if (result != 1) {
-			throw new InvalidParameterException("조회수 증가 중 오류 발생");
+			throw new CustomInvalidParameterException("조회수 증가 중 오류 발생");
 		}
 	}
 	
@@ -103,7 +103,7 @@ public class CampaignServiceImpl implements CampaignService {
 		
 		// 번호가 유효한가?
 		if(campaignNo < 1) {
-			throw new InvalidParameterException("유효하지 않은 접근입니다.");
+			throw new CustomInvalidParameterException("유효하지 않은 접근입니다.");
 		}
 		
 		// 조회
@@ -112,7 +112,7 @@ public class CampaignServiceImpl implements CampaignService {
 		
 		// 존재하는 게시물인가?
 		if(campaign == null) {
-			throw new InvalidParameterException("유효하지 않은 접근입니다.");
+			throw new CustomInvalidParameterException("유효하지 않은 접근입니다.");
 		}
 		
 		return campaign;

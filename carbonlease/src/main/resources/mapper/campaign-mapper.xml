@@ -25,7 +25,7 @@
 	    </association>
 	
 	    <!-- 첨부파일 목록 -->
-	    <collection property="attachments" ofType="com.kh.campaign.model.dto.AttachmentDTO">
+	    <collection property="attachments" ofType="CampaignAttachmentDTO">
 		    <id property="fileNo" column="FILE_NO"/>
 		    <result property="refBno" column="REF_BNO"/>
 		    <result property="originName" column="ORIGIN_NAME"/>

@@ -13,7 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AttachmentDTO {
+public class CampaignAttachmentDTO {
 	
 	private Long fileNo;        // PK
     private Long refBno;        // FK (이벤트 번호)
