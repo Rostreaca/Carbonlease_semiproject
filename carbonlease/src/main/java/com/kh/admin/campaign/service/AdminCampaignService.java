@@ -51,7 +51,7 @@ public interface AdminCampaignService {
 
 
 
-	CampaignDTO findByNo(Long campaignNo);
+	//CampaignDTO findByNo(Long campaignNo);
 
 
 }

@@ -139,12 +139,12 @@ public class AdminCampaignController {
     }
 
 
-	// AdminCampaignController.java
-	@GetMapping("/{campaignNo}")
-	public ResponseEntity<CampaignDTO> findByNo(@PathVariable Long campaignNo) {
-		CampaignDTO campaign = adminCampaignService.findByNo(campaignNo);
-		return ResponseEntity.ok(campaign);
-	}
+//	// AdminCampaignController.java
+//	@GetMapping("/{campaignNo}")
+//	public ResponseEntity<CampaignDTO> findByNo(@PathVariable Long campaignNo) {
+//		CampaignDTO campaign = adminCampaignService.findByNo(campaignNo);
+//		return ResponseEntity.ok(campaign);
+//	}
     
     
     
