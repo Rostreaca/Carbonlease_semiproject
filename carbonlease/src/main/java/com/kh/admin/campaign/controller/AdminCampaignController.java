@@ -92,6 +92,18 @@ public class AdminCampaignController {
         return ResponseEntity.ok(categories);
     }
     
+
+
+	/**
+	 * 캠페인 수정 요청을 처리하는 엔드포인트
+	 * 
+	 * @param campaignNo   수정할 캠페인 번호 (PathVariable)
+	 * @param campaign     수정할 캠페인 정보 (폼 데이터)
+	 * @param thumbnail    썸네일 이미지 파일 (Multipart)
+	 * @param detailImage  상세 이미지 파일 (Multipart)
+	 * @param user         인증된 관리자 정보 (AuthenticationPrincipal)
+	 * @return             수정 결과 응답 (201 Created)
+	 */
     @PutMapping("/update/{campaignNo}")
     public ResponseEntity<CampaignDTO> update(
     		@PathVariable(name="campaignNo") Long campaignNo,
@@ -125,6 +137,14 @@ public class AdminCampaignController {
             return ResponseEntity.badRequest().body("복구할 캠페인이 없거나 이미 활성 상태입니다.");
         }
     }
+
+
+	// AdminCampaignController.java
+	@GetMapping("/{campaignNo}")
+	public ResponseEntity<CampaignDTO> findByNo(@PathVariable Long campaignNo) {
+		CampaignDTO campaign = adminCampaignService.findByNo(campaignNo);
+		return ResponseEntity.ok(campaign);
+	}
     
     
     

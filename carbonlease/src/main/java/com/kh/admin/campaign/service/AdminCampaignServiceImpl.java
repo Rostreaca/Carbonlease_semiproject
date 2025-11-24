@@ -153,17 +153,13 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	@Override
 	public CampaignDTO update(CampaignDTO campaign, MultipartFile thumbnail, MultipartFile detailImage, Long campaignNo,
 			CustomUserDetails user) {
-
-		// 1. 게시글번호가 존재하는 게시글인가 ?
-		// 2. 현재 토큰 소유주가 게시글작성자와 일치하는가 ?
-		// 3. 새로운 파일이 첨부되었는가 ?
-		// 4. 만약 첨부되었다면 새롭게 파일을 업로드 한 후 새로운 패스로 변경
-		// 5. 전부 ok면 UPDATE
-
+		// 1. 권한 및 유효성 검사
 		validateBoard(campaignNo, user);
 
+		// 2. 캠페인 번호 세팅
 		campaign.setCampaignNo(campaignNo);
-		// 3) 첨부파일 처리 (각각 한 번씩만 insert)
+
+		// 3. 첨부파일 처리 (각각 한 번씩만 insert)
 		if (thumbnail != null && !thumbnail.isEmpty()) {
 			CampaignAttachmentDTO thumbDto = saveAttachment(thumbnail, campaignNo, 0);
 			adminCampaignMapper.insertAttachment(thumbDto);
@@ -172,11 +168,30 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 			CampaignAttachmentDTO detailDto = saveAttachment(detailImage, campaignNo, 1);
 			adminCampaignMapper.insertAttachment(detailDto);
 		}
-
+		
+		// 4. 캠페인 정보 수정
 		adminCampaignMapper.update(campaign);
 
-		return campaign;
+		// 5. 첨부파일 목록 최신화
+		List<CampaignAttachmentDTO> attachments = adminCampaignMapper.findAttachmentsByCampaignNo(campaignNo);
+		
+		if (attachments != null && !attachments.isEmpty()) {
+			for (CampaignAttachmentDTO att : attachments) {
+				log.info("[첨부파일] fileNo={}, fileLevel={}, filePath={}, originName={}", att.getFileNo(), att.getFileLevel(), att.getFilePath(), att.getOriginName());
+			}
+		} else {
+			log.info("[첨부파일] 첨부파일 없음");
+		}
+		campaign.setAttachments(attachments);
 
+		// 6. 최종 CampaignDTO 반환
+		return campaign;
+	}
+
+
+	@Override
+	public CampaignDTO findByNo(Long campaignNo) {
+		return adminCampaignMapper.findByNo(campaignNo);
 	}
 
 	/**

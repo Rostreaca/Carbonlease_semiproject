@@ -27,40 +27,52 @@
 	        <result property="categoryName" column="CATEGORY_NAME"/>
 	    </association>
 	
-	    <!-- 첨부파일 목록 -->
-	    <collection property="attachments" ofType="CampaignAttachmentDTO">
-		    <id property="fileNo" column="FILE_NO"/>
-		    <result property="refBno" column="REF_BNO"/>
-		    <result property="originName" column="ORIGIN_NAME"/>
-		    <result property="changeName" column="CHANGE_NAME"/>
-		    <result property="fileLevel" column="FILE_LEVEL"/>
-		    <result property="filePath" column="FILE_PATH"/>
-		    <result property="uploadDate" column="UPLOAD_DATE"/>
-		</collection>
-
-	
+		<!-- 첨부파일 목록 -->
+		<!--
+			<collection> 태그는 내부에 매핑이 없으면 셀프 클로징(<collection ... />)으로 사용해야 하며,
+			내부에 <id> <result> 등이 있으면 <collection> ... </collection>으로 감싸야 합니다.
+			여기서는 select 속성을 사용하므로 셀프 클로징이 맞습니다.
+			첨부파일 매핑은 아래 campaignAttachmentsMap에서 처리합니다.
+		-->
+		<collection property="attachments"
+					ofType="CampaignAttachmentDTO"
+					select="findAttachmentsByCampaignNo"
+					column="CAMPAIGN_NO"/>
 	</resultMap>
-
+	
+	
+	<resultMap id="campaignAttachmentsMap" type="CampaignAttachmentDTO">
+        <id property="fileNo" column="FILE_NO"/>
+        <result property="refBno" column="REF_BNO"/>
+        <result property="originName" column="ORIGIN_NAME"/>
+        <result property="changeName" column="CHANGE_NAME"/>
+        <result property="fileLevel" column="FILE_LEVEL"/>
+        <result property="filePath" column="FILE_PATH"/>
+        <result property="uploadDate" column="UPLOAD_DATE"/>
+    </resultMap>
+	
 	<select id="findAll" resultMap="campaignResultMap" parameterType="map">
-		SELECT
-			   P.CAMPAIGN_NO
-			 , P.CAMPAIGN_TITLE
-			 , C.CATEGORY_NAME
-			 , CASE
-				  WHEN P.STATUS = 'N' THEN '삭제'
-				  WHEN P.END_DATE &lt; SYSDATE THEN '종료'
-				  ELSE '진행중'
-			   END AS DISPLAY_STATUS
-			, P.START_DATE
-			, P.END_DATE
-		 FROM 
-		      CL_CAMPAIGN P
-		 LEFT 
-		 JOIN 
-			  CL_CAMPAIGN_CATEGORY C ON P.CATEGORY_NO = C.CATEGORY_NO
-		ORDER 
-		   BY 
-			  P.ENROLL_DATE DESC
+	  SELECT
+		     P.CAMPAIGN_NO
+		   , P.CAMPAIGN_TITLE
+		   , P.CAMPAIGN_CONTENT
+		   , C.CATEGORY_NO
+		   , C.CATEGORY_NAME
+		   , CASE
+		        WHEN P.STATUS = 'N' THEN '삭제'
+		        WHEN P.END_DATE &lt; SYSDATE THEN '종료'
+		        ELSE '진행중'
+		     END AS DISPLAY_STATUS
+		   , P.START_DATE
+		   , P.END_DATE
+		FROM 
+		     CL_CAMPAIGN P
+		LEFT 
+		JOIN 
+		     CL_CAMPAIGN_CATEGORY C ON P.CATEGORY_NO = C.CATEGORY_NO
+	   ORDER 
+		  BY 
+		     P.ENROLL_DATE DESC
 		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 
@@ -71,8 +83,49 @@
 		  FROM
 			   CL_CAMPAIGN
 	</select>
+	
+	
+	<select id="findAttachmentsByCampaignNo" resultMap="campaignAttachmentsMap" >
+		   SELECT
+				  FILE_NO
+				, REF_BNO
+				, ORIGIN_NAME
+				, CHANGE_NAME
+				, FILE_LEVEL
+				, FILE_PATH
+				, UPLOAD_DATE
+			FROM
+				CL_CAMPAIGN_ATTACHMENT
+		WHERE
+				REF_BNO = #{value}
+	</select>
 
-
+	<select id="findByNo" resultMap="campaignResultMap" parameterType="long">
+	   SELECT
+			  P.CAMPAIGN_NO
+			, P.CAMPAIGN_TITLE
+			, P.CAMPAIGN_CONTENT
+			, C.CATEGORY_NO
+			, C.CATEGORY_NAME
+			, CASE
+					WHEN P.STATUS = 'N' THEN '삭제'
+					WHEN P.END_DATE &lt; SYSDATE THEN '종료'
+					ELSE '진행중'
+				END AS DISPLAY_STATUS
+			, P.START_DATE
+			, P.END_DATE
+			, P.VIEW_COUNT
+			, P.ENROLL_DATE
+			, P.STATUS
+			, P.MEMBER_NO
+	     FROM 
+			  CL_CAMPAIGN P
+		 LEFT 
+		 JOIN 
+			  CL_CAMPAIGN_CATEGORY C ON P.CATEGORY_NO = C.CATEGORY_NO
+		WHERE
+			  P.CAMPAIGN_NO = #{campaignNo}
+	</select>
 
 	<!-- 캠페인 등록 -->
     <insert id="save">

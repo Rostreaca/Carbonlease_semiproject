@@ -37,12 +37,20 @@ public interface AdminCampaignMapper {
 	 */
 	int insertAttachment(CampaignAttachmentDTO attachment);
 	
+	/**
+	 * 캠페인 상세조회
+	 * @param campaignNo
+	 * @return
+	 */
+	List<CampaignAttachmentDTO> findAttachmentsByCampaignNo(Long campaignNo);
 	
 	/**
 	 * 등록할 카테고리 조회
 	 * @return
 	 */
 	List<CategoryDTO> getCategories();
+
+	CampaignDTO findByNo(Long campaignNo);
 	
 	
 	/**
@@ -50,7 +58,7 @@ public interface AdminCampaignMapper {
 	 * @param campaign
 	 */
 	void update(CampaignDTO campaign);
-	
+
 	/**
 	 * 복구
 	 * @param campaignNo
