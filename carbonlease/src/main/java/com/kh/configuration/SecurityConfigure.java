@@ -24,64 +24,64 @@ import com.kh.configuration.filter.JwtFilter;
 
 import lombok.RequiredArgsConstructor;
 
-
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfigure {
-	
+
 	private final JwtFilter jwtFilter;
-	
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-		
-		return httpSecurity.formLogin(AbstractHttpConfigurer::disable)
-						   .csrf(AbstractHttpConfigurer::disable)
-						   .cors(Customizer.withDefaults())
-						   .authorizeHttpRequests(requests -> {
-							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/*/view").permitAll(); // 조회수
-							   requests.requestMatchers(HttpMethod.GET, "/activityBoards/*/replies").permitAll(); // 댓글
-							   requests.requestMatchers(HttpMethod.POST, "/members/**","/auth/login", "/login/admin", "/auth/refresh", "/auth/adminLogin").permitAll();
-							   requests.requestMatchers(HttpMethod.POST, "/boards", "/activityBoards", "/notices", "/campaigns").authenticated();
-							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/**").authenticated();
-							   requests.requestMatchers(HttpMethod.POST, "/campaigns/*/like").authenticated(); // 좋아요 인증 필요
-							   requests.requestMatchers(HttpMethod.GET,"/members/**", "/boards/**","/activityBoards/**", "/images/**", "/notices/**", "/campaigns/**", "/uploads/**" ).permitAll();
-							   requests.requestMatchers(HttpMethod.PUT,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
-							   requests.requestMatchers(HttpMethod.DELETE,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
-							   requests.requestMatchers(HttpMethod.GET, "/admin/**").hasAuthority("ROLE_ADMIN");
-							   requests.requestMatchers(HttpMethod.POST, "/admin/**").hasAuthority("ROLE_ADMIN");
-						   })
-							.sessionManagement(manager ->
-							manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-						   )
-						   .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-						   .build();
-		
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+		return http.formLogin(AbstractHttpConfigurer::disable).csrf(AbstractHttpConfigurer::disable)
+				.cors(Customizer.withDefaults())
+
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers(HttpMethod.POST, "/login/admin").permitAll()
+						.requestMatchers(HttpMethod.GET, "/login/admin").permitAll()
+						.requestMatchers(HttpMethod.POST, "/auth/login", "/auth/adminLogin", "/auth/refresh", "/members/**").permitAll()
+						.requestMatchers(HttpMethod.POST, "/activityBoards/*/view").permitAll()
+						.requestMatchers(HttpMethod.GET, "/activityBoards/*/replies").permitAll()
+						.requestMatchers(HttpMethod.GET, "/members/**", "/boards/**", "/activityBoards/**", "/images/**", "/notices/**", "/campaigns/**", "/uploads/**").permitAll()
+						.requestMatchers(HttpMethod.POST, "/boards", "/activityBoards", "/activityBoards/**", "/notices", "/campaigns", "/campaigns/*/like").authenticated()
+						.requestMatchers(HttpMethod.PUT, "/members/**", "/boards/**", "/activityBoards/**","/notices/**", "/campaigns/**").authenticated()
+						.requestMatchers(HttpMethod.DELETE, "/members/**", "/boards/**", "/activityBoards/**", "/notices/**", "/campaigns/**").authenticated()
+						.requestMatchers("/admin/**")
+						.hasAuthority("ROLE_ADMIN")
+						.anyRequest().authenticated())
+
+				.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+
+				.build();
 	}
-	
+
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
-	    CorsConfiguration configuration = new CorsConfiguration();
-	    configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-	    configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
-	    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type","Accept","Origin","Access-Control-Request-Headers","Access-Control-Request-Method","X-Requested-With"));
-	    configuration.setExposedHeaders(Arrays.asList("Authorization"));
-	    configuration.setAllowCredentials(true);
 
-	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-	    source.registerCorsConfiguration("/**", configuration);
-	    return source;
+		CorsConfiguration config = new CorsConfiguration();
+		config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+		config.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
+		config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "Origin",
+				"Access-Control-Request-Headers", "Access-Control-Request-Method", "X-Requested-With"));
+		config.setExposedHeaders(Arrays.asList("Authorization"));
+		config.setAllowCredentials(true);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", config);
+
+		return source;
 	}
-	
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
-	
+
 	@Bean
-	public AuthenticationManager autheticationManager(AuthenticationConfiguration authConfig) throws Exception {
-		return authConfig.getAuthenticationManager();
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+		return configuration.getAuthenticationManager();
 	}
 }
