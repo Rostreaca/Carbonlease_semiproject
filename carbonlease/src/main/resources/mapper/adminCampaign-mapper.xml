@@ -151,5 +151,34 @@
 	       BY 
 	           CATEGORY_NO
 	</select>
+	
+	<update id="update" parameterType="CampaignDTO">
+		UPDATE
+		       CL_CAMPAIGN
+		   SET
+		       CAMPAIGN_TITLE = #{campaignTitle}
+		     , CAMPAIGN_CONTENT = #{campaignContent}
+		     , CATEGORY_NO = #{categoryNo}
+		     , START_DATE = #{startDate}
+		     , END_DATE = #{endDate}
+		 WHERE
+		       CAMPAIGN_NO = #{campaignNo}
+		   AND
+		       STATUS = 'Y'
+	</update>
+	
+	
+	
+	<update id="restoreStatus" parameterType="long">
+	    UPDATE 
+	           CL_CAMPAIGN
+	       SET 
+	           STATUS = 'Y'
+	     WHERE 
+	           CAMPAIGN_NO = #{campaignNo}
+	       AND 
+	           STATUS = 'N'
+	</update>
+	
 
 </mapper>

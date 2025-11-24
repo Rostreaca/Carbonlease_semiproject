@@ -82,6 +82,15 @@ public class CampaignServiceImpl implements CampaignService {
 		increaseViewCount(campaignNo);
 		return getCampaignOrThrow(campaignNo);
 	}
+
+	/**
+	 * 캠페인 상세 조회 (조회수 증가 없음, 수정/관리용)
+	 * @param campaignNo 캠페인 번호 정보
+	 * @return CampaignDTO 캠페인 정보
+	 */
+	public CampaignDTO getCampaignOnly(Long campaignNo) {
+		return getCampaignOrThrow(campaignNo);
+	}
 	
 	
 	/**
@@ -135,4 +144,4 @@ public class CampaignServiceImpl implements CampaignService {
 
 }
 
-	
+

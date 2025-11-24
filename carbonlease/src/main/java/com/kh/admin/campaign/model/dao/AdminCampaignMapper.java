@@ -45,5 +45,18 @@ public interface AdminCampaignMapper {
 	List<CategoryDTO> getCategories();
 	
 	
+	/**
+	 * 캐페인 게시글 수정
+	 * @param campaign
+	 */
+	void update(CampaignDTO campaign);
+	
+	/**
+	 * 복구
+	 * @param campaignNo
+	 * @return
+	 */
+	int restoreStatus(Long campaignNo);
+	
 	
 }

@@ -9,7 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,8 +35,13 @@ public class AdminCampaignController {
 	
 	private final AdminCampaignService adminCampaignService;
 
+	/**
+	 * 관리자_캠페인 목록조회
+	 * @param pageNo
+	 * @return
+	 */
 	@GetMapping
-	public ResponseEntity<?> findAll(@RequestParam(name = "pageNo", defaultValue= "1") int pageNo){
+	public ResponseEntity<Map<String, Object>> findAll(@RequestParam(name = "pageNo", defaultValue= "1") int pageNo){
 		Map<String, Object> map = new HashMap();
 		map = adminCampaignService.findAll(pageNo);
 		return ResponseEntity.ok(map);
@@ -73,9 +80,6 @@ public class AdminCampaignController {
 	}
 	
 	
-	
-
-	
 	/**
 	 * 카테고리 목록 조회 (관리자)
 	 * 등록 가능한 캠페인 카테고리 전체 목록을 반환
@@ -87,5 +91,42 @@ public class AdminCampaignController {
         List<CategoryDTO> categories = adminCampaignService.getCategories();
         return ResponseEntity.ok(categories);
     }
+    
+    @PutMapping("/update/{campaignNo}")
+    public ResponseEntity<CampaignDTO> update(
+    		@PathVariable(name="campaignNo") Long campaignNo,
+    		CampaignDTO campaign,
+    		@RequestParam("thumbnail") MultipartFile thumbnail,
+ 		    @RequestParam("detailImage") MultipartFile detailImage,
+ 		    @AuthenticationPrincipal CustomUserDetails user
+    		){
+    	CampaignDTO update = adminCampaignService.update(
+			campaign,
+			thumbnail,
+			detailImage,
+			campaignNo,
+			user
+		);
+    	log.info("update:{}", update);
+    	return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+    
+    /**
+     * 복구
+     * @param campaignNo
+     * @return
+     */
+    @PostMapping("/update/{campaignNo}/restore")
+    public ResponseEntity<?> restoreCampaign(@PathVariable Long campaignNo) {
+        int result = adminCampaignService.restoreCampaign(campaignNo);
+        if (result == 1) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().body("복구할 캠페인이 없거나 이미 활성 상태입니다.");
+        }
+    }
+    
+    
+    
 	
 }

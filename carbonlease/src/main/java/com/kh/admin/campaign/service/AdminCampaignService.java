@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
 
@@ -33,5 +34,19 @@ public interface AdminCampaignService {
 	 * @return 카테고리 목록
 	 */
 	List<CategoryDTO> getCategories();
+	
+	CampaignDTO update(
+			CampaignDTO campaign,
+			MultipartFile thumbnail,
+			MultipartFile detailImage,
+			Long campaignNo,
+			CustomUserDetails user);
+	
+	/**
+	 * 복구
+	 * @param campaignNo
+	 * @return 
+	 */
+	int restoreCampaign(Long campaignNo);
 
 }
