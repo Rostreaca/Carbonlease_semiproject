@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class ActivityListDTO {
 	
 	private int activityNo;
-	private String activitytitle;
+	private String activityTitle;
 	private String activityContent;
 	private Date enrollDate;
 	private int viewCount;
