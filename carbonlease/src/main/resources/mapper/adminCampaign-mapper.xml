@@ -19,6 +19,7 @@
 	    <result property="enrollDate" column="ENROLL_DATE"/>
 	    <result property="status" column="STATUS"/>
 	    <result property="memberNo" column="MEMBER_NO"/>
+	    <result property="displayStatus" column="DISPLAY_STATUS"/>
 	    
 	    <!-- 카테고리 -->
 	    <association property="category" javaType="com.kh.campaign.model.dto.CategoryDTO">
@@ -36,6 +37,7 @@
 		    <result property="filePath" column="FILE_PATH"/>
 		    <result property="uploadDate" column="UPLOAD_DATE"/>
 		</collection>
+
 	
 	</resultMap>
 
@@ -59,6 +61,7 @@
 		ORDER 
 		   BY 
 			  P.ENROLL_DATE DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 
 

@@ -37,6 +37,8 @@ public class CampaignDTO {
     private String changeName;
     private int fileLevel;
     
+    private String displayStatus; 
+    
     // Like 정보 (누가 눌렀는지, 총 좋아요수 등)
     private int likeCount;              // 총 좋아요 개수
     private boolean isLiked;            // 특정 유저가 좋아요 했는지 여부
