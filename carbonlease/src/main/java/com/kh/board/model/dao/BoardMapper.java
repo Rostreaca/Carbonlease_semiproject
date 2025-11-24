@@ -20,9 +20,9 @@ public interface BoardMapper {
 	
 	List<BoardReplyDTO> replyList(Long boardNo);
 	
-	Long boardUpdateForm();
-	
 	int replyCount(Long boardNo);
+	
+	Long boardUpdateForm();
 
 	
 }

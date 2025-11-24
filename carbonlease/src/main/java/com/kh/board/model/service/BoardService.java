@@ -13,9 +13,10 @@ public interface BoardService {
 	
 	Map<String, Object> boardDetail(Long boardNo);
 
+	int boardReplyInsert(ReplyInsertVO riVO);
+
 	Long boardUpdateForm();
 	
-	int boardReplyInsert(ReplyInsertVO riVO);
 	
 	
 	

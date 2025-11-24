@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kh.board.model.dao.BoardMapper;
@@ -24,6 +25,7 @@ public class BoardServiceImpl implements BoardService {
 	private final BoardMapper boardMapper;
 	private final Pagination pagination;
 	
+
 	// 전체 목록 조회
 	@Override
 	public Map<String, Object> findAll(int pageNo) {
@@ -87,9 +89,6 @@ public class BoardServiceImpl implements BoardService {
 		
 		return 0;
 	}
-	
-	
-	
 	
 	
 	

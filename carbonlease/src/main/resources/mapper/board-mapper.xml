@@ -99,6 +99,26 @@
 		  	    B.BOARD_NO = #{boardNo}
 	</select>
 	
+	<!-- 댓글 등록 -->
+	<insert id="replyInsert" parameterType="ReplyInsertVO">
+		 INSERT
+		   INTO 
+		   		CL_BOARD_REPLY(
+					REPLY_NO replyNo
+				  , BOARD_NO boardNo
+				  , MEMBER_NO memberNo
+				  , REPLY_CONTENT replyContent
+				  , ENROLL_DATE enrollDate
+			)
+				VALUES (
+				#{replyNo}
+			  , #{boardNo}
+		      , #{memberNo}
+			  , #{replyContent}
+			  , SYSDATE
+	</insert>
+	
+	
 	<!-- 글 수정 하기 -->
 	<insert id="boardUpdateForm" parameterType="long">
 		
