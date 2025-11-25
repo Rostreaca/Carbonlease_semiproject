@@ -8,4 +8,6 @@ public interface AdminMemberService {
 
 	List<MemberDTO> selectMemberList();
 
+	void restoreMember(Long memberNo);
+
 }

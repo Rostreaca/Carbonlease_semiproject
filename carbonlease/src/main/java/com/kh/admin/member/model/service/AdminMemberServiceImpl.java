@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.kh.exception.UserNotFoundException;
 import com.kh.member.model.dao.MemberMapper;
 import com.kh.member.model.dto.MemberDTO;
 
@@ -21,6 +22,17 @@ public class AdminMemberServiceImpl implements AdminMemberService{
 	@Override
 	public List<MemberDTO> selectMemberList() {
 		return memberMapper.selectMemberList();
+	}
+
+	@Override
+	public void restoreMember(Long memberNo) {
+		
+		int result = memberMapper.restoreMember(memberNo);
+		
+		if(result != 1) {
+			throw new UserNotFoundException("존재하지 않는 계정입니다.");
+		}
+		
 	}
 
 }

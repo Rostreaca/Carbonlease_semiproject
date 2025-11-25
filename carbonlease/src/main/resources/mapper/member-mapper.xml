@@ -129,6 +129,17 @@
 		
 	</select>
 	
+	<update id="restoreMember" parameterType="_long">
+		UPDATE
+		       CL_MEMBER
+		   SET
+		       STATUS = 'Y'
+		 WHERE
+		       STATUS = 'N'
+		   AND
+		       MEMBER_NO = #{memberNo}
+		   
+	</update>
 	
 	
 	
