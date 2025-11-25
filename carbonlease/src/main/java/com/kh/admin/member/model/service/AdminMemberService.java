@@ -10,4 +10,6 @@ public interface AdminMemberService {
 
 	void restoreMember(Long memberNo);
 
+	void deleteMember(Long memberNo);
+
 }

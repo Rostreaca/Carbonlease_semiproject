@@ -24,7 +24,7 @@ public interface MemberMapper {
 
 	void updateMember(MemberDTO member);
 
-	void deleteMember(Long memberNo);
+	int deleteMember(Long memberNo);
 
 	List<MemberDTO> selectMemberList();
 

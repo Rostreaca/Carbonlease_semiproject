@@ -35,4 +35,15 @@ public class AdminMemberServiceImpl implements AdminMemberService{
 		
 	}
 
+	@Override
+	public void deleteMember(Long memberNo) {
+		
+		int result = memberMapper.deleteMember(memberNo);
+		
+		if(result != 1) {
+			throw new UserNotFoundException("존재하지 않는 계정입니다.");
+		}
+		
+	}
+
 }
