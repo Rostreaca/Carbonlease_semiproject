@@ -64,10 +64,10 @@ public class CampaignController {
 	 * @return ResponseEntity<CampaignDTO> 캠페인 상세 정보(200 OK)
 	 */
 	@GetMapping("/detail/{campaignNo}")
-	public ResponseEntity<CampaignDTO> findByNo(
+	public ResponseEntity<CampaignDTO> findDetailByNo(
 			@PathVariable(name="campaignNo")
 			@Min(value=1, message="너무 작습니다.") Long campaignNo){
-		CampaignDTO campaign = campaignService.findByNo(campaignNo);
+		CampaignDTO campaign = campaignService.findDetailByNo(campaignNo);
 		return ResponseEntity.ok(campaign);
 	}
 	

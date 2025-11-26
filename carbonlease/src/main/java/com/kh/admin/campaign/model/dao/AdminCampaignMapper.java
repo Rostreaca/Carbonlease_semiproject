@@ -42,7 +42,7 @@ public interface AdminCampaignMapper {
 	 * @param campaignNo
 	 * @return
 	 */
-	List<CampaignAttachmentDTO> findAttachmentsByCampaignNo(Long campaignNo);
+	List<CampaignAttachmentDTO> findAttachmentsByNo(Long campaignNo);
 	
 	/**
 	 * 등록할 카테고리 조회

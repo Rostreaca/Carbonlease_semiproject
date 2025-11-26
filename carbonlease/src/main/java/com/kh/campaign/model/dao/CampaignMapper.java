@@ -31,9 +31,15 @@ public interface CampaignMapper {
 	 * @param campaignNo
 	 * @return
 	 */
-	CampaignDTO findByNo(Long campaignNo);
+	CampaignDTO findDetailByNo(Long campaignNo);
 
-	
+	/**
+	 * 단순 pk로만 조회
+	 * @param CampaignNo
+	 * @return
+	 */
+	CampaignDTO getCampaignOnly(Long CampaignNo);
+
 	/**
 	 * 좋아요 존재 여부 조회
 	 * @param likeDTO

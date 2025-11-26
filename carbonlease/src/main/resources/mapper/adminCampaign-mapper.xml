@@ -36,7 +36,7 @@
 		-->
 		<collection property="attachments"
 					ofType="CampaignAttachmentDTO"
-					select="findAttachmentsByCampaignNo"
+					select="findAttachmentsByNo"
 					column="CAMPAIGN_NO"/>
 	</resultMap>
 	
@@ -85,7 +85,7 @@
 	</select>
 	
 	
-	<select id="findAttachmentsByCampaignNo" resultMap="campaignAttachmentsMap" >
+	<select id="findAttachmentsByNo" resultMap="campaignAttachmentsMap" >
 		   SELECT
 				  FILE_NO
 				, REF_BNO
@@ -100,7 +100,7 @@
 				REF_BNO = #{value}
 	</select>
 
-	<select id="findByNo" resultMap="campaignResultMap" parameterType="long">
+	<!-- <select id="findByNo" resultMap="campaignResultMap" parameterType="long">
 	   SELECT
 			  P.CAMPAIGN_NO
 			, P.CAMPAIGN_TITLE
@@ -125,7 +125,7 @@
 			  CL_CAMPAIGN_CATEGORY C ON P.CATEGORY_NO = C.CATEGORY_NO
 		WHERE
 			  P.CAMPAIGN_NO = #{campaignNo}
-	</select>
+	</select> -->
 
 	<!-- 캠페인 등록 -->
     <insert id="save">

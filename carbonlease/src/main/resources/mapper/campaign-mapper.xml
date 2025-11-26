@@ -85,7 +85,7 @@
 	
 	
 	<!-- 상세조회 -->
-	<select id="findByNo" resultMap="campaignResultMap">
+	<select id="findDetailByNo" resultMap="campaignResultMap">
 	    <include refid="campaignColumn"/>
 	    WHERE 
 	          A.FILE_LEVEL = 1

@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.admin.campaign.model.dao.AdminCampaignMapper;
 import com.kh.auth.model.vo.CustomUserDetails;
-import com.kh.campaign.model.dao.CampaignMapper;
 import com.kh.campaign.model.dto.CampaignAttachmentDTO;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
@@ -33,7 +32,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	private final AdminCampaignMapper adminCampaignMapper;
 	private final CampaignService campaignService;
 	private final Pagination pagination;
-	private final CampaignMapper campaignMapper;
+	//private final CampaignMapper campaignMapper;
 
 	/**
 	 * 관리자_목록조회
@@ -89,8 +88,9 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		}
 
 		log.info("캠페인 등록 완료 — campaignNo: {}", campaignNo);
+		
 		// 등록 후 상세조회하여 최신 CampaignDTO 반환
-		return campaignService.findByNo(campaignNo);
+		return campaignService.getCampaignOnly(campaignNo);
 	}
 
 	/**
@@ -151,7 +151,11 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	 * 수정하기
 	 */
 	@Override
-	public CampaignDTO update(CampaignDTO campaign, MultipartFile thumbnail, MultipartFile detailImage, Long campaignNo,
+	public CampaignDTO update(
+			CampaignDTO campaign,
+			MultipartFile thumbnail,
+			MultipartFile detailImage,
+			Long campaignNo,
 			CustomUserDetails user) {
 		// 1. 권한 및 유효성 검사
 		validateBoard(campaignNo, user);
@@ -173,7 +177,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		adminCampaignMapper.update(campaign);
 
 		// 5. 첨부파일 목록 최신화
-		List<CampaignAttachmentDTO> attachments = adminCampaignMapper.findAttachmentsByCampaignNo(campaignNo);
+		List<CampaignAttachmentDTO> attachments = adminCampaignMapper.findAttachmentsByNo(campaignNo);
 		
 		if (attachments != null && !attachments.isEmpty()) {
 			for (CampaignAttachmentDTO att : attachments) {
@@ -187,13 +191,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		// 6. 최종 CampaignDTO 반환
 		return campaign;
 	}
-
-
-	@Override
-	public CampaignDTO findByNo(Long campaignNo) {
-		return adminCampaignMapper.findByNo(campaignNo);
-	}
-
+	
 	/**
 	 * 유효성 검사
 	 * 

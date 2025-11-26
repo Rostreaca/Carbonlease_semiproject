@@ -122,31 +122,39 @@ public class AdminCampaignController {
     	log.info("update:{}", update);
     	return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-    
-    /**
-     * 복구
-     * @param campaignNo
-     * @return
-     */
-    @PostMapping("/update/{campaignNo}/restore")
-    public ResponseEntity<?> restoreCampaign(@PathVariable Long campaignNo) {
-        int result = adminCampaignService.restoreCampaign(campaignNo);
-        if (result == 1) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.badRequest().body("복구할 캠페인이 없거나 이미 활성 상태입니다.");
-        }
-    }
 
+	/**
+	 * 복구
+	 * @param campaignNo
+	 * @return
+	 */
+	@PostMapping("/update/{campaignNo}/restore")
+	public ResponseEntity<?> restoreCampaign(@PathVariable Long campaignNo) {
+		int result = adminCampaignService.restoreCampaign(campaignNo);
+		if (result == 1) {
+			return ResponseEntity.ok().build();
+		} else {
+			return ResponseEntity.badRequest().body("복구할 캠페인이 없거나 이미 활성 상태입니다.");
+		}
+	}
 
-//	// AdminCampaignController.java
-//	@GetMapping("/{campaignNo}")
-//	public ResponseEntity<CampaignDTO> findByNo(@PathVariable Long campaignNo) {
-//		CampaignDTO campaign = adminCampaignService.findByNo(campaignNo);
-//		return ResponseEntity.ok(campaign);
-//	}
-    
-    
-    
-	
+	/**
+	 * [임시] DB 연결 불가 시 더미 어드민 로그인
+	 * @param username 아이디
+	 * @param password 비밀번호
+	 * @return 인증 결과
+	 */
+	@PostMapping("/admin/login-dummy")
+	public ResponseEntity<?> dummyAdminLogin(@RequestParam String username, @RequestParam String password) {
+		if ("dummy".equals(username) && "1234".equals(password)) {
+			// 임시 어드민 인증 성공
+			Map<String, Object> result = new HashMap<>();
+			result.put("message", "임시 어드민 로그인 성공 (dummy)");
+			result.put("role", "ROLE_ADMIN");
+			return ResponseEntity.ok(result);
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("임시 어드민 로그인 실패");
+		}
+	}
+
 }

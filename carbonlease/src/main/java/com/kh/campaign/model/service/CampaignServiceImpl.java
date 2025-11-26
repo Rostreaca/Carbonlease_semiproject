@@ -1,6 +1,6 @@
 package com.kh.campaign.model.service;
 
-import com.kh.exception.CustomInvalidParameterException;
+import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +10,7 @@ import com.kh.campaign.model.dao.CampaignMapper;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.LikeDTO;
 import com.kh.common.util.Pagination;
+import com.kh.exception.CustomInvalidParameterException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -78,13 +79,13 @@ public class CampaignServiceImpl implements CampaignService {
 	 * @return CampaignDTO 캠페인 정보
 	 */
 	@Override
-	public CampaignDTO findByNo(Long campaignNo) {
+	public CampaignDTO findDetailByNo(Long campaignNo) {
 		increaseViewCount(campaignNo);
 		return getCampaignOrThrow(campaignNo);
 	}
 
 	/**
-	 * 캠페인 상세 조회 (조회수 증가 없음, 수정/관리용)
+	 * 단순 pk로만 조회 (조회수 증가 없음, 수정/관리용)
 	 * @param campaignNo 캠페인 번호 정보
 	 * @return CampaignDTO 캠페인 정보
 	 */
@@ -107,7 +108,7 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 		
 		// 조회
-		CampaignDTO campaign = campaignMapper.findByNo(campaignNo);
+		CampaignDTO campaign = campaignMapper.getCampaignOnly(campaignNo);
 		
 		
 		// 존재하는 게시물인가?

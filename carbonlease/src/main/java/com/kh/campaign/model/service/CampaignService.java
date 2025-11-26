@@ -20,7 +20,7 @@ public interface CampaignService {
 	 * @param campaignNo
 	 * @return CampaignDTO : 캠페인 상세 정보
 	 */
-	CampaignDTO findByNo(Long campaignNo);
+	CampaignDTO findDetailByNo(Long campaignNo);
 	
 	
 	/**
