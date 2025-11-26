@@ -92,5 +92,23 @@ public class JwtFilter extends OncePerRequestFilter{
 		
 		filterChain.doFilter(request, response);
 	}
+	
+	@Override
+	protected boolean shouldNotFilter(HttpServletRequest request) {
+	    String method = request.getMethod();
+	    String uri = request.getRequestURI();
+
+	    // 프리플라이트
+	    if (method.equalsIgnoreCase("OPTIONS")) return true;
+
+	    // 로그인
+	    if (uri.startsWith("/auth/login")) return true;
+
+	    // 인증게시판 조회는 전부 허용
+	    if (uri.startsWith("/activityBoards") && method.equals("GET")) return true;
+
+	    return false;
+	}
+	
 
 }
