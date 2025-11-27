@@ -93,27 +93,22 @@ public class ActivityController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다");
 		}
 
-		try {
 			activityService.activityDelete(activityNo, loginUser.getMemberNo());
 			return ResponseEntity.ok("success");
-		} catch (Exception e) {
-			log.error("삭제 실패", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
-		}
 	}
 
 	// 댓글 조회
 	@GetMapping("/{activityNo}/replies")
-	public Map<String, Object> getReplies(@PathVariable("activityNo") int activityNo
-										 ,@RequestParam(name ="pageNo",defaultValue="1") int pageNo) {
+	public Map<String, Object> getReplies(@PathVariable("activityNo") int activityNo,
+			@RequestParam(name = "pageNo", defaultValue = "1") int pageNo) {
 
-	    return activityService.selectReplies(activityNo, pageNo);
+		return activityService.selectReplies(activityNo, pageNo);
 	}
 
 	// 댓글 등록
 	@PostMapping("/{activityNo}/replies")
-	public ResponseEntity<?> insertReply(@PathVariable("activityNo") int activityNo, @RequestBody Map<String, String> body,
-			@AuthenticationPrincipal CustomUserDetails loginUser) {
+	public ResponseEntity<?> insertReply(@PathVariable("activityNo") int activityNo,
+			@RequestBody Map<String, String> body, @AuthenticationPrincipal CustomUserDetails loginUser) {
 		if (loginUser == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
 		}
@@ -137,31 +132,43 @@ public class ActivityController {
 		activityService.deleteReply(replyNo);
 		return ResponseEntity.ok("deleted");
 	}
-	
+
 	// 댓글 수정
 	@PutMapping("/replies/{replyNo}")
-	public ResponseEntity<?> updateReply(@PathVariable("replyNo") int replyNo
-									    ,@RequestBody Map<String, String> payload
-									    ,@AuthenticationPrincipal CustomUserDetails loginUser) {
+	public ResponseEntity<?> updateReply(@PathVariable("replyNo") int replyNo, @RequestBody Map<String, String> payload,
+			@AuthenticationPrincipal CustomUserDetails loginUser) {
 
-	    if (loginUser == null) {
-	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
-	    }
+		if (loginUser == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+		}
 
-	    String replyContent = payload.get("replyContent");
+		String replyContent = payload.get("replyContent");
 
-	    activityService.updateReply(replyNo, replyContent, loginUser.getMemberNo());
+		activityService.updateReply(replyNo, replyContent, loginUser.getMemberNo());
 
-	    return ResponseEntity.ok("updated");
+		return ResponseEntity.ok("updated");
 	}
-	
+
 	// 조회수
 	@PostMapping("/{activityNo}/view")
 	public ResponseEntity<?> increaseViewCount(@PathVariable("activityNo") int activityNo) {
-	    activityService.increaseViewCount(activityNo);
-	    return ResponseEntity.ok().build();
+		activityService.increaseViewCount(activityNo);
+		return ResponseEntity.ok().build();
 	}
 
+	// 게시글 수정
+	@PutMapping("/{activityNo}")
+	public ResponseEntity<?> updateActivity(@PathVariable("activityNo") int activityNo,
+			@ModelAttribute ActivityFormDTO activity, @RequestParam(name = "file", required = false) MultipartFile file,
+			@AuthenticationPrincipal CustomUserDetails loginUser) {
+		if (loginUser == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+		}
 
+		activity.setActivityNo(activityNo);
+		activityService.updateActivity(activity, file, loginUser.getMemberNo());
+
+		return ResponseEntity.ok("updated");
+	}
 
 }

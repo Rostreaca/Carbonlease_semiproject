@@ -38,18 +38,21 @@ public class SecurityConfigure {
 				.cors(Customizer.withDefaults())
 
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers(HttpMethod.POST, "/login/admin").permitAll()
-						.requestMatchers(HttpMethod.GET, "/login/admin").permitAll()
-						.requestMatchers(HttpMethod.POST, "/auth/login", "/auth/adminLogin", "/auth/refresh", "/members/**").permitAll()
-						.requestMatchers(HttpMethod.POST, "/activityBoards/*/view").permitAll()
-						.requestMatchers(HttpMethod.GET, "/activityBoards/*/replies").permitAll()
-						.requestMatchers(HttpMethod.GET, "/members/**", "/boards/**", "/activityBoards/**", "/images/**", "/notices/**", "/campaigns/**", "/uploads/**").permitAll()
-						.requestMatchers(HttpMethod.POST, "/boards", "/activityBoards", "/activityBoards/**", "/notices", "/campaigns", "/campaigns/*/like").authenticated()
-						.requestMatchers(HttpMethod.PUT, "/members/**", "/boards/**", "/activityBoards/**","/notices/**", "/campaigns/**").authenticated()
-						.requestMatchers(HttpMethod.DELETE, "/members/**", "/boards/**", "/activityBoards/**", "/notices/**", "/campaigns/**").authenticated()
-						.requestMatchers("/admin/**")
-						.hasAuthority("ROLE_ADMIN")
-						.anyRequest().authenticated())
+
+				        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+				        .requestMatchers(HttpMethod.PATCH, "/admin/**").hasAuthority("ROLE_ADMIN")
+				        .requestMatchers(HttpMethod.POST, "/login/admin").permitAll()
+				        .requestMatchers(HttpMethod.GET, "/login/admin").permitAll()
+				        .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
+				        .requestMatchers(HttpMethod.GET, "/members/**", "/boards/**", "/activityBoards/**", "/images/**", "/notices/**", "/campaigns/**", "/uploads/**").permitAll()
+				        .requestMatchers(HttpMethod.POST, "/boards", "/activityBoards", "/activityBoards/**", "/notices", "/campaigns", "/campaigns/*/like").authenticated()
+				        .requestMatchers(HttpMethod.PUT, "/members/**", "/boards/**", "/activityBoards/**", "/notices/**", "/campaigns/**").authenticated()
+				        .requestMatchers(HttpMethod.DELETE, "/members/**", "/boards/**", "/activityBoards/**", "/notices/**", "/campaigns/**").authenticated()
+				        .requestMatchers(HttpMethod.PATCH, "/activityBoards/**").authenticated()
+				        .anyRequest().authenticated()
+				)
+
+
 
 				.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
@@ -61,19 +64,18 @@ public class SecurityConfigure {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 
-		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-		config.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
-		config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "Origin",
-				"Access-Control-Request-Headers", "Access-Control-Request-Method", "X-Requested-With"));
-		config.setExposedHeaders(Arrays.asList("Authorization"));
-		config.setAllowCredentials(true);
+	    CorsConfiguration config = new CorsConfiguration();
+	    config.setAllowCredentials(true);
+	    config.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173", "http://localhost"));
+	    config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+	    config.setAllowedHeaders(Arrays.asList("*"));
+	    config.setExposedHeaders(Arrays.asList("Authorization"));
 
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", config);
-
-		return source;
+	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	    source.registerCorsConfiguration("/**", config);
+	    return source;
 	}
+
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
