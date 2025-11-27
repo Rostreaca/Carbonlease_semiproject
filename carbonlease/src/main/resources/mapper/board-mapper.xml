@@ -100,7 +100,7 @@
 	</select>
 	
 	<!-- 댓글 등록 -->
-	<insert id="replyInsert" parameterType="ReplyInsertVO">
+	<insert id="replyInsert" parameterType="com.kh.board.model.vo.ReplyInsertVO">
 		 INSERT
 		   INTO 
 		   		CL_BOARD_REPLY(
@@ -109,13 +109,14 @@
 				  , MEMBER_NO memberNo
 				  , REPLY_CONTENT replyContent
 				  , ENROLL_DATE enrollDate
-			)
-				VALUES (
-				#{replyNo}
-			  , #{boardNo}
-		      , #{memberNo}
-			  , #{replyContent}
-			  , SYSDATE
+			      )
+			VALUES (
+				  	#{replyNo}
+				  , #{boardNo}
+			      , #{memberNo}
+				  , #{replyContent}
+				  , SYSDATE
+				    )
 	</insert>
 	
 	

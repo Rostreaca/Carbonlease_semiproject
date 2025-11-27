@@ -16,8 +16,8 @@ import lombok.ToString;
 public class ReplyInsertVO {
 	
 	private int replyNo;
-	private long memberNo;
 	private long boardNo;
+	private long memberNo;
 	private String replyContent;
 	private Date enrollDate;
 	
