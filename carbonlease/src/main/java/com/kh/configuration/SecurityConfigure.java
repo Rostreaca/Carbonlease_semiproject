@@ -41,6 +41,7 @@ public class SecurityConfigure {
 						   .cors(Customizer.withDefaults())
 						   .authorizeHttpRequests(requests -> {
 <<<<<<< HEAD
+<<<<<<< HEAD
 							   requests.requestMatchers(HttpMethod.POST, "/members/**", "/auth/login", "/auth/adminLogin", "/auth/refresh", "/boards/detail/replyInsert").permitAll();
 							   requests.requestMatchers(HttpMethod.POST, "/boards/**", "/activityBoards", "/notices", "/campaigns").authenticated();
 =======
@@ -49,6 +50,10 @@ public class SecurityConfigure {
 							   requests.requestMatchers(HttpMethod.POST, "/members/**","/auth/login", "/login/admin", "/auth/refresh", "/auth/adminLogin").permitAll();
 							   requests.requestMatchers(HttpMethod.POST, "/boards", "/activityBoards", "/notices", "/campaigns").authenticated();
 >>>>>>> 7e1144b76c37a6919139d8d946620889b540c6d8
+=======
+							   requests.requestMatchers(HttpMethod.POST, "/members/**", "/auth/login", "/auth/adminLogin", "/auth/refresh", "/boards/detail/replyInsert").permitAll();
+							   requests.requestMatchers(HttpMethod.POST, "/boards/**", "/activityBoards", "/notices", "/campaigns").authenticated();
+>>>>>>> d397f402316ba79ae32bd64e8ba2dd8521a20ed9
 							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/**").authenticated();
 							   requests.requestMatchers(HttpMethod.POST, "/campaigns/*/like").authenticated(); // 좋아요 인증 필요
 							   requests.requestMatchers(HttpMethod.GET,"/members/**", "/boards/**","/activityBoards/**", "/images/**", "/notices/**", "/campaigns/**", "/uploads/**" ).permitAll();

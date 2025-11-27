@@ -87,6 +87,9 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public int boardReplyInsert(ReplyInsertVO riVO) {
 		
+		boardMapper.replyInsert(riVO);
+		
+		
 		return 0;
 	}
 	
@@ -98,6 +101,7 @@ public class BoardServiceImpl implements BoardService {
 		
 		return null;
 	}
+
 
 }
 	

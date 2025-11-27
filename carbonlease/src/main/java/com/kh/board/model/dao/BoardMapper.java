@@ -8,6 +8,7 @@ import org.apache.ibatis.session.RowBounds;
 
 import com.kh.board.model.dto.BoardDTO;
 import com.kh.board.model.dto.BoardReplyDTO;
+import com.kh.board.model.vo.ReplyInsertVO;
 
 @Mapper
 public interface BoardMapper {
@@ -19,6 +20,8 @@ public interface BoardMapper {
 	BoardDTO boardDetail(Long boardNo);
 	
 	List<BoardReplyDTO> replyList(Long boardNo);
+	
+	int replyInsert(ReplyInsertVO riVO);
 	
 	int replyCount(Long boardNo);
 	
