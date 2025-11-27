@@ -17,6 +17,8 @@ public interface BoardService {
 
 	Long boardUpdateForm();
 	
+	int insertBoard(BoardDTO boardVo);
+	
 	
 	
 }

@@ -86,11 +86,7 @@ public class BoardServiceImpl implements BoardService {
 	// 댓글 등록
 	@Override
 	public int boardReplyInsert(ReplyInsertVO riVO) {
-		
-		boardMapper.replyInsert(riVO);
-		
-		
-		return 0;
+		return boardMapper.replyInsert(riVO);
 	}
 	
 	
@@ -100,6 +96,13 @@ public class BoardServiceImpl implements BoardService {
 	public Long boardUpdateForm() {
 		
 		return null;
+	}
+	
+	
+	@Override
+	public int insertBoard(BoardDTO boardVo) {
+		// TODO Auto-generated method stub
+		return boardMapper.insertClBoard(boardVo);
 	}
 
 

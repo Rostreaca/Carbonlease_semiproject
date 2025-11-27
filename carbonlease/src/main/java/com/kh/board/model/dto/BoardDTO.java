@@ -23,7 +23,7 @@ public class BoardDTO {
 	private int viewCount;
 	private Date enrollDate;
 	private char status;
-	private int memberNo;
+	private long memberNo;
 	private int regionNo;
 	private String regionName;
 	private String nickname;

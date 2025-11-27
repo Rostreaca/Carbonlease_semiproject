@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.auth.model.vo.CustomUserDetails;
+import com.kh.board.model.dto.BoardDTO;
 import com.kh.board.model.dto.BoardReplyDTO;
 import com.kh.board.model.service.BoardService;
 import com.kh.board.model.vo.ReplyInsertVO;
@@ -62,22 +63,33 @@ public class BoardController {
 	
 	// 댓글 등록
 	@PostMapping("detail/replyInsert")
-	public ResponseEntity<?> boardReplyInsert(@RequestBody BoardReplyDTO replyDto, @AuthenticationPrincipal CustomUserDetails user) {
-		
+	public ResponseEntity<?> boardReplyInsert(@RequestBody ReplyInsertVO replayVO , @AuthenticationPrincipal CustomUserDetails user) {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
 		System.out.println("userInfo : " + user);
+		 log.info("댓글 내용 : ", replayVO);
+		 replayVO.setMemberNo(user.getMemberNo());
+		 System.out.println("replayVO : " + replayVO);
+   	     int replayCnt=boardService.boardReplyInsert(replayVO);
+   	     resultMap.put("replyInsert", replayCnt);
+		 return ResponseEntity.ok(resultMap); 
 		
-		  ReplyInsertVO riVO = new ReplyInsertVO();
-		  
-		  riVO.setMemberNo(user.getMemberNo());
-		  
-		  boardService.boardReplyInsert(riVO);
-		
-		  
-		  return null; 
+	}
+	
+	// 글쓰기
+	@PostMapping("boardInsert")
+	public ResponseEntity<?> regBoard(@RequestBody BoardDTO boardDto , @AuthenticationPrincipal CustomUserDetails user) {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		System.out.println("userInfo : " + user);
+		 log.info("게시판 내용 : ", boardDto);
+		 boardDto.setMemberNo(user.getMemberNo());
+		 System.out.println("새글 등록 insert : " + boardDto);
+   	     int boardInsert =boardService.insertBoard(boardDto);
+   	     resultMap.put("boardInsert", boardInsert);
+		 return ResponseEntity.ok(resultMap); 
 		
 	}
 
-	// 글쓰기
+	
 	
 	// 글 수정 하기
 	@PostMapping("detail/{boardNo}")

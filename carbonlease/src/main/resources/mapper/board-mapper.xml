@@ -100,18 +100,18 @@
 	</select>
 	
 	<!-- 댓글 등록 -->
-	<insert id="replyInsert" parameterType="com.kh.board.model.vo.ReplyInsertVO">
+	<insert id="replyInsert" parameterType="com.kh.board.model.vo.ReplyInsertVO" >
 		 INSERT
 		   INTO 
 		   		CL_BOARD_REPLY(
-					REPLY_NO replyNo
-				  , BOARD_NO boardNo
-				  , MEMBER_NO memberNo
-				  , REPLY_CONTENT replyContent
-				  , ENROLL_DATE enrollDate
+					REPLY_NO 
+				  , BOARD_NO 
+				  , MEMBER_NO 
+				  , REPLY_CONTENT 
+				  , ENROLL_DATE 
 			      )
 			VALUES (
-				  	#{replyNo}
+				  	SEQ_BOARD_REPLY_NO.NEXTVAL
 				  , #{boardNo}
 			      , #{memberNo}
 				  , #{replyContent}
@@ -123,6 +123,32 @@
 	<!-- 글 수정 하기 -->
 	<insert id="boardUpdateForm" parameterType="long">
 		
+	</insert>
+	
+	
+	<insert id="insertClBoard" parameterType="com.kh.board.model.dto.BoardDTO">
+		 INSERT
+		   INTO 
+		   		CL_BOARD(
+					 BOARD_NO
+					,BOARD_TITLE
+					,BOARD_CONTENT
+					,VIEW_COUNT
+					,ENROLL_DATE
+					,STATUS
+					,MEMBER_NO
+					,REGION_NO
+			      )
+			VALUES (
+				  	SEQ_BOARD_NO.NEXTVAL
+				  , #{boardTitle}
+			      , #{boardContent}
+				  , 0
+				  , SYSDATE
+				  , 'Y'
+				  , #{memberNo}
+				  , #{regionNo}
+				    )
 	</insert>
 	
 

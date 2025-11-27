@@ -26,6 +26,8 @@ public interface BoardMapper {
 	int replyCount(Long boardNo);
 	
 	Long boardUpdateForm();
+	
+	int insertClBoard(BoardDTO boardVO);
 
 	
 }
