@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.kh.admin.notice.model.dto.NoticeAdminDTO;
 import com.kh.admin.notice.model.vo.AdminNoticeVO;
@@ -27,7 +28,7 @@ public interface NoticeMapper {
 
 	void insertNotice(AdminNoticeVO adminNotice);
 
-	void insertAttachment(List<AttachmentDTO> ats);
+	void insertAttachment(AttachmentDTO at);
 
 
 }

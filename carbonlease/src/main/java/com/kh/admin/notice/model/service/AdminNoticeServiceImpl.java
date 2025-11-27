@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.admin.notice.model.dto.NoticeAdminDTO;
@@ -24,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AdminNoticeServiceImpl implements AdminNoticeService {
 	
 	private final NoticeMapper noticeMapper;
@@ -74,7 +76,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 	// db 슈웃
 	// 성공하면 1-1파일 과정 슈웃 (묶어서 처리)
 	// 3
-	// 예외처리 
+	// 예외처리
 	@Override
 	public void insert(@Valid NoticeAdminDTO notice, List<MultipartFile> files, CustomUserDetails user) {
 
@@ -86,7 +88,12 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 				
 				List<AttachmentDTO> ats = saveFiles(files);
 				
-				noticeMapper.insertAttachment(ats);
+				log.info("파일 어캐됨 {}", ats);
+				
+//				noticeMapper.insertAttachment(ats);
+				for (AttachmentDTO at : ats) {
+					noticeMapper.insertAttachment(at);
+				}
 				
 			} catch (Exception e) {
 				// 오류발생: rollback시켜

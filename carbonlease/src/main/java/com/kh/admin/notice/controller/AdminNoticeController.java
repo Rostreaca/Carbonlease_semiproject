@@ -54,7 +54,7 @@ public class AdminNoticeController {
 //	        return ResponseEntity.status(403).body("관리자만 등록 가능합니다.");
 //	    } 이건 서비스에서 해야지
 
-	    log.info("받은 데이터 = {} files = {}", notice, files);
+	    log.info("받은 데이터 = {}, files = {}", notice, files);
 
 	    adminNoticeService.insert(notice, files, user);
 

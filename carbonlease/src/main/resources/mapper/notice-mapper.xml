@@ -98,6 +98,22 @@
 				)
 	</insert>
 	
+	<insert id="insertAttachment"
+			parameterType="AttachmentDTO">
+	    INSERT
+		INTO 
+				CL_NOTICE_ATTACHMENT
+		VALUES 
+				(
+	              SEQ_NOTICE_FILE_NO.NEXTVAL
+	            , SEQ_NOTICE_NO.CURRVAL
+	            , #{originName}
+	            , #{changeName}
+	            , #{filePath}
+	            , SYSDATE
+		        )
+	</insert>
+
 	
 	
 	
