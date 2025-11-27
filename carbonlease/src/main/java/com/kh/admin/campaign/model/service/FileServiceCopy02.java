@@ -1,4 +1,4 @@
-package com.kh.admin.campaign.service;
+package com.kh.admin.campaign.model.service;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,11 +16,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class FileService {
+public class FileServiceCopy02 {
 
 	private final Path fileLocation;
 
-	public FileService() {
+	public FileServiceCopy02() {
 		this.fileLocation = Paths.get("uploads/campaign/images").toAbsolutePath().normalize();
 		try {
 			Files.createDirectories(this.fileLocation);

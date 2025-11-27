@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.kh.admin.campaign.service.AdminCampaignService;
+import com.kh.admin.campaign.model.service.AdminCampaignService;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
@@ -138,23 +138,5 @@ public class AdminCampaignController {
 		}
 	}
 
-	/**
-	 * [임시] DB 연결 불가 시 더미 어드민 로그인
-	 * @param username 아이디
-	 * @param password 비밀번호
-	 * @return 인증 결과
-	 */
-	@PostMapping("/admin/login-dummy")
-	public ResponseEntity<?> dummyAdminLogin(@RequestParam String username, @RequestParam String password) {
-		if ("dummy".equals(username) && "1234".equals(password)) {
-			// 임시 어드민 인증 성공
-			Map<String, Object> result = new HashMap<>();
-			result.put("message", "임시 어드민 로그인 성공 (dummy)");
-			result.put("role", "ROLE_ADMIN");
-			return ResponseEntity.ok(result);
-		} else {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("임시 어드민 로그인 실패");
-		}
-	}
 
 }

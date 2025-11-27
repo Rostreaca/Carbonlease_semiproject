@@ -65,6 +65,6 @@ public interface AdminCampaignMapper {
 	 * @return
 	 */
 	int restoreStatus(Long campaignNo);
-	
+
 	
 }

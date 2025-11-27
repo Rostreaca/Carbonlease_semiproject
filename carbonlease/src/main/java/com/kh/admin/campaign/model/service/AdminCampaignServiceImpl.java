@@ -1,4 +1,4 @@
-package com.kh.admin.campaign.service;
+package com.kh.admin.campaign.model.service;
 
 import java.io.File;
 import java.security.InvalidParameterException;
@@ -157,6 +157,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 			MultipartFile detailImage,
 			Long campaignNo,
 			CustomUserDetails user) {
+		
 		// 1. 권한 및 유효성 검사
 		validateBoard(campaignNo, user);
 

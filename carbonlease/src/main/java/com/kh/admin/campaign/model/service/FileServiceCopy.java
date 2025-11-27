@@ -1,4 +1,4 @@
-package com.kh.admin.campaign.service;
+package com.kh.admin.campaign.model.service;
 
 import java.io.IOException;
 import java.nio.file.Files;
