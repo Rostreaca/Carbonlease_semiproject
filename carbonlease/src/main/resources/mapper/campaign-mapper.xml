@@ -100,13 +100,19 @@
 	</select>
 	
 	<!-- 상세조회_수정용 -->
-	<select id="getCampaignOnly" parameterType="long" resultType="CampaignDTO">
+	<!--<select id="getCampaignOnly" parameterType="long" resultType="CampaignDTO">
 	    SELECT 
 	           * 
 	      FROM 
 	           CL_CAMPAIGN
 	     WHERE 
 	           CAMPAIGN_NO = #{campaignNo}
+	</select>-->
+	
+	
+	<select id="getCampaignOnly" parameterType="long" resultMap="campaignResultMap">
+	    <include refid="campaignColumn"/>
+	    WHERE P.CAMPAIGN_NO = #{campaignNo}
 	</select>
 
 	<!-- 전체 게시글 수 조회 (리스트 조회와 동일 조건) -->
