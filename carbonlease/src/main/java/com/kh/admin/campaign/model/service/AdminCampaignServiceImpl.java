@@ -69,9 +69,16 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	@Override
 	public CampaignDTO save(CampaignDTO dto, MultipartFile thumbnail, MultipartFile detailImage, Long memberNo) {
 		// 1) campaignDTO로 변환 (DB insert용)
-		CampaignDTO campaignDTO = CampaignDTO.builder().campaignTitle(dto.getCampaignTitle())
-				.campaignContent(dto.getCampaignContent()).startDate(dto.getStartDate()).endDate(dto.getEndDate())
-				.memberNo(memberNo).categoryNo(dto.getCategoryNo()).status("Y").build();
+		CampaignDTO campaignDTO = 
+				CampaignDTO.builder()
+				.campaignTitle(dto.getCampaignTitle())
+				.campaignContent(dto.getCampaignContent())
+				.startDate(dto.getStartDate())
+				.endDate(dto.getEndDate())
+				.memberNo(memberNo)
+				.categoryNo(dto.getCategoryNo())
+				.status("Y")
+				.build();
 
 		// 2) 캠페인 저장 (PK 자동 생성)
 		adminCampaignMapper.save(campaignDTO);

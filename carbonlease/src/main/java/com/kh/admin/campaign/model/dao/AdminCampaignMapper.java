@@ -50,9 +50,6 @@ public interface AdminCampaignMapper {
 	 */
 	List<CategoryDTO> getCategories();
 
-	CampaignDTO findByNo(Long campaignNo);
-	
-	
 	/**
 	 * 캐페인 게시글 수정
 	 * @param campaign
