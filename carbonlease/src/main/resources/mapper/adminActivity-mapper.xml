@@ -34,7 +34,6 @@
 	</select>
 
 
-
     <!-- 전체 개수 -->
     <select id="getAdminCount" resultType="int">
     	SELECT 

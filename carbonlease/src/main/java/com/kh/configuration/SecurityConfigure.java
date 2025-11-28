@@ -32,48 +32,45 @@ public class SecurityConfigure {
 	private final JwtFilter jwtFilter;
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+		
+		return httpSecurity.formLogin(AbstractHttpConfigurer::disable)
+						   .csrf(AbstractHttpConfigurer::disable)
+						   .cors(Customizer.withDefaults())
+						   .authorizeHttpRequests(requests -> {
+							   requests.requestMatchers(HttpMethod.POST, "/members/**","/auth/login", "/auth/refresh", "/auth/adminLogin").permitAll();
+							   requests.requestMatchers(HttpMethod.POST, "/boards", "/activityBoards", "/notices", "/campaigns").authenticated();
+							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/**").authenticated();
+							   requests.requestMatchers(HttpMethod.POST, "/campaigns/*/like").authenticated(); // 좋아요 인증 필요
+							   requests.requestMatchers(HttpMethod.GET,"/members/**", "/boards/**","/activityBoards/**", "/uploads/**", "/notices/**", "/campaigns/**").permitAll();
+							   requests.requestMatchers(HttpMethod.PUT,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
+							   requests.requestMatchers(HttpMethod.DELETE,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
+							   requests.requestMatchers(HttpMethod.PUT, "/admin/**").hasAuthority("ROLE_ADMIN");
+							   requests.requestMatchers(HttpMethod.GET, "/admin/**").hasAuthority("ROLE_ADMIN");
+							   requests.requestMatchers(HttpMethod.POST, "/admin/**").hasAuthority("ROLE_ADMIN");
+                 requests.requestMatchers(HttpMethod.PATCH, "/activityBoards/**").authenticated();
+                 requests.requestMatchers(HttpMethod.PATCH, "/admin/**").hasAuthority("ROLE_ADMIN");
 
-		return http.formLogin(AbstractHttpConfigurer::disable).csrf(AbstractHttpConfigurer::disable)
-				.cors(Customizer.withDefaults())
+							//    requests.requestMatchers("/admin/**").permitAll();
+						   })
+							.sessionManagement(manager ->
+							manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+						   )
+						   .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+						   .build();
 
-				.authorizeHttpRequests(auth -> auth
-
-				        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
-				        .requestMatchers(HttpMethod.PATCH, "/admin/**").hasAuthority("ROLE_ADMIN")
-				        .requestMatchers(HttpMethod.POST, "/login/admin").permitAll()
-				        .requestMatchers(HttpMethod.GET, "/login/admin").permitAll()
-				        .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
-				        .requestMatchers(HttpMethod.GET, "/members/**", "/boards/**", "/activityBoards/**", "/images/**", "/notices/**", "/campaigns/**", "/uploads/**").permitAll()
-				        .requestMatchers(HttpMethod.POST, "/boards", "/activityBoards", "/activityBoards/**", "/notices", "/campaigns", "/campaigns/*/like").authenticated()
-				        .requestMatchers(HttpMethod.PUT, "/members/**", "/boards/**", "/activityBoards/**", "/notices/**", "/campaigns/**").authenticated()
-				        .requestMatchers(HttpMethod.DELETE, "/members/**", "/boards/**", "/activityBoards/**", "/notices/**", "/campaigns/**").authenticated()
-				        .requestMatchers(HttpMethod.PATCH, "/activityBoards/**").authenticated()
-				        .anyRequest().authenticated()
-				)
-
-
-
-				.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-
-				.build();
 	}
 
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
-
-	    CorsConfiguration config = new CorsConfiguration();
-	    config.setAllowCredentials(true);
-	    config.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173", "http://localhost"));
-	    config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-	    config.setAllowedHeaders(Arrays.asList("*"));
-	    config.setExposedHeaders(Arrays.asList("Authorization"));
-
-	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-	    source.registerCorsConfiguration("/**", config);
-	    return source;
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+		configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "PATCH", "OPTIONS"));
+		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+		configuration.setAllowCredentials(true);
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
 	}
 
 
