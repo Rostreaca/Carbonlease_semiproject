@@ -48,9 +48,8 @@ public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws
 							   requests.requestMatchers(HttpMethod.PUT, "/admin/**").hasAuthority("ROLE_ADMIN");
 							   requests.requestMatchers(HttpMethod.GET, "/admin/**").hasAuthority("ROLE_ADMIN");
 							   requests.requestMatchers(HttpMethod.POST, "/admin/**").hasAuthority("ROLE_ADMIN");
-                 requests.requestMatchers(HttpMethod.PATCH, "/activityBoards/**").authenticated();
-                 requests.requestMatchers(HttpMethod.PATCH, "/admin/**").hasAuthority("ROLE_ADMIN");
-
+							   requests.requestMatchers(HttpMethod.PATCH, "/activityBoards/**").authenticated();
+							   requests.requestMatchers(HttpMethod.PATCH, "/admin/**").hasAuthority("ROLE_ADMIN");
 							//    requests.requestMatchers("/admin/**").permitAll();
 						   })
 							.sessionManagement(manager ->
