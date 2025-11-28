@@ -101,7 +101,7 @@
 	</select>
 
 	<!-- 캠페인 등록 -->
-    <insert id="save">
+    <insert id="save"><!-- vo 바꾸고 나서 parameterType 추가 고려 -->
 
         <selectKey keyProperty="campaignNo"
                    resultType="long"
