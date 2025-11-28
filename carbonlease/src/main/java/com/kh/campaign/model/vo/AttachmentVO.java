@@ -9,6 +9,7 @@ import lombok.Value;
 @Builder
 public class AttachmentVO {
 	
+	
 	private Long fileNo;        // PK
     private Long refBno;        // FK (이벤트 번호)
     private String originName;  // 원본 파일명
