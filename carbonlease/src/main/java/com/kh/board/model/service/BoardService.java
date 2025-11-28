@@ -15,7 +15,7 @@ public interface BoardService {
 
 	int boardReplyInsert(ReplyInsertVO riVO);
 
-	Long boardUpdateForm();
+	int boardUpdateForm();
 	
 	int insertBoard(BoardDTO boardVo);
 	

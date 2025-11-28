@@ -90,21 +90,20 @@ public class BoardServiceImpl implements BoardService {
 	}
 	
 	
-	
-	// 글 수정하기
-	@Override
-	public Long boardUpdateForm() {
-		
-		return null;
-	}
-	
-	
+	// 글 쓰기
 	@Override
 	public int insertBoard(BoardDTO boardVo) {
-		// TODO Auto-generated method stub
+
 		return boardMapper.insertClBoard(boardVo);
 	}
 
 
+	// 글 수정하기
+	@Override
+	public int boardUpdateForm() {
+		
+		return 0;
+	}
+	
 }
 	

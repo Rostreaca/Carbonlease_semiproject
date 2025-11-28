@@ -121,7 +121,7 @@
 	
 	
 	<!-- 글 수정 하기 -->
-	<insert id="boardUpdateForm" parameterType="long">
+	<insert id="boardUpdateForm" parameterType="_int">
 		
 	</insert>
 	
