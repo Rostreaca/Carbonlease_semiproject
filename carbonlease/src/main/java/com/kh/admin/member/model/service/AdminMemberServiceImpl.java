@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.kh.exception.InvalidValueException;
 import com.kh.exception.UserNotFoundException;
 import com.kh.member.model.dao.MemberMapper;
 import com.kh.member.model.dto.MemberDTO;
@@ -22,11 +23,16 @@ public class AdminMemberServiceImpl implements AdminMemberService{
 	
 	@Override
 	public List<MemberDTO> selectMemberList(Map<String, String> selectOptions) {
+		
 		return memberMapper.selectMemberList(selectOptions);
 	}
 
 	@Override
 	public void restoreMember(Long memberNo) {
+		
+		if(memberNo < 0) {
+			throw new InvalidValueException("잘못된 요청이 들어왔습니다.");
+		}
 		
 		int result = memberMapper.restoreMember(memberNo);
 		
@@ -38,6 +44,10 @@ public class AdminMemberServiceImpl implements AdminMemberService{
 
 	@Override
 	public void deleteMember(Long memberNo) {
+		
+		if(memberNo < 0) {
+			throw new InvalidValueException("잘못된 요청이 들어왔습니다.");
+		}
 		
 		int result = memberMapper.deleteMember(memberNo);
 		

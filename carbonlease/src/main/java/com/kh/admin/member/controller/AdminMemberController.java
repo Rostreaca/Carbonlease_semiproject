@@ -28,7 +28,7 @@ public class AdminMemberController {
 	private final AdminMemberService adminMemberService;
 	
 	@GetMapping
-	public ResponseEntity<?> selectMemberList(@RequestParam(name = "orderBy", defaultValue = "memberNo") String orderBy,
+	public ResponseEntity<List<MemberDTO>> selectMemberList(@RequestParam(name = "orderBy", defaultValue = "memberNo") String orderBy,
 			                                  @RequestParam(name = "keyword") String keyword){
 		
 		Map<String, String> selectOptions = new HashMap();
