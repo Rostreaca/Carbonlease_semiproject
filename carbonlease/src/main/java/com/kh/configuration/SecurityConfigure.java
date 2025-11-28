@@ -32,8 +32,7 @@ public class SecurityConfigure {
 	private final JwtFilter jwtFilter;
 
 	@Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-		
+	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 		return httpSecurity.formLogin(AbstractHttpConfigurer::disable)
 						   .csrf(AbstractHttpConfigurer::disable)
 						   .cors(Customizer.withDefaults())
@@ -50,6 +49,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws
 							   requests.requestMatchers(HttpMethod.POST, "/admin/**").hasAuthority("ROLE_ADMIN");
 							   requests.requestMatchers(HttpMethod.PATCH, "/activityBoards/**").authenticated();
 							   requests.requestMatchers(HttpMethod.PATCH, "/admin/**").hasAuthority("ROLE_ADMIN");
+
 							//    requests.requestMatchers("/admin/**").permitAll();
 						   })
 							.sessionManagement(manager ->
@@ -57,7 +57,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws
 						   )
 						   .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 						   .build();
-
+		
 	}
 
 	@Bean
