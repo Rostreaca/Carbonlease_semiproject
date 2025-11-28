@@ -17,13 +17,13 @@ public interface CampaignMapper {
 	 * @param
 	 * @return
 	 */
-	List<CampaignDTO> selectCampaignList(Map<String, Object> params);
+	List<CampaignDTO> findAll(Map<String, Object> params);
 	
 	/**
 	 * 전체 게시글 수 조회
 	 * @return
 	 */
-	int findListCount();
+	int findAndCountAll();
 	
 	
 	/**
@@ -31,9 +31,15 @@ public interface CampaignMapper {
 	 * @param campaignNo
 	 * @return
 	 */
-	CampaignDTO selectByCampaignNo(Long campaignNo);
+	CampaignDTO findDetailByNo(Long campaignNo);
 
-	
+	/**
+	 * 단순 pk로만 조회
+	 * @param CampaignNo
+	 * @return
+	 */
+	CampaignDTO getCampaignOnly(Long CampaignNo);
+
 	/**
 	 * 좋아요 존재 여부 조회
 	 * @param likeDTO

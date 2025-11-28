@@ -11,7 +11,6 @@ import com.kh.board.model.dao.BoardMapper;
 import com.kh.board.model.dto.BoardDTO;
 import com.kh.board.model.dto.BoardReplyDTO;
 import com.kh.common.util.Pagination;
-import com.kh.notice.model.dto.NoticeDTO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
