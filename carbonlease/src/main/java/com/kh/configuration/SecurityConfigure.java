@@ -51,6 +51,8 @@ public class SecurityConfigure {
 							   requests.requestMatchers(HttpMethod.DELETE,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
 							   requests.requestMatchers(HttpMethod.GET, "/admin/**").hasAuthority("ROLE_ADMIN");
 							   requests.requestMatchers(HttpMethod.POST, "/admin/**").hasAuthority("ROLE_ADMIN");
+							   requests.requestMatchers(HttpMethod.PUT, "/admin/**").hasAuthority("ROLE_ADMIN");
+							   requests.requestMatchers(HttpMethod.DELETE, "/admin/**").hasAuthority("ROLE_ADMIN");
 						   })
 							.sessionManagement(manager ->
 							manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

@@ -1,6 +1,7 @@
 package com.kh.member.model.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -26,7 +27,7 @@ public interface MemberMapper {
 
 	int deleteMember(Long memberNo);
 
-	List<MemberDTO> selectMemberList();
+	List<MemberDTO> selectMemberList(Map<String, String> selectOptions);
 
 	int restoreMember(Long memberNo);
 	

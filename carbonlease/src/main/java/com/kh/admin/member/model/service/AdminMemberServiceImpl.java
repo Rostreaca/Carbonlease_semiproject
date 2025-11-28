@@ -1,6 +1,7 @@
 package com.kh.admin.member.model.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -20,8 +21,8 @@ public class AdminMemberServiceImpl implements AdminMemberService{
 	private final MemberMapper memberMapper;
 	
 	@Override
-	public List<MemberDTO> selectMemberList() {
-		return memberMapper.selectMemberList();
+	public List<MemberDTO> selectMemberList(Map<String, String> selectOptions) {
+		return memberMapper.selectMemberList(selectOptions);
 	}
 
 	@Override
@@ -30,7 +31,7 @@ public class AdminMemberServiceImpl implements AdminMemberService{
 		int result = memberMapper.restoreMember(memberNo);
 		
 		if(result != 1) {
-			throw new UserNotFoundException("존재하지 않는 계정입니다.");
+			throw new UserNotFoundException("계정이 존재하지 않거나 탈퇴하지 않았습니다.");
 		}
 		
 	}
