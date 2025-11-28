@@ -39,7 +39,7 @@ public class ActivityServiceImpl implements ActivityService{
 	    int listCount = findListCount(filter,keyword);
 	    
 	    
-	    Map<String, Object> params = pagination.pageRequest(pageNo, 6, listCount);
+	    Map<String, Object> params = pagination.pageRequest(pageNo, 8, listCount);
 	    params.put("keyword", keyword);
 	    params.put("filter", filter);
 	    List<ActivityListDTO> activityListDTO = activityMapper.activityAllList(params);
