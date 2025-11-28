@@ -69,9 +69,13 @@ public class NoticeServiceImpl implements NoticeService{
 	}
 
 	@Override
-	public NoticeDTO findByNo(Long noticeNo) {
+	public Map<String, Object> findByNo(Long noticeNo) {
 
-		return getNoticeOrThrow(noticeNo);
+		Map<String, Object> map = new HashMap();
+		map.put("notice", getNoticeOrThrow(noticeNo));
+		//TODO: 파일 갖고오기
+		
+		return map;
 	}
 
 	private NoticeDTO getNoticeOrThrow(Long noticeNo) {

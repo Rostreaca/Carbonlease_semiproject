@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.admin.notice.model.dao.AdminNoticeMapper">
+
+	<select id="findAll"
+			resultType="NoticeAdminDTO"
+			parameterType="map">
+		SELECT
+				  NOTICE_NO noticeNo
+				, NOTICE_TITLE noticeTitle
+				, ENROLL_DATE createDate
+				, VIEW_COUNT viewCount
+		FROM
+				CL_NOTICE
+		WHERE		
+				STATUS='Y'
+		ORDER
+		BY
+				NOTICE_NO DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+				
+	<select id="countAll"
+			resultType="_int">
+		SELECT
+				COUNT(*)
+		FROM
+				CL_NOTICE
+	</select>
+	
+	<select id="findAllByAdmin"
+			parameterType="map"
+			resultType="NoticeAdminDTO"
+			>
+		SELECT
+				  N.NOTICE_NO noticeNo
+				, M.MEMBER_ID noticeWriter
+				, N.NOTICE_TITLE noticeTitle
+				, N.ENROLL_DATE createDate
+				, N.VIEW_COUNT viewCount
+				, N.STATUS status
+				, N.FIX fix
+		FROM
+				CL_NOTICE N
+		JOIN
+				CL_MEMBER M
+		ON
+				(N.MEMBER_NO = M.MEMBER_NO)
+		ORDER
+		BY
+				NOTICE_NO DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
+	<insert id="insertNotice"
+			parameterType="NoticeAdminDTO">
+		INSERT
+		INTO
+				CL_NOTICE
+		VALUES
+				(
+				  SEQ_NOTICE_NO.NEXTVAL
+				, #{noticeWriter}
+				, #{noticeTitle}
+				, #{noticeContent}
+				, DEFAULT
+				, SYSDATE
+				, 'Y'
+				, #{fix}
+				)
+	</insert>
+	
+	<insert id="insertAttachment"
+			parameterType="AttachmentDTO">
+	    INSERT
+		INTO 
+				CL_NOTICE_ATTACHMENT
+		VALUES 
+				(
+	              SEQ_NOTICE_FILE_NO.NEXTVAL
+	            , SEQ_NOTICE_NO.CURRVAL
+	            , #{originName}
+	            , #{changeName}
+	            , #{filePath}
+	            , SYSDATE
+		        )
+	</insert>
+	
+	<select id="findByNo"
+			parameterType="long"
+			resultType="NoticeAdminDTO">
+		SELECT
+				  NOTICE_TITLE noticeTitle
+				, NOTICE_CONTENT noticeContent
+				, VIEW_COUNT viewCount
+				, ENROLL_DATE createDate
+		FROM
+				CL_NOTICE
+		WHERE
+				NOTICE_NO = #{noticeNo}
+	</select>
+
+	
+	
+	
+</mapper>

@@ -1,4 +1,4 @@
-package com.kh.notice.model.dao;
+package com.kh.admin.notice.model.dao;
 
 import java.util.List;
 import java.util.Map;
@@ -14,14 +14,19 @@ import com.kh.notice.model.dto.NoticeDTO;
 import jakarta.validation.Valid;
 
 @Mapper
-public interface NoticeMapper {
-
-	int findAndCountAll();
-
-	List<NoticeDTO> findAll(Map<String, Object> params);
-
-	NoticeDTO findByNo(Long noticeNo);
+public interface AdminNoticeMapper {
 
 	int countAll();
+
+	List<NoticeAdminDTO> findAllByAdmin(Map<String, Object> params);
+
+	void insertAttachment(AttachmentDTO at);
+
+	void insertNotice(AdminNoticeVO adminNotice);
+
+	NoticeAdminDTO findByNo(Long noticeNo);
+
+
+
 
 }

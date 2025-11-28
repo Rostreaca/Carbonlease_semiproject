@@ -16,5 +16,7 @@ public interface AdminNoticeService {
 
 	void insert(@Valid NoticeAdminDTO notice, List<MultipartFile> files, CustomUserDetails user);
 
+	NoticeAdminDTO findByNo(Long noticeNo);
+
 	
 }

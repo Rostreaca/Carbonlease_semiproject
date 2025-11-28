@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.admin.notice.model.dao.AdminNoticeMapper;
 import com.kh.admin.notice.model.dto.NoticeAdminDTO;
 import com.kh.admin.notice.model.vo.AdminNoticeVO;
 import com.kh.auth.model.vo.CustomUserDetails;
@@ -17,6 +18,7 @@ import com.kh.common.util.FileUtil;
 import com.kh.common.util.Pagination;
 import com.kh.notice.model.dao.NoticeMapper;
 import com.kh.notice.model.dto.AttachmentDTO;
+import com.kh.notice.model.dto.NoticeDTO;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 public class AdminNoticeServiceImpl implements AdminNoticeService {
 	
-	private final NoticeMapper noticeMapper;
+	private final AdminNoticeMapper adminNoticeMapper;
 	private final Pagination pagination;
 	private final FileUtil fileUtil;
 	
@@ -45,7 +47,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		
 		Map<String, Object> params = pagination.pageRequest(pageNo, 2, listCount);
 		
-		List<NoticeAdminDTO> notices = noticeMapper.findAllByAdmin(params);
+		List<NoticeAdminDTO> notices = adminNoticeMapper.findAllByAdmin(params);
 		
 		Map<String, Object> map = new HashMap();
 		map.put("pageInfo", params.get("pi"));
@@ -57,26 +59,9 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 
 	private int countAll() {
 		
-		return noticeMapper.countAll();
+		return adminNoticeMapper.countAll();
 	}
 
-
-	// 0. 뭐받았냐
-	//  DTO title, content, fix
-	//  file (있을수도 없을수도)
-	//  user정보
-	// 1. 유효성 검사 (분리 필요)
-	// null값 있으면 기각
-	// 파일이 있다면 뭐해야되냐 ㅁ?ㄹ
-	// 1-1 
-	// 파일 있으면 그거해야댐 이름바꾸고 경로수정
-	// 그담에DTO에 담아서
-	// DB로 슝
-	// 2
-	// db 슈웃
-	// 성공하면 1-1파일 과정 슈웃 (묶어서 처리)
-	// 3
-	// 예외처리
 	@Override
 	public void insert(@Valid NoticeAdminDTO notice, List<MultipartFile> files, CustomUserDetails user) {
 
@@ -92,7 +77,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 				
 //				noticeMapper.insertAttachment(ats);
 				for (AttachmentDTO at : ats) {
-					noticeMapper.insertAttachment(at);
+					adminNoticeMapper.insertAttachment(at);
 				}
 				
 			} catch (Exception e) {
@@ -134,7 +119,6 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 			throw new InvalidParameterException("null값은 못넣어용");
 		}
 		
-		//notice.setNoticeWriter(user.getNickname());
 		AdminNoticeVO adminNotice = null;
 		
 		adminNotice = AdminNoticeVO.builder()
@@ -144,7 +128,33 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 											.fix(notice.getFix())
 											.build();
 		
-		noticeMapper.insertNotice(adminNotice);
+		adminNoticeMapper.insertNotice(adminNotice);
+	}
+
+
+	@Override
+	public NoticeAdminDTO findByNo(Long noticeNo) {
+
+		return getNoticeOrThrow(noticeNo);
+	}
+
+
+	private NoticeAdminDTO getNoticeOrThrow(Long noticeNo) {
+		
+		// 번호가 유효한가?
+		if(noticeNo < 1) {
+			throw new InvalidParameterException("유효하지 않은 접근입니다.");
+		}
+		
+		// 조회
+		NoticeAdminDTO notice = adminNoticeMapper.findByNo(noticeNo);
+		
+		// 존재하는 게시물인가?
+		if(notice == null) {
+			throw new InvalidParameterException("유효하지 않은 접근입니다.");
+		}
+		
+		return notice;
 	}
 
 	
