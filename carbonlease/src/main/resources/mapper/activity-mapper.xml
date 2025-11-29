@@ -257,18 +257,6 @@
 		       FILE_NO ASC
 	</select>
 	
-	<select id="checkLike"
-			resultType="int">
-		SELECT
-			   COUNT(*)
-		  FROM
-		       CL_ACTIVITY_LIKE
-		 WHERE
-		       ACTIVITY_BOARD_NO = #{activityNo}
-		   AND
-		       MEMBER_NO = #{memberNo}
-	</select>
-	
 	<insert id="insertLike">
 		INSERT
 		  INTO
@@ -297,6 +285,18 @@
 		   AND
 		       MEMBER_NO = #{memberNo}
 	</delete>
+	
+	<select id="checkLike"
+			resultType="int">
+		SELECT
+			   COUNT(*)
+		  FROM
+		       CL_ACTIVITY_LIKE
+		 WHERE
+		       ACTIVITY_BOARD_NO = #{activityNo}
+		   AND
+		       MEMBER_NO = #{memberNo}
+	</select>
 	
 	<select id="findBoardOwner"
 			resultType="com.kh.activity.model.vo.ActivityBoard">
