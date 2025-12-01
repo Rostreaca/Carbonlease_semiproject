@@ -55,7 +55,7 @@
 	</select>
 	
 	<insert id="insertNotice"
-			parameterType="NoticeAdminDTO">
+			parameterType="AdminNoticeVO">
 		INSERT
 		INTO
 				CL_NOTICE
@@ -102,7 +102,37 @@
 				NOTICE_NO = #{noticeNo}
 	</select>
 
+	<update id="delete"
+			parameterType="long">
+		UPDATE
+				CL_NOTICE
+		SET
+				STATUS = 'N'
+		WHERE
+				NOTICE_NO = #{noticeNo}
+	</update>
 	
+	<update id="updateNotice"
+			parameterType="AdminNoticeVO">
+		UPDATE
+				CL_NOTICE
+		SET
+				  MEMBER_NO = #{noticeWriter}
+				, NOTICE_TITLE = #{noticeTitle}
+				, NOTICE_CONTENT = #{noticeContent}
+				, ENROLL_DATE = SYSDATE
+		WHERE
+				NOTICE_NO=#{noticeNo}
+	</update>
+	
+	<delete id="resetAttachment">
+		DELETE
+		FROM
+				CL_NOTICE_ATTACHMENT
+		WHERE
+				REF_BNO = #{noticeNo}
+		
+	</delete>
 	
 	
 </mapper>

@@ -31,18 +31,10 @@
 		WHERE
 				STATUS='Y'
 	</select>
-				
-	<select id="countAll"
-			resultType="_int">
-		SELECT
-				COUNT(*)
-		FROM
-				CL_NOTICE
-	</select>
 	
 	<select id="findByNo"
-			parameterType="long"
-			resultType="NoticeDTO">
+			resultType="NoticeDTO"
+			parameterType="long">
 		SELECT
 				  NOTICE_TITLE noticeTitle
 				, NOTICE_CONTENT noticeContent
@@ -55,5 +47,20 @@
 		AND
 				NOTICE_NO = #{noticeNo}
 	</select>
-	
+				  
+	<select id="getAttachment"
+			resultType="AttachmentDTO"
+			parameterType="long">
+		SELECT
+				  FILE_NO fileNo
+				, ORIGIN_NAME originName
+				, CHANGE_NAME changeName
+				, FILE_PATH filePath
+				, UPLOAD_DATE uploadDate
+		FROM
+				CL_NOTICE_ATTACHMENT
+		WHERE
+				REF_BNO = #{noticeNo}
+	</select>
+				  
 </mapper>

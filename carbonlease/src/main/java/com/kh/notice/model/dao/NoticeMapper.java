@@ -4,14 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
-import com.kh.admin.notice.model.dto.NoticeAdminDTO;
-import com.kh.admin.notice.model.vo.AdminNoticeVO;
 import com.kh.notice.model.dto.AttachmentDTO;
 import com.kh.notice.model.dto.NoticeDTO;
-
-import jakarta.validation.Valid;
 
 @Mapper
 public interface NoticeMapper {
@@ -22,6 +18,18 @@ public interface NoticeMapper {
 
 	NoticeDTO findByNo(Long noticeNo);
 
-	int countAll();
+//	@Select("""
+//			SELECT
+//				  FILE_NO fileNo
+//				, ORIGIN_NAME originName
+//				, CHANGE_NAME changeName
+//				, FILE_PATH filePath
+//				, UPLOAD_DATE uploadDate
+//		FROM
+//				CL_NOTICE_ATTACHMENT
+//		WHERE
+//				REF_BNO = #{noticeNo}
+//			""")
+	List<AttachmentDTO> getAttachment(Long noticeNo);
 
 }

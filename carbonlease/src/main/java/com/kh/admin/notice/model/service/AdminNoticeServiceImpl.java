@@ -157,6 +157,66 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		return notice;
 	}
 
+
+	@Override
+	public void update(@Valid NoticeAdminDTO notice, List<MultipartFile> files, CustomUserDetails user) {
+		
+		try {
+			
+			setNoticeAndUpdate(notice, user);
+			
+			// 첨부파일 초기화
+			resetAttachment(notice.getNoticeNo());
+			
+			List<AttachmentDTO> ats = saveFiles(files);
+			
+			log.info("파일 어캐됨 {}", ats);
+			
+//			noticeMapper.insertAttachment(ats);
+			for (AttachmentDTO at : ats) {
+				adminNoticeMapper.insertAttachment(at);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	private void resetAttachment(Long noticeNo) {
+		
+		adminNoticeMapper.resetAttachment(noticeNo);
+		
+	}
+
+
+	private void setNoticeAndUpdate(@Valid NoticeAdminDTO notice, CustomUserDetails user) {
+		
+		if(notice.getNoticeTitle() == null || notice.getNoticeContent() == null) {
+			
+			throw new InvalidParameterException("null값은 못넣어용");
+		}
+		
+		AdminNoticeVO adminNotice = null;
+		
+		adminNotice = AdminNoticeVO.builder()
+											.noticeNo(notice.getNoticeNo())
+											.noticeWriter(user.getMemberNo())
+											.noticeTitle(notice.getNoticeTitle())
+											.noticeContent(notice.getNoticeContent())
+											.fix(notice.getFix())
+											.build();
+		
+		adminNoticeMapper.updateNotice(adminNotice);
+	}
+
+
+	@Override
+	public void delete(Long noticeNo) {
+
+		adminNoticeMapper.delete(noticeNo);
+	}
+
 	
 	
 

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.kh.common.util.Pagination;
 import com.kh.notice.model.dao.NoticeMapper;
+import com.kh.notice.model.dto.AttachmentDTO;
 import com.kh.notice.model.dto.NoticeDTO;
 
 import lombok.RequiredArgsConstructor;
@@ -72,10 +73,15 @@ public class NoticeServiceImpl implements NoticeService{
 	public Map<String, Object> findByNo(Long noticeNo) {
 
 		Map<String, Object> map = new HashMap();
+		
 		map.put("notice", getNoticeOrThrow(noticeNo));
-		//TODO: 파일 갖고오기
+		map.put("attachment", getAttachment(noticeNo));
 		
 		return map;
+	}
+
+	private List<AttachmentDTO> getAttachment(Long noticeNo) {
+		return noticeMapper.getAttachment(noticeNo);
 	}
 
 	private NoticeDTO getNoticeOrThrow(Long noticeNo) {

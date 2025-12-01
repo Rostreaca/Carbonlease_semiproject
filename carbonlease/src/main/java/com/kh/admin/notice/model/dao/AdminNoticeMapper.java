@@ -26,6 +26,13 @@ public interface AdminNoticeMapper {
 
 	NoticeAdminDTO findByNo(Long noticeNo);
 
+	void delete(Long noticeNo);
+
+	void updateNotice(AdminNoticeVO adminNotice);
+
+	void resetAttachment(Long noticeNo);
+
+
 
 
 
