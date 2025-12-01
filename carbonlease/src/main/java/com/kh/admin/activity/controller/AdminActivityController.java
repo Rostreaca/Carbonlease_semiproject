@@ -45,7 +45,7 @@ public class AdminActivityController {
     }
 
     // 삭제
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") int id) {
         service.deleteBoard(id);
         return ResponseEntity.ok("deleted");
