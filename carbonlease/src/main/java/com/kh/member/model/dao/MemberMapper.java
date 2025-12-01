@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.kh.activity.model.dto.ActivityListDTO;
+import com.kh.board.model.dto.BoardDTO;
 import com.kh.member.model.dto.MemberDTO;
 import com.kh.member.model.vo.MemberVO;
 
@@ -30,5 +32,9 @@ public interface MemberMapper {
 	List<MemberDTO> selectMemberList(Map<String, String> selectOptions);
 
 	int restoreMember(Long memberNo);
+
+	List<BoardDTO> selectBoardsByMemberNo(Long memberNo);
+
+	List<ActivityListDTO> selectActivityBoardsByMemberNo(Long memberNo);
 	
 }

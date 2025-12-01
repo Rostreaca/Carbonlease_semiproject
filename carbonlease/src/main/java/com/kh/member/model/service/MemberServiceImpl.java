@@ -1,11 +1,15 @@
 package com.kh.member.model.service;
 
+import java.util.List;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.kh.activity.model.dto.ActivityListDTO;
 import com.kh.auth.model.vo.CustomUserDetails;
+import com.kh.board.model.dto.BoardDTO;
 import com.kh.exception.CustomAuthenticationException;
 import com.kh.member.model.dao.MemberMapper;
 import com.kh.member.model.dto.MemberDTO;
@@ -105,6 +109,22 @@ public class MemberServiceImpl implements MemberService {
 
 		memberValidator.checkEmail(email);
 
+	}
+
+	@Override
+	public List<BoardDTO> selectBoardsByMemberNo(Long memberNo) {
+		
+		List<BoardDTO> boards = memberMapper.selectBoardsByMemberNo(memberNo); 
+		
+		return boards;
+	}
+
+	@Override
+	public List<ActivityListDTO> selectActivityBoardsByMemberNo(Long memberNo) {
+
+		List<ActivityListDTO> activityBoards = memberMapper.selectActivityBoardsByMemberNo(memberNo);
+		
+		return activityBoards;
 	}
 
 }
