@@ -4,5 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface MainApiService {
-	List<Map<String, Object>> getLast3MonthsStats();
+    /**
+     * 광역시/도별 에너지 사용량 % 반환
+     * @return List<Map> (region, lat, lng, value)
+     */
+    List<Map<String, Object>> getRegionMapData();
 }

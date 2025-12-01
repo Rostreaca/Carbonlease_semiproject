@@ -1,7 +1,8 @@
+
 package com.kh.openapi.main.model.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kh.openapi.common.client.OpenApiClient;
+import com.kh.openapi.main.model.vo.KoreaRegionCoord;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,166 +20,137 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MainApiServiceImpl implements MainApiService {
 
-	
-	private final OpenApiClient client;
-    private final ObjectMapper objectMapper;
+        /**
+         * 지역명 정규화 함수
+         * ex) "경상북도" > "경북", "서울특별시" > "서울", "경기 남양주시" > "경기"
+         * - 지도/DB/좌표 매칭을 위해 광역시/도 단위로 변환
+         */
+        private static String normalizeRegion(String region) {
+            if (region == null) return null;
+            // ex) "인천 계양구" > "인천", "서울 강남구" > "서울", "경기 남양주시" > "경기"
+            String[] parts = region.split(" ");
+            String wide = parts[0];
+            if (wide.endsWith("특별시")) return wide.replace("특별시", "");
+            if (wide.endsWith("광역시")) return wide.replace("광역시", "");
+            if (wide.endsWith("도")) return wide.replace("도", "");
+            return wide;
+        }
 
-    
+    private final OpenApiClient client;
+    private final ObjectMapper om;
+
     /**
-     * Map에서 key로 안전하게 Map<String, Object>를 꺼내는 유틸
+     * [지도 API] 광역시/도별 에너지 사용량 % 반환
+     * - OpenAPI에서 데이터 조회 및 파싱
+     * - 광역시/도별 평균 사용량 > 전체 합 대비 % 계산
+     * - 수도권(서울/경기/인천) 별도 집계(평균값, region=수도권)
+     * - value는 반드시 숫자(%)만 반환(프론트 NaN 방지)
+     * - 장애/데이터 누락/좌표 누락 등 실무적 예외처리 포함
      */
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> safeGetMap(Map<String, Object> map, String key, String errMsg, String json) {
-        Object obj = map.get(key);
-        if (obj == null) throw new RuntimeException(errMsg + ": " + json);
-        return (Map<String, Object>) obj;
-    }
-
-    /**
-     * 공공데이터포털 openapi 테스트용 메서드
-     * @param serviceName OpenApiProperties에 등록된 서비스명
-     * @param params 요청 파라미터 (Map<String, String>)
-     */
-    public void testOpenApiCall(String serviceName, Map<String, String> params) {
-        try {
-            String json = client.call(serviceName, params);
-            log.info("=== 최신날짜 원본 JSON ===\n{}", json);
-            log.info("[OpenAPI 응답] {}", json);
-        } catch (Exception e) {
-            log.error("[OpenAPI 호출 오류]", e);
-        }
-    }
-
-    private static final String[] REGIONS = {
-            "서울", "부산", "대구", "인천",
-            "광주", "대전", "울산", "세종",
-            "경기", "강원", "충북", "충남",
-            "전북", "전남", "경북", "경남", "제주"
-    };
-
-    /** 1) 최신 날짜 조회 */
-    private Map<String, String> getLatestDate() {
-        Map<String, String> params = new HashMap<>();
-        params.put("pageNo", "1");
-        params.put("numOfRows", "1");
-        try {
-            String json = client.call("carbon-energy", params);
-            Map<String, Object> map = objectMapper.readValue(json, Map.class);
-            Map<String, Object> body = safeGetMap(map, "body", "OpenAPI 응답에 body가 없습니다", json);
-            Map<String, Object> items = safeGetMap(body, "items", "OpenAPI 응답에 items가 없습니다", json);
-            Map<String, Object> item = safeGetMap(items, "item", "OpenAPI 응답에 item이 없습니다", json);
-            return Map.of(
-                "rlvtYr", (String) item.get("rlvtYr"),
-                "rlvtMm", (String) item.get("rlvtMm")
-            );
-        } catch (org.springframework.web.client.HttpClientErrorException e) {
-            log.error("[OpenAPI 호출 오류] {}", e.getResponseBodyAsString());
-            throw new RuntimeException("외부 OpenAPI 호출이 일시적으로 제한되었습니다. 잠시 후 다시 시도해 주세요.");
-        } catch (Exception e) {
-            log.error("[OpenAPI 예외]", e);
-            throw new RuntimeException("최신 날짜 조회 실패", e);
-        }
-    }
-
-
-
-
-    /** 2) 최신 날짜 기준 3개월 리스트 생성 */
-    private List<Map<String, String>> getLast3Months(String year, String month) {
-
-        int y = Integer.parseInt(year);
-        int m = Integer.parseInt(month);
-
-        List<Map<String, String>> list = new ArrayList<>();
-
-        for (int i = 0; i < 3; i++) {
-            int mm = m - i;
-            int yy = y;
-
-            if (mm <= 0) {
-                mm += 12;
-                yy--;
-            }
-
-            list.add(
-                Map.of(
-                    "rlvtYr", String.valueOf(yy),
-                    "rlvtMm", String.format("%02d", mm)
-                )
-            );
-        }
-
-        return list;
-    }
-
-    /** 3) 참여율 파싱 */
-    private int extractParticipationRate(String json) {
-        try {
-            Map<String, Object> map = objectMapper.readValue(json, Map.class);
-            Map<String, Object> body = safeGetMap(map, "body", "OpenAPI 응답에 body가 없습니다", json);
-            Map<String, Object> items = safeGetMap(body, "items", "OpenAPI 응답에 items가 없습니다", json);
-            Map<String, Object> item = safeGetMap(items, "item", "OpenAPI 응답에 item이 없습니다", json);
-            Object ptcpRt = item.get("ptcpRt");
-            if (ptcpRt instanceof Number) {
-                return ((Number) ptcpRt).intValue();
-            } else if (ptcpRt != null) {
-                try {
-                    return Integer.parseInt(ptcpRt.toString());
-                } catch (NumberFormatException e) {
-                    log.warn("ptcpRt 값 파싱 실패: {}", ptcpRt);
-                }
-            }
-            return 0;
-        } catch (Exception e) {
-            log.error("[참여율 파싱 오류]", e);
-            return 0;
-        }
-    }
-            
     @Override
-    public List<Map<String, Object>> getLast3MonthsStats() {
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> getRegionMapData() {
+        try {
+            // 1. OpenAPI 호출 (3초 타임아웃, 장애 시 null)
+            String json = client.call(Map.of("pageNo", "1", "numOfRows", "17"));
+            if (json == null) return List.of();
 
-        Map<String, String> latest = getLatestDate();
-
-        List<Map<String, String>> months =
-                getLast3Months(latest.get("rlvtYr"), latest.get("rlvtMm"));
-
-        List<Map<String, Object>> result = new ArrayList<>();
-
-        for (String region : REGIONS) {
-
-            List<Map<String, Object>> history = new ArrayList<>();
-
-            for (Map<String, String> date : months) {
-
-                Map<String, String> params = new HashMap<>();
-                params.put("rlvtYr", date.get("rlvtYr"));
-                params.put("rlvtMm", date.get("rlvtMm"));
-                params.put("lclgvNm", region);
-                params.put("pageNo", "1");
-                params.put("numOfRows", "1");
-
-                String json = client.call("carbon-energy", params);
-
-                int ptcpRt = extractParticipationRate(json);
-
-                history.add(
-                    Map.of(
-                        "year", date.get("rlvtYr"),
-                        "month", date.get("rlvtMm"),
-                        "ptcpRt", ptcpRt
-                    )
-                );
+            // 2. JSON 파싱 및 body 추출
+            Object parsed = om.readValue(json, Object.class);
+            Map<String, Object> body;
+            if (parsed instanceof Map) {
+                body = (Map<String, Object>) ((Map<String, Object>) parsed).get("body");
+            } else if (parsed instanceof List) {
+                log.error("[OpenAPI 응답 body가 List로 내려옴: {}]", parsed.getClass());
+                return List.of();
+            } else {
+                log.error("[OpenAPI 응답 body 타입 예외: {}]", parsed.getClass());
+                return List.of();
             }
 
-            result.add(
-                Map.of(
-                    "region", region,
-                    "history", history
-                )
-            );
-        }
+            // 3. items 파싱 (Map/List 모두 대응)
+            Object itemsObj = body.get("items");
+            Object itemObj;
+            if (itemsObj instanceof Map) {
+                itemObj = ((Map<String, Object>) itemsObj).get("item");
+            } else if (itemsObj instanceof List) {
+                itemObj = itemsObj;
+            } else {
+                itemObj = null;
+            }
 
-        return result;
+            // 4. itemObj를 List<Map>으로 변환 (실무형 안전 파싱)
+            List<Map<String, Object>> items;
+            if (itemObj instanceof List) {
+                List<?> rawList = (List<?>) itemObj;
+                if (!rawList.isEmpty() && rawList.get(0) instanceof List) {
+                    // 리스트의 리스트 구조 대응
+                    items = new ArrayList<>();
+                    for (Object sub : rawList) {
+                        if (sub instanceof List) {
+                            for (Object m : (List<?>) sub) {
+                                if (m instanceof Map) items.add((Map<String, Object>) m);
+                            }
+                        }
+                    }
+                } else {
+                    items = (List<Map<String, Object>>) itemObj;
+                }
+            } else if (itemObj instanceof Map) {
+                items = List.of((Map<String, Object>) itemObj);
+            } else {
+                items = List.of();
+            }
+
+            // 데이터 누락 시만 경고 로그
+            if (items.isEmpty()) {
+                log.warn("[OpenAPI items가 비어있음] 응답 파싱 또는 API 데이터 문제");
+            }
+
+            // 5. 광역시/도별로 사용량 합산 (여러 구/군/시 > 광역시/도)
+            Map<String, List<Integer>> regionUsageList = new LinkedHashMap<>();
+            for (Map<String, Object> it : items) {
+                String region = normalizeRegion(it.get("lclgvNm").toString());
+                int usage = it.get("avgUseQnt") != null ? Integer.parseInt(it.get("avgUseQnt").toString()) : 0;
+                regionUsageList.computeIfAbsent(region, k -> new ArrayList<>()).add(usage);
+            }
+
+            // 6. 광역시/도별 평균 사용량 계산
+            Map<String, Integer> usageMap = new LinkedHashMap<>();
+            regionUsageList.forEach((region, list) -> {
+                if (!list.isEmpty()) {
+                    int avg = (int) Math.round(list.stream().mapToInt(Integer::intValue).average().orElse(0));
+                    usageMap.put(region, avg);
+                }
+            });
+
+            // usageMap이 비어있을 때만 경고
+            if (usageMap.isEmpty()) {
+                log.warn("[usageMap이 비어있음] items 파싱 문제 또는 데이터 없음");
+            }
+
+            // 7. 전체 합계(%) 기준 value 계산 및 좌표 매핑
+            double total = usageMap.values().stream().mapToDouble(Integer::doubleValue).sum();
+            List<Map<String, Object>> out = new ArrayList<>();
+            usageMap.forEach((region, val) -> {
+                double[] coord = KoreaRegionCoord.COORDS.get(region);
+                if (coord != null) {
+                    double percent = total > 0 ? Math.round((val / total) * 1000.0) / 10.0 : 0.0;
+                    log.info("[지역별 사용량] region={}, value(%)={}, lat={}, lng={}", region, percent, coord[0], coord[1]);
+                    out.add(Map.of("region", region, "lat", coord[0], "lng", coord[1], "value", percent));
+                } else {
+                    log.warn("[좌표 없음] region={}", region);
+                }
+            });
+
+            // 최종 반환 데이터가 비어있을 때만 경고
+            if (out.isEmpty()) {
+                log.warn("[지도 반환 데이터 out이 비어있음] usageMap에 좌표 매칭되는 지역 없음");
+            }
+            return out;
+        } catch (Exception e) {
+            log.error("[OpenAPI 조회 실패]", e);
+            return List.of();
+        }
     }
 }
