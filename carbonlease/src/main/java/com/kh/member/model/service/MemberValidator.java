@@ -1,12 +1,18 @@
 package com.kh.member.model.service;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.kh.auth.model.vo.CustomUserDetails;
+import com.kh.exception.CustomAuthenticationException;
 import com.kh.exception.EmailDuplicateException;
 import com.kh.exception.IdDuplicateException;
 import com.kh.exception.InvalidValueException;
 import com.kh.exception.NickNameDuplicateException;
 import com.kh.member.model.dao.MemberMapper;
+import com.kh.member.model.dto.MemberDTO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,9 +21,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MemberValidator {
 
+	private final PasswordEncoder passwordEncoder;
 	private final MemberMapper memberMapper;
 	
-	public void checkBlank(String param,String message) {
+	private void checkBlank(String param,String message) {
 		if(param == null || param.trim() == "") {
 			throw new InvalidValueException(message);
 		}
@@ -52,5 +59,48 @@ public class MemberValidator {
 			throw new EmailDuplicateException("이미 존재하는 이메일입니다.");
 		}
 	}
+	
+	public void validateSignUp(MemberDTO member) {
+		checkId(member.getMemberId());
+		checkBlank(member.getMemberPwd(), "비밀번호는 비어있을 수 없습니다.");
+		checkNickName(member.getNickName());
+		checkEmail(member.getEmail());
+	}
+
+	public MemberDTO validateUpdate(MemberDTO member) {
+		// 불필요한 코드
+//		checkBlank(member.getNickName(), "닉네임은 비어있을 수 없습니다.");
+//		checkBlank(member.getEmail(), "이메일은 비어있을 수 없습니다.");
+		
+		CustomUserDetails user = comparePassword(member.getMemberPwd());
+		// 기존 사용했던 닉네임은 변경(유지) 가능 / 그 외 중복검사
+		if (!member.getNickName().equals(user.getNickname())) {
+			checkNickName(member.getNickName());
+		}
+
+		// 기존 사용했던 이메일은 변경(유지) 가능 / 그 외 중복검사
+		if (!member.getEmail().equals(user.getEmail())) {
+			checkEmail(member.getEmail());
+		}
+
+		// DB에서 UPDATE하기 위해 로그인 한 유저의 PK 받아옴
+		member.setMemberNo(user.getMemberNo());
+		
+		return member;
+	}
+	
+	public CustomUserDetails comparePassword(String password) {
+		checkBlank(password, "비밀번호를 입력해 주십시오.");
+
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+
+		if (!passwordEncoder.matches(password, user.getPassword())) {
+			throw new CustomAuthenticationException("입력한 비밀번호가 기존 비밀번호 값과 다릅니다.");
+		}
+		
+		return user;
+	}
+
 	
 }
