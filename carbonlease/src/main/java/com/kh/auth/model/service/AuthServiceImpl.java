@@ -47,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
 		
 		log.info("로그인 성공");
 		
-		Map<String, String> loginResponse = tokenService.generateToken(user.getMemberNo());
+		Map<String, String> loginResponse = tokenService.generateToken(user);
 		loginResponse.put("memberId", user.getUsername());
 		loginResponse.put("nickName", user.getNickname());
 		loginResponse.put("role", user.getAuthorities().toString());
@@ -79,7 +79,7 @@ public class AuthServiceImpl implements AuthService {
 		
 		log.info("로그인 성공");
 		
-		Map<String, String> loginResponse = tokenService.generateToken(user.getMemberNo());
+		Map<String, String> loginResponse = tokenService.generateToken(user);
 		loginResponse.put("memberId", user.getUsername());
 		loginResponse.put("nickName", user.getNickname());
 		loginResponse.put("role", user.getAuthorities().toString());
