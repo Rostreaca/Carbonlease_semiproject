@@ -46,7 +46,7 @@ public class MemberController {
 		
 		memberService.updateMember(member);
 		
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 	
 	@DeleteMapping
@@ -92,8 +92,8 @@ public class MemberController {
 	/**
 	 * 해당 유저가 가장 최근에 작성한 글 3개를 가져와 표시
 	 * 
-	 * @param memberNo
-	 * @return
+	 * @param user
+	 * @return ResponseEntity<List<BoardDTO>>
 	 */
 	@GetMapping("/boards")
 	public ResponseEntity<List<BoardDTO>> selectBoardsByMemberNo(@AuthenticationPrincipal CustomUserDetails user){

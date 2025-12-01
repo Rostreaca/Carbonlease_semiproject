@@ -33,10 +33,7 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public void signUp(MemberDTO member) {
 
-		memberValidator.checkId(member.getMemberId());
-		memberValidator.checkBlank(member.getMemberPwd(), "비밀번호는 비어있을 수 없습니다.");
-		memberValidator.checkNickName(member.getNickName());
-		memberValidator.checkEmail(member.getEmail());
+		memberValidator.validateSignUp(member);
 
 		String encodedPassword = passwordEncoder.encode(member.getMemberPwd());
 
@@ -51,23 +48,8 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public void updateMember(MemberDTO member) {
 
-		memberValidator.checkBlank(member.getNickName(), "닉네임은 비어있을 수 없습니다.");
-		memberValidator.checkBlank(member.getEmail(), "이메일은 비어있을 수 없습니다.");
 
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
-
-		// 기존 사용했던 닉네임은 변경(유지) 가능
-		if (!member.getNickName().equals(user.getNickname())) {
-			memberValidator.checkNickName(member.getNickName());
-		}
-
-		// 기존 사용했던 이메일은 변경(유지) 가능
-		if (!member.getEmail().equals(user.getEmail())) {
-			memberValidator.checkEmail(member.getEmail());
-		}
-
-		member.setMemberNo(user.getMemberNo());
+		member = memberValidator.validateUpdate(member);
 
 		memberMapper.updateMember(member);
 
@@ -76,14 +58,7 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public void deleteMember(String password) {
 
-		memberValidator.checkBlank(password, "비밀번호를 입력해 주십시오.");
-
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
-
-		if (!passwordEncoder.matches(password, user.getPassword())) {
-			throw new CustomAuthenticationException("입력한 비밀번호가 기존 비밀번호 값과 다릅니다.");
-		}
+		CustomUserDetails user = memberValidator.comparePassword(password);
 
 		memberMapper.deleteMember(user.getMemberNo());
 		tokenMapper.deleteToken(user.getMemberNo());

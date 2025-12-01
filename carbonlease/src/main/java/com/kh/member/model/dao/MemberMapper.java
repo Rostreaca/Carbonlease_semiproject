@@ -29,10 +29,6 @@ public interface MemberMapper {
 
 	int deleteMember(Long memberNo);
 
-	List<MemberDTO> selectMemberList(Map<String, String> selectOptions);
-
-	int restoreMember(Long memberNo);
-
 	List<BoardDTO> selectBoardsByMemberNo(Long memberNo);
 
 	List<ActivityListDTO> selectActivityBoardsByMemberNo(Long memberNo);

@@ -114,54 +114,6 @@
 		
 	</update>
 	
-	<select id="selectMemberList" resultType="MemberDTO" parameterType="map">
-		SELECT
-		       MEMBER_NO memberNo
-		     , MEMBER_ID memberId
-		     , NICKNAME
-		     , ENROLL_DATE enrollDate
-		     , STATUS
-		  FROM
-		       CL_MEMBER
-		 WHERE
-		       ROLE = 'ROLE_USER'
-		    <if test="keyword != ''">
-		   AND
-			   NICKNAME LIKE '%' || #{keyword} || '%'
-			</if>
-		 ORDER
-		    BY
-		    <choose>
-				<when test="orderBy == 'memberId'">
-					MEMBER_ID ASC
-				</when>
-				<when test="orderBy == 'enrollDate'">
-					ENROLL_DATE DESC
-				</when>
-				<when test="orderBy == 'nickName'">
-					NICKNAME ASC
-				</when>
-				<otherwise>
-		       		MEMBER_NO DESC
-				</otherwise>
-			</choose>
-		
-		
-		
-	</select>
-	
-	<update id="restoreMember" parameterType="_long">
-		UPDATE
-		       CL_MEMBER
-		   SET
-		       STATUS = 'Y'
-		 WHERE
-		       STATUS = 'N'
-		   AND
-		       MEMBER_NO = #{memberNo}
-		   
-	</update>
-	
 	<select id="selectBoardsByMemberNo" resultType="BoardDTO" parameterType="_long">
 		
 		SELECT
