@@ -24,6 +24,7 @@ public class BoardDTO {
 	private Date enrollDate;
 	private char status;
 	private long memberNo;
+	private String memberId;
 	private int regionNo;
 	private String regionName;
 	private String nickname;

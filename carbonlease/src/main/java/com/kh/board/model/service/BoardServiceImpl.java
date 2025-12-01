@@ -100,17 +100,37 @@ public class BoardServiceImpl implements BoardService {
 
 	// 글 수정하기
 	@Override
-	public int boardUpdateForm() {
+	public int boardUpdateForm(BoardDTO boardDTO, CustomUserDetails user) {
 		
-		return 0;
+		int updateOK = 0;
+		
+		if(user.getUsername().equals(boardDTO.getMemberId())) {
+			
+			updateOK = boardMapper.boardUpdateForm(boardDTO);
+			
+		} else {
+			throw new InvalidParameterException("유효하지 않은 접근입니다.");
+		}
+		
+		return updateOK;
 	}
 	
 	
 	// 글 삭제하기
 	@Override
-	public void boardDelete(Long boardNo, CustomUserDetails user) {
+	public int boardDelete(BoardDTO boardDTO, CustomUserDetails user) {
 		
-		boardMapper.boardDelete(boardNo, user);
+		int deleteOK = 0;
+				
+		System.out.println(user);
+		if(user.getUsername().equals(boardDTO.getMemberId())) {
+			
+			deleteOK = boardMapper.boardDelete(new Integer( boardDTO.getBoardNo()).longValue());
+		} else {
+			throw new InvalidParameterException("유효하지 않은 접근입니다.");
+		}
+		
+		return deleteOK;
 	}
 
 }

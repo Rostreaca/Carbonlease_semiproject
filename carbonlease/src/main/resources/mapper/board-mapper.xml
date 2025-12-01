@@ -24,6 +24,8 @@
 		  LEFT 
 		  JOIN
 		   	   CL_BOARD_REPLY R ON (B.BOARD_NO = R.BOARD_NO)
+		 WHERE
+		 	   B.STATUS ='Y'
 		 GROUP 
 		    BY
 			   B.BOARD_NO, B.BOARD_TITLE, B.BOARD_CONTENT, 
@@ -54,16 +56,16 @@
 		      , M.NICKNAME AS nickname
 		      , B.REGION_NO AS regionNo
 		      , RC.REGION_NAME AS regionName
+		      , M.MEMBER_ID AS memberId
 		   FROM 
 		   		CL_BOARD B
 		   JOIN 
 		   		CL_MEMBER M ON B.MEMBER_NO = M.MEMBER_NO
 		   LEFT 
 		   JOIN CL_REGION_CATEGORY RC ON B.REGION_NO = RC.REGION_NO 
-		  WHERE 
-		  		B.REGION_NO = RC.REGION_NO 
-		    AND
-		    	B.BOARD_NO = #{boardNo}
+		  WHERE B.REGION_NO = RC.REGION_NO 
+		  	AND B.STATUS = 'Y'
+		    AND B.BOARD_NO = #{boardNo}
 	</select>
 	
 	<!-- 댓글 조회 -->
@@ -146,8 +148,15 @@
 	</insert>
 	
 	<!-- 글 수정 하기 -->
-	<insert id="boardUpdateForm" parameterType="_int">
-		
+	<insert id="boardUpdateForm" parameterType="BoardDTO">
+		UPDATE
+			    CL_BOARD
+		   SET
+		   	    BOARD_TITLE = #{boardTitle}
+			  , BOARD_CONTENT = #{boardContent}
+			  , REGION_NO = #{regionNo}
+	     WHERE
+	     	    BOARD_NO = #{boardNo}
 	</insert>
 	
 	<!-- 글 삭제 하기 -->

@@ -16,11 +16,11 @@ public interface BoardService {
 
 	int boardReplyInsert(ReplyInsertVO riVO);
 
-	int boardUpdateForm();
+	int boardUpdateForm(BoardDTO boardDTO, CustomUserDetails user);
 	
 	int insertBoard(BoardDTO boardVo);
 	
-	void boardDelete(Long boardNo, CustomUserDetails user);
+	int boardDelete(BoardDTO boardDTO, CustomUserDetails user);
 
 	
 	

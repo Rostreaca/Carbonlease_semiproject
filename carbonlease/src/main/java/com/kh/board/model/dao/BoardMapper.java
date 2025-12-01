@@ -26,9 +26,9 @@ public interface BoardMapper {
 	
 	int replyCount(Long boardNo);
 	
-	int boardUpdateForm();
+	int boardUpdateForm(BoardDTO boardDTO);
 	
-	void boardDelete(Long boardNo, CustomUserDetails user);
+	int boardDelete(Long boardNo);
 	
 	int insertClBoard(BoardDTO boardVO);
 
