@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LikeDTO {
+public class LikeDTO {// 좋아요 => INSERT || 취소 => DELETE || 마이페이지 내가 좋아요한거 => 정렬기준
     private Long campaignNo;
     private Long memberNo;
 }

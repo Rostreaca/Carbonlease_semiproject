@@ -10,9 +10,9 @@ public interface CampaignService {
 	/**
 	 * 전체조회
 	 * @param PageNo
-	 * @return Map<String, Object> : pageInfo(페이징 정보), notices(캠페인 목록)
+	 * @return Map<String, Object> : pageInfo(페이징 정보), campaigns(캠페인 목록)
 	 */
-	Map<String, Object> selectCampaignList(int PageNo);
+	Map<String, Object> findAll(int PageNo);
 	
 	
 	/**
@@ -20,7 +20,15 @@ public interface CampaignService {
 	 * @param campaignNo
 	 * @return CampaignDTO : 캠페인 상세 정보
 	 */
-	CampaignDTO selectByCampaignNo(Long campaignNo);
+	CampaignDTO findDetailByNo(Long campaignNo);
+	
+	
+	/**
+	 * 상세 조회 (조회수 증가 없음, 수정/관리용)
+	 * @param campaignNo 캠페인 번호 정보
+	 * @return CampaignDTO 캠페인 정보
+	 */
+	CampaignDTO getCampaignOnly(Long campaignNo);
 	
 	/**
 	 * 조회수 증가
@@ -37,4 +45,6 @@ public interface CampaignService {
 	 * @return void
 	 */
 	void toggleLike(Long campaignNo, Long memberNo);
+
+
 }

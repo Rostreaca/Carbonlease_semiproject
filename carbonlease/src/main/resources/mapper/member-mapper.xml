@@ -114,5 +114,34 @@
 		
 	</update>
 	
+	<select id="selectMemberList" resultType="MemberDTO">
+		SELECT
+		       MEMBER_NO memberNo
+		     , MEMBER_ID memberId
+		     , NICKNAME
+		     , ENROLL_DATE enrollDate
+		  FROM
+		       CL_MEMBER
+		 WHERE
+		       ROLE = 'ROLE_USER'
+		
+		
+		
+	</select>
+	
+	<update id="restoreMember" parameterType="_long">
+		UPDATE
+		       CL_MEMBER
+		   SET
+		       STATUS = 'Y'
+		 WHERE
+		       STATUS = 'N'
+		   AND
+		       MEMBER_NO = #{memberNo}
+		   
+	</update>
+	
+	
+	
 	
 </mapper>
