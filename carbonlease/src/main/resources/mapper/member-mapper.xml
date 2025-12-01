@@ -114,33 +114,42 @@
 		
 	</update>
 	
-	<select id="selectMemberList" resultType="MemberDTO">
+	<select id="selectBoardsByMemberNo" resultType="BoardDTO" parameterType="_long">
+		
 		SELECT
-		       MEMBER_NO memberNo
-		     , MEMBER_ID memberId
-		     , NICKNAME
+			   BOARD_NO boardNo
+		     , BOARD_TITLE boardTitle
 		     , ENROLL_DATE enrollDate
 		  FROM
-		       CL_MEMBER
+		       CL_BOARD
 		 WHERE
-		       ROLE = 'ROLE_USER'
-		
+		       MEMBER_NO = #{memberNo}
+		   AND
+		       STATUS = 'Y'
+		 ORDER
+		    BY
+		       ENROLL_DATE DESC
+		OFFSET 0 ROWS FETCH NEXT 3 ROWS ONLY
 		
 		
 	</select>
 	
-	<update id="restoreMember" parameterType="_long">
-		UPDATE
-		       CL_MEMBER
-		   SET
-		       STATUS = 'Y'
+	<select id="selectActivityBoardsByMemberNo" resultType="ActivityListDTO" parameterType="_long">
+		SELECT
+		       ACTIVITY_NO activityNo
+		     , ACTIVITY_TITLE activityTitle
+		     , ENROLL_DATE enrollDate
+		  FROM
+		       CL_ACTIVITY_BOARD
 		 WHERE
-		       STATUS = 'N'
-		   AND
 		       MEMBER_NO = #{memberNo}
-		   
-	</update>
-	
+		   AND
+		       STATUS = 'Y'
+		 ORDER
+		    BY
+		       ENROLL_DATE DESC
+		OFFSET 0 ROWS FETCH NEXT 3 ROWS ONLY
+	</select>
 	
 	
 	

@@ -51,8 +51,6 @@ public class SecurityConfigure {
 							   requests.requestMatchers(HttpMethod.PATCH, "/activityBoards/**").authenticated();
 							   requests.requestMatchers(HttpMethod.PATCH, "/admin/**").hasAuthority("ROLE_ADMIN");
 							   requests.requestMatchers(HttpMethod.DELETE, "/admin/**").hasAuthority("ROLE_ADMIN");
-
-							//    requests.requestMatchers("/admin/**").permitAll();
 						   })
 							.sessionManagement(manager ->
 							manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
