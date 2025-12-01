@@ -1,8 +1,6 @@
 
 package com.kh.openapi.main.model.service;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kh.openapi.common.client.OpenApiClient;
-import com.kh.openapi.main.model.vo.KoreaRegionCoord;
+import com.kh.openapi.common.config.OpenApiProperties;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +36,7 @@ public class MainApiServiceImpl implements MainApiService {
 
     private final OpenApiClient client;
     private final ObjectMapper om;
+    private final OpenApiProperties openApiProperties;
 
     /**
      * [지도 API] 광역시/도별 에너지 사용량 % 반환
@@ -51,8 +50,20 @@ public class MainApiServiceImpl implements MainApiService {
     @SuppressWarnings("unchecked")
     public List<Map<String, Object>> getRegionMapData() {
         try {
-            // 1. OpenAPI 호출 (3초 타임아웃, 장애 시 null)
-            String json = client.call(Map.of("pageNo", "1", "numOfRows", "17"));
+            
+            // === [OpenApiProperties 기반 energy 서비스 정보 직접 활용] ===
+            // application.yml의 api.open.services.energy.* 구조와 1:1 매핑
+            // 확장성/유지보수성을 위해 서비스별 정보(key, baseUrl, endpoint 등)를 코드에서 직접 사용
+            OpenApiProperties.ApiInfo energyApi = openApiProperties.getServices().get("energy");
+            log.debug("[OpenAPI 설정] key={}, baseUrl={}, endpoint={}", energyApi.getKey(), energyApi.getBaseUrl(), energyApi.getEndpoint());
+
+            // 실제 인증키 등 파라미터로 전달 (OpenAPI 명세에 따라 필요시)
+            String json = client.call(Map.of(
+                "pageNo", "1",
+                "numOfRows", "17",
+                "serviceKey", energyApi.getKey() // <-- yml에서 주입된 인증키 사용
+            ));
+            log.info("[OpenAPI 응답 원문] {}", json);
             if (json == null) return List.of();
 
             // 2. JSON 파싱 및 body 추출
@@ -85,7 +96,7 @@ public class MainApiServiceImpl implements MainApiService {
                 List<?> rawList = (List<?>) itemObj;
                 if (!rawList.isEmpty() && rawList.get(0) instanceof List) {
                     // 리스트의 리스트 구조 대응
-                    items = new ArrayList<>();
+                    items = new java.util.ArrayList<>();
                     for (Object sub : rawList) {
                         if (sub instanceof List) {
                             for (Object m : (List<?>) sub) {
@@ -108,15 +119,15 @@ public class MainApiServiceImpl implements MainApiService {
             }
 
             // 5. 광역시/도별로 사용량 합산 (여러 구/군/시 > 광역시/도)
-            Map<String, List<Integer>> regionUsageList = new LinkedHashMap<>();
+            Map<String, java.util.List<Integer>> regionUsageList = new java.util.LinkedHashMap<>();
             for (Map<String, Object> it : items) {
                 String region = normalizeRegion(it.get("lclgvNm").toString());
                 int usage = it.get("avgUseQnt") != null ? Integer.parseInt(it.get("avgUseQnt").toString()) : 0;
-                regionUsageList.computeIfAbsent(region, k -> new ArrayList<>()).add(usage);
+                regionUsageList.computeIfAbsent(region, k -> new java.util.ArrayList<>()).add(usage);
             }
 
             // 6. 광역시/도별 평균 사용량 계산
-            Map<String, Integer> usageMap = new LinkedHashMap<>();
+            Map<String, Integer> usageMap = new java.util.LinkedHashMap<>();
             regionUsageList.forEach((region, list) -> {
                 if (!list.isEmpty()) {
                     int avg = (int) Math.round(list.stream().mapToInt(Integer::intValue).average().orElse(0));
@@ -131,9 +142,9 @@ public class MainApiServiceImpl implements MainApiService {
 
             // 7. 전체 합계(%) 기준 value 계산 및 좌표 매핑
             double total = usageMap.values().stream().mapToDouble(Integer::doubleValue).sum();
-            List<Map<String, Object>> out = new ArrayList<>();
+            java.util.List<Map<String, Object>> out = new java.util.ArrayList<>();
             usageMap.forEach((region, val) -> {
-                double[] coord = KoreaRegionCoord.COORDS.get(region);
+                double[] coord = com.kh.openapi.main.model.vo.KoreaRegionCoord.COORDS.get(region);
                 if (coord != null) {
                     double percent = total > 0 ? Math.round((val / total) * 1000.0) / 10.0 : 0.0;
                     log.info("[지역별 사용량] region={}, value(%)={}, lat={}, lng={}", region, percent, coord[0], coord[1]);

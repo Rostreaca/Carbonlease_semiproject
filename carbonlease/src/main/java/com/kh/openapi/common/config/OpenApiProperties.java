@@ -20,6 +20,5 @@ public class OpenApiProperties {
         private String key;
         private String baseUrl;
         private String endpoint;
-        private String method;
     }
 }

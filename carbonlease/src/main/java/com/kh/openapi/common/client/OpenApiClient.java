@@ -5,10 +5,11 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+
+import com.kh.openapi.common.config.OpenApiProperties;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,19 +18,11 @@ import lombok.extern.slf4j.Slf4j;
 public class OpenApiClient {
 
 
-    /**
-     * OpenAPI 기본 URL (application.yml에서 주입)
-     * ex) https://api.odcloud.kr/api/...
-     */
-    @Value("${openapi.base-url}")
-    private String baseUrl;
 
     /**
-     * OpenAPI 서비스 키 (application.yml에서 주입)
-     * 외부에 노출되지 않도록 주의
+     * OpenAPI 서비스 정보 (api.open.services.energy)
      */
-    @Value("${openapi.service-key}")
-    private String serviceKey;
+    private final OpenApiProperties.ApiInfo apiInfo;
 
 
     /**
@@ -42,11 +35,13 @@ public class OpenApiClient {
      * 생성자: RestTemplate에 타임아웃 설정
      * (실무에서 OpenAPI 장애/지연 대응 목적)
      */
-    public OpenApiClient() {
+    public OpenApiClient(OpenApiProperties openApiProperties) {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(3000); // 3초 커넥션 타임아웃
         factory.setReadTimeout(3000);    // 3초 응답(읽기) 타임아웃
         this.rest = new RestTemplate(factory);
+        // energy 서비스 기준(필요시 파라미터화 가능)
+        this.apiInfo = openApiProperties.getServices().get("energy");
     }
 
     /**
@@ -61,8 +56,12 @@ public class OpenApiClient {
      */
     public String call(Map<String, String> params) {
         try {
-            StringBuilder url = new StringBuilder(baseUrl);
-            url.append("?serviceKey=").append(serviceKey);
+            StringBuilder url = new StringBuilder(apiInfo.getBaseUrl());
+            if (apiInfo.getEndpoint() != null && !apiInfo.getEndpoint().isEmpty()) {
+                if (!apiInfo.getBaseUrl().endsWith("/")) url.append("/");
+                url.append(apiInfo.getEndpoint());
+            }
+            url.append("?serviceKey=").append(apiInfo.getKey());
             url.append("&returnType=json");
 
             params.forEach((k, v) ->
@@ -76,7 +75,7 @@ public class OpenApiClient {
             return rest.getForObject(new URI(finalUrl), String.class);
 
         } catch (Exception e) {
-            log.error("[OpenAPI 요청 실패]", e);
+            log.error("[OpenAPI 요청 실패] - 외부 OpenAPI 서버 장애/지연/타임아웃 등 문제 가능성. 네트워크, 서비스키, 호출제한, 서버상태 등 점검 필요.", e);
             return null;
         }
     }
