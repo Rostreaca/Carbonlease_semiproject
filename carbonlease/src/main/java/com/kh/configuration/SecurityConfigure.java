@@ -40,28 +40,16 @@ public class SecurityConfigure {
 						   .csrf(AbstractHttpConfigurer::disable)
 						   .cors(Customizer.withDefaults())
 						   .authorizeHttpRequests(requests -> {
-<<<<<<< HEAD
 							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/*/view").permitAll(); // 조회수
 							   requests.requestMatchers(HttpMethod.GET, "/activityBoards/*/replies").permitAll(); // 댓글
 							   requests.requestMatchers(HttpMethod.POST, "/members/**", "/auth/login", "/auth/adminLogin", "/auth/refresh", "/boards/detail/replyInsert").permitAll();
 							   requests.requestMatchers(HttpMethod.POST, "/boards/**", "/activityBoards", "/notices", "/campaigns").authenticated();
-=======
-							   requests.requestMatchers(HttpMethod.POST, "/members/**","/auth/login", "/auth/refresh", "/auth/adminLogin").permitAll();
-							   requests.requestMatchers(HttpMethod.POST, "/boards", "/activityBoards", "/notices", "/campaigns").authenticated();
->>>>>>> 8062900e5d6084482dea5909534538dc35ffb687
 							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/**").authenticated();
 							   requests.requestMatchers(HttpMethod.POST, "/campaigns/*/like").authenticated(); // 좋아요 인증 필요
-							   requests.requestMatchers(HttpMethod.GET,"/members/**", "/boards/**","/activityBoards/**", "/uploads/**", "/notices/**", "/campaigns/**").permitAll();
+							   requests.requestMatchers(HttpMethod.GET,"/members/**", "/boards/**","/activityBoards/**", "/images/**", "/notices/**", "/campaigns/**", "/uploads/**" ).permitAll();
 							   requests.requestMatchers(HttpMethod.PUT,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
 							   requests.requestMatchers(HttpMethod.DELETE,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
-<<<<<<< HEAD
 							   requests.requestMatchers("/admin/**").hasRole("ADMIN");
-=======
-							   requests.requestMatchers(HttpMethod.PUT, "/admin/**").hasAuthority("ROLE_ADMIN");
-							   requests.requestMatchers(HttpMethod.GET, "/admin/**").hasAuthority("ROLE_ADMIN");
-							   requests.requestMatchers(HttpMethod.POST, "/admin/**").hasAuthority("ROLE_ADMIN");
-							//    requests.requestMatchers("/admin/**").permitAll();
->>>>>>> 8062900e5d6084482dea5909534538dc35ffb687
 						   })
 							.sessionManagement(manager ->
 							manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -73,14 +61,16 @@ public class SecurityConfigure {
 	
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-		configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
-		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-		configuration.setAllowCredentials(true);
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
+	    CorsConfiguration configuration = new CorsConfiguration();
+	    configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+	    configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
+	    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type","Accept","Origin","Access-Control-Request-Headers","Access-Control-Request-Method","X-Requested-With"));
+	    configuration.setExposedHeaders(Arrays.asList("Authorization"));
+	    configuration.setAllowCredentials(true);
+
+	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	    source.registerCorsConfiguration("/**", configuration);
+	    return source;
 	}
 	
 	@Bean

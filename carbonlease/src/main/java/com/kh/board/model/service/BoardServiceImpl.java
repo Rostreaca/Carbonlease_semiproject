@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.board.model.dao.BoardMapper;
 import com.kh.board.model.dto.BoardDTO;
 import com.kh.board.model.dto.BoardReplyDTO;
@@ -105,5 +105,13 @@ public class BoardServiceImpl implements BoardService {
 		return 0;
 	}
 	
+	
+	// 글 삭제하기
+	@Override
+	public void boardDelete(Long boardNo, CustomUserDetails user) {
+		
+		boardMapper.boardDelete(boardNo, user);
+	}
+
 }
 	

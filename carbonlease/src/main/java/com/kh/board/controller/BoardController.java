@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,7 +53,8 @@ public class BoardController {
 	@GetMapping("detail/{boardNo}")
 	public ResponseEntity<?> boardDetail(@PathVariable(name="boardNo") Long boardNo) {
 		
-		 log.info("상세조회 : ", boardNo);
+		// log.info("상세조회 : ", boardNo);
+		
 		Map<String, Object> map = boardService.boardDetail(boardNo);
 		
 		 log.info("왜 안나와 ? : {}", map);
@@ -99,16 +101,27 @@ public class BoardController {
 	// 글 수정 하기
 	@GetMapping("/update/{boardNo}")
 	public ResponseEntity<?> boardUpdateForm(@PathVariable Long boardNo, @AuthenticationPrincipal CustomUserDetails user) {
+		
+		Map<Long, Object> resultMap = new HashMap<Long, Object>();
+		
+		 if (user == null) {
+		        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+		    }
 
-
+		 Long update = boardNo.getLong("boardNo");
+		 
 	    return ResponseEntity.ok(null);
 	}
 	
 	// 글 삭제 하기
+	@DeleteMapping("/delete/{boardNo}")
+	public ResponseEntity<?> boardDelete(@PathVariable Long boardNo, @AuthenticationPrincipal CustomUserDetails user) {
+		
+		 boardService.boardDelete(boardNo, user);
+		 
+		 return ResponseEntity.ok().build();
 	
-	
-	
-	
+	}
 	
 	
 		

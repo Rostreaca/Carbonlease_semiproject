@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.RowBounds;
 
+import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.board.model.dto.BoardDTO;
 import com.kh.board.model.dto.BoardReplyDTO;
 import com.kh.board.model.vo.ReplyInsertVO;
@@ -26,6 +27,8 @@ public interface BoardMapper {
 	int replyCount(Long boardNo);
 	
 	int boardUpdateForm();
+	
+	void boardDelete(Long boardNo, CustomUserDetails user);
 	
 	int insertClBoard(BoardDTO boardVO);
 

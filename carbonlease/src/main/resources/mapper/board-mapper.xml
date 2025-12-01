@@ -119,13 +119,7 @@
 				    )
 	</insert>
 	
-	
-	<!-- 글 수정 하기 -->
-	<insert id="boardUpdateForm" parameterType="_int">
-		
-	</insert>
-	
-	
+	<!-- 글 쓰기 -->
 	<insert id="insertClBoard" parameterType="com.kh.board.model.dto.BoardDTO">
 		 INSERT
 		   INTO 
@@ -150,6 +144,21 @@
 				  , #{regionNo}
 				    )
 	</insert>
+	
+	<!-- 글 수정 하기 -->
+	<insert id="boardUpdateForm" parameterType="_int">
+		
+	</insert>
+	
+	<!-- 글 삭제 하기 -->
+	<update id="boardDelete" parameterType="Long">
+		  UPDATE
+		         CL_BOARD
+             SET
+		         STATUS = 'N'
+           WHERE
+			     BOARD_NO = #{boardNo}
+	</update>
 	
 
 </mapper>

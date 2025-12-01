@@ -3,6 +3,7 @@ package com.kh.board.model.service;
 import java.util.List;
 import java.util.Map;
 
+import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.board.model.dto.BoardDTO;
 import com.kh.board.model.dto.BoardReplyDTO;
 import com.kh.board.model.vo.ReplyInsertVO;
@@ -18,6 +19,9 @@ public interface BoardService {
 	int boardUpdateForm();
 	
 	int insertBoard(BoardDTO boardVo);
+	
+	void boardDelete(Long boardNo, CustomUserDetails user);
+
 	
 	
 	
