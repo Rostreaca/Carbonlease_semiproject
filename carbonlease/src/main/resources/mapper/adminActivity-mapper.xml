@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kh.admin.activity.model.dao.AdminActivityMapper">
+
+    <!-- 관리자용 전체 목록 조회 -->
+    <select id="selectAdminActivityList"
+        resultType="com.kh.admin.activity.model.dto.AdminActivityDTO">
+
+	    SELECT
+	        B.ACTIVITY_NO AS activityNo,
+	        B.ACTIVITY_TITLE AS title,
+	        B.MEMBER_NO AS memberNo,
+	        M.NICKNAME AS nickname,
+	        B.STATUS AS status,
+	        TO_CHAR(B.ENROLL_DATE, 'YYYY-MM-DD HH24:MI:SS') AS enrollDate,
+	        B.VIEW_COUNT AS viewCount,
+	
+	        C.CERTIFICATION_NO AS categoryNo,
+	        CC.CERTIFICATION_NAME AS categoryName
+	
+	    FROM CL_ACTIVITY_BOARD B
+	    JOIN CL_MEMBER M ON B.MEMBER_NO = M.MEMBER_NO
+	    LEFT JOIN CL_ACTIVITY_CERTIFICATION C 
+	           ON B.ACTIVITY_NO = C.ACTIVITY_BOARD_NO
+	    LEFT JOIN CL_ACTIVITY_CERTIFICATION_CATEGORY CC 
+	           ON C.CERTIFICATION_NO = CC.CERTIFICATION_NO
+	
+	    ORDER BY B.ACTIVITY_NO DESC
+	    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	
+	</select>
+
+
+    <!-- 전체 개수 -->
+    <select id="getAdminCount" resultType="int">
+    	SELECT 
+    		   COUNT(*) 
+          FROM 
+          	   CL_ACTIVITY_BOARD
+	</select>
+
+
+
+    <!-- 숨김 처리 -->
+    <update id="hideBoard">
+        UPDATE 
+               CL_ACTIVITY_BOARD
+           SET 
+               STATUS = 'N'
+         WHERE 
+               ACTIVITY_NO = #{activityNo}
+    </update>
+
+    <!-- 복구 처리 -->
+    <update id="restoreBoard">
+        UPDATE 
+               CL_ACTIVITY_BOARD
+           SET 
+               STATUS = 'Y'
+         WHERE 
+               ACTIVITY_NO = #{activityNo}
+    </update>
+
+    <!-- 관리자 삭제 (진짜 삭제) -->
+    <delete id="deleteBoard">
+        DELETE 
+          FROM 
+               CL_ACTIVITY_BOARD
+         WHERE 
+               ACTIVITY_NO = #{activityNo}
+    </delete>
+    
+    <!-- 단일 조회 -->
+    <select id="selectDetail" resultType="com.kh.admin.activity.model.dto.AdminActivityDTO">
+	    SELECT
+	        B.ACTIVITY_NO AS activityNo,
+	        B.ACTIVITY_TITLE AS title,
+	        B.ACTIVITY_CONTENT AS content,
+	        B.MEMBER_NO AS memberNo,
+	        M.NICKNAME AS nickname,
+	        B.STATUS AS status,
+	        TO_CHAR(B.ENROLL_DATE, 'YYYY-MM-DD') AS enrollDate,
+	        B.VIEW_COUNT AS viewCount,
+	
+	        C.CERTIFICATION_NO AS categoryNo,
+	        CC.CERTIFICATION_NAME AS categoryName,
+	
+	        A.FILE_PATH AS thumbnailPath,
+	        A.CHANGE_NAME AS thumbnailName,
+	
+	        B.ADDRESS AS address,
+	        B.LAT AS lat,
+	        B.LNG AS lng
+	
+	    FROM CL_ACTIVITY_BOARD B
+	    JOIN CL_MEMBER M ON B.MEMBER_NO = M.MEMBER_NO
+	    LEFT JOIN CL_ACTIVITY_CERTIFICATION C ON B.ACTIVITY_NO = C.ACTIVITY_BOARD_NO
+	    LEFT JOIN CL_ACTIVITY_CERTIFICATION_CATEGORY CC ON C.CERTIFICATION_NO = CC.CERTIFICATION_NO
+	    LEFT JOIN CL_ACTIVITY_ATTACHMENT A ON B.ACTIVITY_NO = A.REF_BNO
+	         AND A.THUMBNAIL_YN = 'Y'
+	    WHERE B.ACTIVITY_NO = #{id}
+	</select>
+
+    <!-- 제목/내용/카테고리 수정 -->
+    <update id="updateBoard">
+	    UPDATE CL_ACTIVITY_BOARD
+	       SET ACTIVITY_TITLE = #{title},
+	           ACTIVITY_CONTENT = #{content}
+	    WHERE ACTIVITY_NO = #{id}
+	</update>
+
+	<update id="updateCertification">
+	    UPDATE CL_ACTIVITY_CERTIFICATION
+	       SET CERTIFICATION_NO = #{category}
+	    WHERE ACTIVITY_BOARD_NO = #{id}
+	</update>
+
+    <!-- 썸네일 경로 업데이트 -->
+    <update id="updateThumbnail">
+	    UPDATE CL_ACTIVITY_ATTACHMENT
+	       SET FILE_PATH = #{filePath}
+	    WHERE REF_BNO = #{id}
+	      AND THUMBNAIL_YN = 'Y'
+	</update>
+
+
+
+</mapper>
