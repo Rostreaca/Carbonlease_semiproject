@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kh.openapi.common.client.OpenApiClient;
 import com.kh.openapi.common.config.OpenApiProperties;
+import com.kh.openapi.main.model.vo.KoreaRegionCoord;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,21 +19,21 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MainApiServiceImpl implements MainApiService {
 
-        /**
-         * 지역명 정규화 함수
-         * ex) "경상북도" > "경북", "서울특별시" > "서울", "경기 남양주시" > "경기"
-         * - 지도/DB/좌표 매칭을 위해 광역시/도 단위로 변환
-         */
-        private static String normalizeRegion(String region) {
-            if (region == null) return null;
-            // ex) "인천 계양구" > "인천", "서울 강남구" > "서울", "경기 남양주시" > "경기"
-            String[] parts = region.split(" ");
-            String wide = parts[0];
-            if (wide.endsWith("특별시")) return wide.replace("특별시", "");
-            if (wide.endsWith("광역시")) return wide.replace("광역시", "");
-            if (wide.endsWith("도")) return wide.replace("도", "");
-            return wide;
-        }
+    /**
+     * 지역명 정규화 함수
+     * ex) "경상북도" > "경북", "서울특별시" > "서울", "경기 남양주시" > "경기"
+     * - 지도/DB/좌표 매칭을 위해 광역시/도 단위로 변환
+     */
+    private static String normalizeRegion(String region) {
+        if (region == null) return null;
+        // ex) "인천 계양구" > "인천", "서울 강남구" > "서울", "경기 남양주시" > "경기"
+        String[] parts = region.split(" ");
+        String wide = parts[0];
+        if (wide.endsWith("특별시")) return wide.replace("특별시", "");
+        if (wide.endsWith("광역시")) return wide.replace("광역시", "");
+        if (wide.endsWith("도")) return wide.replace("도", "");
+        return wide;
+    }
 
     private final OpenApiClient client;
     private final ObjectMapper om;
@@ -144,7 +145,7 @@ public class MainApiServiceImpl implements MainApiService {
             double total = usageMap.values().stream().mapToDouble(Integer::doubleValue).sum();
             java.util.List<Map<String, Object>> out = new java.util.ArrayList<>();
             usageMap.forEach((region, val) -> {
-                double[] coord = com.kh.openapi.main.model.vo.KoreaRegionCoord.COORDS.get(region);
+                double[] coord = KoreaRegionCoord.COORDS.get(region);
                 if (coord != null) {
                     double percent = total > 0 ? Math.round((val / total) * 1000.0) / 10.0 : 0.0;
                     log.info("[지역별 사용량] region={}, value(%)={}, lat={}, lng={}", region, percent, coord[0], coord[1]);
