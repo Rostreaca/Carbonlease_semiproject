@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.admin.campaign.model.dao.AdminCampaignMapper;
@@ -65,6 +66,8 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 
 	/**
 	 * 게시글 저장하기
+	 * 
+	 * 인서트 할 경우 VO로 가는 게 더 좋을 것 같음,  @Transactional 추가 하기 ( 2) 3) 세개 묶어서 )
 	 */
 	@Override
 	public CampaignDTO save(CampaignDTO dto, MultipartFile thumbnail, MultipartFile detailImage, Long memberNo) {
@@ -85,9 +88,11 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		Long campaignNo = campaignDTO.getCampaignNo();
 
 		// 3) 첨부파일 처리 (각각 한 번씩만 insert)
+		
+		// vo 문제 발생 ->  셀렉트 했을 때 값을 덮어 씌울 때 기본 생성자와 세터를 써서 사용 하는데 여기서는 값을 넣기만하고 가져오는게 아니라서 VO가 맞다.
 		if (thumbnail != null && !thumbnail.isEmpty()) {
 			CampaignAttachmentDTO thumbDto = saveAttachment(thumbnail, campaignNo, 0);
-			adminCampaignMapper.insertAttachment(thumbDto);
+			adminCampaignMapper.insertAttachment(thumbDto); // int 변수 지정하여 값 받아오기 ( 예외처리 ) 
 		}
 		if (detailImage != null && !detailImage.isEmpty()) {
 			CampaignAttachmentDTO detailDto = saveAttachment(detailImage, campaignNo, 1);
@@ -142,6 +147,8 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 			throw new RuntimeException("파일 저장 실패", e);
 		}
 		String fileUrl = "http://localhost:80/uploads/campaign/images/" + changeName;
+		
+		// DTO 같은 경우 기본생성자 + 매개 변수 생성자 + 세터가 있기 때문에 builder 패턴을 사용할 필요가 없음 -> dto (builder는 웬만해서 빼느게 좋음) / builder 패턴 사용 시 , vo만들어서 사용하기
 		return CampaignAttachmentDTO.builder().refBno(refBno).originName(file.getOriginalFilename())
 				.changeName(changeName).filePath(fileUrl).fileLevel(fileLevel).status("Y").build();
 	}
@@ -157,7 +164,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	/**
 	 * 수정하기
 	 */
-	@Override
+	@Override // campaigndto void로 바꾸기
 	public CampaignDTO update(
 			CampaignDTO campaign,
 			MultipartFile thumbnail,
@@ -184,7 +191,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		// 4. 캠페인 정보 수정
 		adminCampaignMapper.update(campaign);
 
-		// 5. 첨부파일 목록 최신화
+		// 5. 첨부파일 목록 최신화 - 이유 정리?? -- 여기 _ campaignDTO을 넣었는데 아무것도 안하는 중 처내고, 리턴 안하고 반환형을 void 로 바꾸기 _ 셀렉트 하고 돈듬 뭐해...?
 		List<CampaignAttachmentDTO> attachments = adminCampaignMapper.findAttachmentsByNo(campaignNo);
 		
 		if (attachments != null && !attachments.isEmpty()) {
@@ -194,7 +201,8 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		} else {
 			log.info("[첨부파일] 첨부파일 없음");
 		}
-		campaign.setAttachments(attachments);
+		
+		campaign.setAttachments(attachments);// 여기까지 주석처리 하고 
 
 		// 6. 최종 CampaignDTO 반환
 		return campaign;
