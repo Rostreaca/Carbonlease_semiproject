@@ -18,6 +18,8 @@ public class ReplyInsertVO {
 	private int replyNo;
 	private long boardNo;
 	private long memberNo;
+	private String memberId;
+	private String nickname;
 	private String replyContent;
 	private Date enrollDate;
 	

@@ -31,6 +31,10 @@ public interface BoardMapper {
 	int boardDelete(Long boardNo);
 	
 	int insertClBoard(BoardDTO boardVO);
+	
+	int replyUpdate(ReplyInsertVO riVO);
+	
+	void boardViewCount(int boardNo);
 
 	
 }

@@ -58,7 +58,7 @@ public class BoardController {
 		
 		Map<String, Object> map = boardService.boardDetail(boardNo);
 		
-		 log.info("왜 안나와 ? : {}", map);
+		// log.info("왜 안나와 ? : {}", map);
 		
 		return ResponseEntity.ok(map);
 		
@@ -79,6 +79,25 @@ public class BoardController {
 		 
 		 return ResponseEntity.ok(resultMap); 
 		
+	}
+	
+	// 댓글 수정
+	@PostMapping("/replyUpdate")
+	public ResponseEntity<?> boardReplyUpdate(@RequestBody ReplyInsertVO replyVO, @AuthenticationPrincipal CustomUserDetails user) {
+		
+		System.out.println(replyVO);
+		
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		
+		if (user == null) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+		}
+		
+		 int updateOK = boardService.boardReplyUpdate(replyVO, user);
+		
+		 resultMap.put("updateOK", updateOK);
+		 
+		 return ResponseEntity.ok(resultMap); 
 	}
 	
 	// 글쓰기
@@ -132,6 +151,16 @@ public class BoardController {
 	
 	}
 	
+	
+	// 조회수
+	@PostMapping("/{boardNo}/view")
+	public ResponseEntity<?> boardViewCount(@PathVariable("boardNo") int boardNo) {
+		
+	    boardService.boardViewCount(boardNo);
+	    
+	    return ResponseEntity.ok().build();
+	}
+
 	
 		
 }

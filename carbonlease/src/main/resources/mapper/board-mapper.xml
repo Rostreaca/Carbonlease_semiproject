@@ -121,6 +121,17 @@
 				    )
 	</insert>
 	
+	<!-- 댓글 수정 -->
+	<insert id="replyUpdate" parameterType="ReplyInsertVO">
+		UPDATE
+			   CL_BOARD_REPLY
+		   SET
+		       REPLY_CONTENT = #{replyContent}
+		     , ENROLL_DATE = SYSDATE
+		WHERE
+		       REPLY_NO = #{replyNo}
+	</insert>
+	
 	<!-- 글 쓰기 -->
 	<insert id="insertClBoard" parameterType="com.kh.board.model.dto.BoardDTO">
 		 INSERT
@@ -168,6 +179,17 @@
            WHERE
 			     BOARD_NO = #{boardNo}
 	</update>
+	
+	<!-- 조회수 -->
+	<update id="boardViewCount">
+    	UPDATE 
+    	       CL_BOARD
+    	   SET 
+    	   	   VIEW_COUNT = VIEW_COUNT + 1
+    	 WHERE 
+    	 	   BOARD_NO = #{boardNo}
+	</update>
+
 	
 
 </mapper>
