@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import com.kh.campaign.model.dto.CampaignAttachmentDTO;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
+import com.kh.campaign.model.vo.CampaignVO;
 
 @Mapper
 public interface AdminCampaignMapper {
@@ -26,17 +27,25 @@ public interface AdminCampaignMapper {
 
 	/**
 	 * 캠페인 게시글 등록
-	 * @param campaign
+	 * @param campaignDTO
 	 */
-	void save(CampaignDTO campaign);
-	
+	void save(CampaignDTO campaignDTO);
 
+	/**
+	 * 캠페인 단건 상세조회(관리자용)
+	 * @param campaignNo
+	 * @return CampaignVO
+	 */
+	CampaignVO getCampaignOnly(Long campaignNo);
+	
 	/**
 	 * 첨부파일 등록 (단일)
 	 * @param attachment
 	 */
 	int insertAttachment(CampaignAttachmentDTO attachment);
 	
+	
+
 	/**
 	 * 캠페인 상세조회
 	 * @param campaignNo

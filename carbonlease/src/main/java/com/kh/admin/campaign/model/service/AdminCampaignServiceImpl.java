@@ -18,6 +18,7 @@ import com.kh.campaign.model.dto.CampaignAttachmentDTO;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
 import com.kh.campaign.model.service.CampaignService;
+import com.kh.campaign.model.vo.CampaignVO;
 import com.kh.common.util.Pagination;
 //import com.kh.exception.CustomAuthenticationException;
 import com.kh.exception.CustomAuthenticationException;
@@ -31,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminCampaignServiceImpl implements AdminCampaignService {
 
 	private final AdminCampaignMapper adminCampaignMapper;
-	private final CampaignService campaignService;
+	// private final CampaignService campaignService;
 	private final Pagination pagination;
 	//private final CampaignMapper campaignMapper;
 
@@ -65,12 +66,13 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	}
 
 	/**
-	 * 게시글 저장하기
+	 * 게시글 등록하기
 	 * 
 	 * 인서트 할 경우 VO로 가는 게 더 좋을 것 같음,  @Transactional 추가 하기 ( 2) 3) 세개 묶어서 )
 	 */
 	@Override
-	public CampaignDTO save(CampaignDTO dto, MultipartFile thumbnail, MultipartFile detailImage, Long memberNo) {
+	@Transactional
+	public void save(CampaignDTO dto, MultipartFile thumbnail, MultipartFile detailImage, Long memberNo) {
 		// 1) campaignDTO로 변환 (DB insert용)
 		CampaignDTO campaignDTO = 
 				CampaignDTO.builder()
@@ -83,16 +85,14 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 				.status("Y")
 				.build();
 
-		// 2) 캠페인 저장 (PK 자동 생성)
+		// 2) 캠페인 저장 후 PK 추출 (PK 자동 생성)
 		adminCampaignMapper.save(campaignDTO);
 		Long campaignNo = campaignDTO.getCampaignNo();
 
 		// 3) 첨부파일 처리 (각각 한 번씩만 insert)
-		
-		// vo 문제 발생 ->  셀렉트 했을 때 값을 덮어 씌울 때 기본 생성자와 세터를 써서 사용 하는데 여기서는 값을 넣기만하고 가져오는게 아니라서 VO가 맞다.
 		if (thumbnail != null && !thumbnail.isEmpty()) {
 			CampaignAttachmentDTO thumbDto = saveAttachment(thumbnail, campaignNo, 0);
-			adminCampaignMapper.insertAttachment(thumbDto); // int 변수 지정하여 값 받아오기 ( 예외처리 ) 
+			adminCampaignMapper.insertAttachment(thumbDto);
 		}
 		if (detailImage != null && !detailImage.isEmpty()) {
 			CampaignAttachmentDTO detailDto = saveAttachment(detailImage, campaignNo, 1);
@@ -100,10 +100,12 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		}
 
 		log.info("캠페인 등록 완료 — campaignNo: {}", campaignNo);
-		
-		// 등록 후 상세조회하여 최신 CampaignDTO 반환
-		return campaignService.getCampaignOnly(campaignNo);
+		// 등록 후 VO 재조회 및 반환 생략 (void)
 	}
+
+	// private CampaignVO getCampaignOnly(Long campaignNo) {
+	// 	return adminCampaignMapper.getCampaignOnly(campaignNo);
+	// }
 
 	/**
 	 * 파일명 생성 & 절대경로 생성

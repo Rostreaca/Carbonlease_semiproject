@@ -50,7 +50,7 @@
         <result property="filePath" column="FILE_PATH"/>
         <result property="uploadDate" column="UPLOAD_DATE"/>
     </resultMap>
-	
+
 	<select id="findAll" resultMap="campaignResultMap" parameterType="map">
 	  SELECT
 		     P.CAMPAIGN_NO

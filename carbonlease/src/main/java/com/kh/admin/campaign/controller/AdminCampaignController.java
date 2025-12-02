@@ -21,6 +21,7 @@ import com.kh.admin.campaign.model.service.AdminCampaignService;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
+import com.kh.campaign.model.vo.CampaignVO;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -63,14 +64,14 @@ public class AdminCampaignController {
 	 * 값을 넘길 때 dto 또는 map[v]으로 서비스단으로 넘기기
 	 */
 	@PostMapping("/insert")
-	public ResponseEntity<CampaignDTO> save(
+	public ResponseEntity<Void> save(
 		    @Valid CampaignDTO campaign,
 		    @RequestParam("thumbnail") MultipartFile thumbnail,
 		    @RequestParam("detailImage") MultipartFile detailImage,
 		    @AuthenticationPrincipal CustomUserDetails user) {
 
 		// 캠페인 및 첨부파일 등록, 등록된 캠페인 객체 반환
-		CampaignDTO saved = adminCampaignService.save(
+		adminCampaignService.save(
 			campaign,
 			thumbnail,
 			detailImage,
@@ -78,7 +79,7 @@ public class AdminCampaignController {
 		);
 
 		// 201(CREATED) 상태와 함께 등록된 캠페인 객체 반환
-		return ResponseEntity.status(HttpStatus.CREATED).body(saved);// body로 왜 보냈는가? 조회 아닌데 굳이?
+		return ResponseEntity.status(HttpStatus.CREATED).build();// body로 왜 보냈는가? 조회 아닌데 굳이?
 	}
 	
 	

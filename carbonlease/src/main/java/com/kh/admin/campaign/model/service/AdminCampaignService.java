@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
+import com.kh.campaign.model.vo.CampaignVO;
 
 public interface AdminCampaignService {
 	
@@ -21,13 +22,12 @@ public interface AdminCampaignService {
 	 * @param thumbnail 썸네일 이미지 파일
 	 * @param detailImage 상세 이미지 파일
 	 * @param memberNo 작성자 번호
-	 * @return 등록된 캠페인 정보
 	 */
-	CampaignDTO save(
-		CampaignDTO campaign,
-		MultipartFile thumbnail,
-		MultipartFile detailImage,
-		Long memberNo);
+    void save(
+        CampaignDTO campaign,
+        MultipartFile thumbnail,
+        MultipartFile detailImage,
+        Long memberNo);
 
 	/**
 	 * 카테고리 목록 조회
