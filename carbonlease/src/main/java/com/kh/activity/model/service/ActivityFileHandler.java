@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,4 +68,31 @@ public class ActivityFileHandler {
 			throw new RuntimeException("파일 저장 중 오류 발생");
 		}
 	}
+	
+	public void deleteExisting(int activityNo) {
+
+	    // 기존 파일 경로 조회
+	    List<String> paths = activityMapper.selectDetailImage(activityNo);
+
+	    for (String path : paths) {
+
+	        String relativePath = path.replace("/uploads/", ""); 
+	        Path filePath = fileLocation.resolve(relativePath).normalize();
+
+	        try {
+	            if (Files.exists(filePath)) {
+	                Files.delete(filePath);
+	                log.info("기존 파일 삭제 완료: {}", filePath);
+	            }
+	        } catch (IOException e) {
+	            log.error("기존 파일 삭제 실패: {}", filePath, e);
+	        }
+	    }
+
+	    // DB 첨부파일 레코드 삭제
+	    activityMapper.deleteAttachments(activityNo);
+	}
+
+	
+	
 }
