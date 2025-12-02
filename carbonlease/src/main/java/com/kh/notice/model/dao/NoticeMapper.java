@@ -4,13 +4,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
-import com.kh.admin.notice.model.dto.NoticeAdminDTO;
-import com.kh.admin.notice.model.vo.AdminNoticeVO;
 import com.kh.notice.model.dto.AttachmentDTO;
+import com.kh.notice.model.dto.EventDTO;
 import com.kh.notice.model.dto.NoticeDTO;
-
-import jakarta.validation.Valid;
 
 @Mapper
 public interface NoticeMapper {
@@ -21,13 +19,10 @@ public interface NoticeMapper {
 
 	NoticeDTO findByNo(Long noticeNo);
 
-	int countAll();
+	List<AttachmentDTO> getAttachment(Long noticeNo);
 
-	List<NoticeAdminDTO> findAllByAdmin(Map<String, Object> params);
+	void addViewCount(Long noticeNo);
 
-	void insertNotice(AdminNoticeVO adminNotice);
-
-	void insertAttachment(List<AttachmentDTO> ats);
-
+	List<EventDTO> findAllEvents();
 
 }
