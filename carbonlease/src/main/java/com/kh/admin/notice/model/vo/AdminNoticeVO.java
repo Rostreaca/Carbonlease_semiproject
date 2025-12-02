@@ -7,6 +7,7 @@ import lombok.Value;
 @Builder
 public class AdminNoticeVO {
 
+	private Long noticeNo;
 	private Long noticeWriter;
 	private String noticeTitle;
 	private String noticeContent;
