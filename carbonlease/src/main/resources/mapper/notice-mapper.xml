@@ -62,5 +62,28 @@
 		WHERE
 				REF_BNO = #{noticeNo}
 	</select>
+	
+	<update id="addViewCount">
+		UPDATE 
+				CL_NOTICE
+		SET
+				VIEW_COUNT = VIEW_COUNT+1
+		WHERE
+				NOTICE_NO = #{noticeNo}
+	</update>
+	
+	<select id="findAllEvents"
+			resultType="EventDTO">
+		SELECT
+				  CALENDAR_NO calendarNo
+				, MEMBER_NO eventWriter
+				, START_DATE startDate
+				, END_DATE endDate 
+				, CALENDAR_TITLE title
+		FROM
+				CL_CALENDAR
+		WHERE
+				STATUS = 'Y'
+	</select>
 				  
 </mapper>

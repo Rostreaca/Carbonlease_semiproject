@@ -45,7 +45,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		
 		int listCount = countAll();
 		
-		Map<String, Object> params = pagination.pageRequest(pageNo, 2, listCount);
+		Map<String, Object> params = pagination.pageRequest(pageNo, 5, listCount);
 		
 		List<NoticeAdminDTO> notices = adminNoticeMapper.findAllByAdmin(params);
 		
