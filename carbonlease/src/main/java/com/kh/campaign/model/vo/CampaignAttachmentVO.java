@@ -5,10 +5,9 @@ import java.sql.Date;
 import lombok.Builder;
 import lombok.Value;
 
-@Value
 @Builder
-public class AttachmentVO {
-	
+@Value
+public class CampaignAttachmentVO {
 	
 	private Long fileNo;        // PK
     private Long refBno;        // FK (이벤트 번호)

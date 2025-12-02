@@ -5,11 +5,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Builder
 public class CategoryDTO {
 	private Long categoryNo;		// 카테고리 번호
