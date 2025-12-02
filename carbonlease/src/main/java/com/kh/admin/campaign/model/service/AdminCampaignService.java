@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
+import com.kh.campaign.model.vo.CampaignVO;
 
 public interface AdminCampaignService {
 	
@@ -20,10 +21,8 @@ public interface AdminCampaignService {
 	 * @param campaign 캠페인 정보
 	 * @param thumbnail 썸네일 이미지 파일
 	 * @param detailImage 상세 이미지 파일
-	 * @param memberNo 작성자 번호
-	 * @return 등록된 캠페인 정보
 	 */
-	CampaignDTO save(
+	void save(
 		CampaignDTO campaign,
 		MultipartFile thumbnail,
 		MultipartFile detailImage,
@@ -35,12 +34,18 @@ public interface AdminCampaignService {
 	 */
 	List<CategoryDTO> getCategories();
 	
-	CampaignDTO update(
-			CampaignDTO campaign,
-			MultipartFile thumbnail,
-			MultipartFile detailImage,
-			Long campaignNo,
-			CustomUserDetails user);
+	/**
+	 * 캠페인 수정
+	 * @param campaign
+	 * @param thumbnail
+	 * @param detailImage
+	 * @param campaignNo
+	 */
+	void update(
+		CampaignDTO campaign,
+		MultipartFile thumbnail,
+		MultipartFile detailImage,
+		Long campaignNo);
 	
 	/**
 	 * 복구
@@ -48,10 +53,6 @@ public interface AdminCampaignService {
 	 * @return 
 	 */
 	int restoreCampaign(Long campaignNo);
-
-
-
-	//CampaignDTO findByNo(Long campaignNo);
 
 
 }

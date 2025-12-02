@@ -2,15 +2,11 @@ package com.kh.campaign.model.vo;
 
 import java.sql.Date;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Setter;
 import lombok.Value;
 
+@Builder
 @Value
-@Builder	 // 빌더 패턴 자동 생성
-@AllArgsConstructor
-@Setter
 public class CampaignVO {
 	
 	private Long campaignNo;            // 캠페인 번호 (PK)
