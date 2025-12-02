@@ -129,7 +129,7 @@ public class AdminCampaignController {
 	 * @param campaignNo
 	 * @return
 	 */
-	@PostMapping("/update/{campaignNo}/restore")
+	@PostMapping("/{campaignNo}/restore")
 	public ResponseEntity<?> restoreCampaign(@PathVariable Long campaignNo) {
 		int result = adminCampaignService.restoreCampaign(campaignNo);
 		if (result == 1) {

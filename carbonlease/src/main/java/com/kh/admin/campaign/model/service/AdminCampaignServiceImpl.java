@@ -73,15 +73,15 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	 */
 	@Override
 	@Transactional
-	public void save(CampaignDTO dto, MultipartFile thumbnail, MultipartFile detailImage, Long memberNo) {
+	public void save(CampaignDTO campaignDTO, MultipartFile thumbnail, MultipartFile detailImage, Long memberNo) {
 		
 		// 1) campaignDTO로 변환 (DB insert용)
 		CampaignVO campaignVO = CampaignVO.builder()
-			.campaignTitle(dto.getCampaignTitle())
-			.campaignContent(dto.getCampaignContent())
-			.startDate(dto.getStartDate())
-			.endDate(dto.getEndDate())
-			.categoryNo(dto.getCategoryNo())
+			.campaignTitle(campaignDTO.getCampaignTitle())
+			.campaignContent(campaignDTO.getCampaignContent())
+			.startDate(campaignDTO.getStartDate())
+			.endDate(campaignDTO.getEndDate())
+			.categoryNo(campaignDTO.getCategoryNo())
 			.memberNo(memberNo) // 반드시 세팅!
 			.status("Y")
 			.build();
@@ -171,7 +171,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	@Override
 	@Transactional
 	public void update(
-			CampaignDTO dto,
+			CampaignDTO campaignDTO,
 			MultipartFile thumbnail,
 			MultipartFile detailImage,
 			Long campaignNo) {
@@ -179,13 +179,13 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		// 1. VO로 변환 (수정용)
 		CampaignVO campaignVO = CampaignVO.builder()
 				.campaignNo(campaignNo)
-				.campaignTitle(dto.getCampaignTitle())
-				.campaignContent(dto.getCampaignContent())
-				.startDate(dto.getStartDate())
-				.endDate(dto.getEndDate())
-				.memberNo(dto.getMemberNo())
-				.categoryNo(dto.getCategoryNo())
-				.status(dto.getStatus())
+				.campaignTitle(campaignDTO.getCampaignTitle())
+				.campaignContent(campaignDTO.getCampaignContent())
+				.startDate(campaignDTO.getStartDate())
+				.endDate(campaignDTO.getEndDate())
+				.memberNo(campaignDTO.getMemberNo())
+				.categoryNo(campaignDTO.getCategoryNo())
+				.status(campaignDTO.getStatus())
 				.build();
 
 		// 2. 첨부파일 처리 (각각 한 번씩만 insert)
