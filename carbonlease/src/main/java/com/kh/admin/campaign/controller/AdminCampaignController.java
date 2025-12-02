@@ -61,9 +61,8 @@ public class AdminCampaignController {
 	 * @param user         인증된 관리자 정보(회원번호)
 	 * @return ResponseEntity<CampaignDTO> 201(CREATED) + 등록된 캠페인 객체(첨부파일 포함)
 	 * 
-	 * 값을 넘길 때 dto 또는 map[v]으로 서비스단으로 넘기기
 	 */
-	@PostMapping("/insert")
+	@PostMapping
 	public ResponseEntity<Void> save(
 		    @Valid CampaignDTO campaign,
 		    @RequestParam("thumbnail") MultipartFile thumbnail,
@@ -79,7 +78,7 @@ public class AdminCampaignController {
 		);
 
 		// 201(CREATED) 상태와 함께 등록된 캠페인 객체 반환
-		return ResponseEntity.status(HttpStatus.CREATED).build();// body로 왜 보냈는가? 조회 아닌데 굳이?
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
 	

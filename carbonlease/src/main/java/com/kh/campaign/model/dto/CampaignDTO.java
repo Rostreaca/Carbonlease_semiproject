@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,6 +31,7 @@ public class CampaignDTO {
     private Date endDate;
     private Date enrollDate;
     private int viewCount;
+    @JsonIgnore
     private String status;
     private Long memberNo;
 

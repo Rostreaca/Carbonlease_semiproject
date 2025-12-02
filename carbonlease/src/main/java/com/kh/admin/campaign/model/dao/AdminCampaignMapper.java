@@ -32,18 +32,10 @@ public interface AdminCampaignMapper {
 	void save(CampaignDTO campaignDTO);
 
 	/**
-	 * 캠페인 단건 상세조회(관리자용)
-	 * @param campaignNo
-	 * @return CampaignVO
-	 */
-	CampaignVO getCampaignOnly(Long campaignNo);
-	
-	/**
 	 * 첨부파일 등록 (단일)
 	 * @param attachment
 	 */
 	int insertAttachment(CampaignAttachmentDTO attachment);
-	
 	
 
 	/**

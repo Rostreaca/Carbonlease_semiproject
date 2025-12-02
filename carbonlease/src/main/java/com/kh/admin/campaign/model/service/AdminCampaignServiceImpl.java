@@ -73,6 +73,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	@Override
 	@Transactional
 	public void save(CampaignDTO dto, MultipartFile thumbnail, MultipartFile detailImage, Long memberNo) {
+		
 		// 1) campaignDTO로 변환 (DB insert용)
 		CampaignDTO campaignDTO = 
 				CampaignDTO.builder()
@@ -100,12 +101,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		}
 
 		log.info("캠페인 등록 완료 — campaignNo: {}", campaignNo);
-		// 등록 후 VO 재조회 및 반환 생략 (void)
 	}
-
-	// private CampaignVO getCampaignOnly(Long campaignNo) {
-	// 	return adminCampaignMapper.getCampaignOnly(campaignNo);
-	// }
 
 	/**
 	 * 파일명 생성 & 절대경로 생성

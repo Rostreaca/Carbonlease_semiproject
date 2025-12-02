@@ -50,8 +50,4 @@ public interface AdminCampaignService {
 	int restoreCampaign(Long campaignNo);
 
 
-
-	//CampaignDTO findByNo(Long campaignNo);
-
-
 }
