@@ -1,5 +1,6 @@
 package com.kh.member.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -11,13 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.activity.model.dto.ActivityListDTO;
 import com.kh.auth.model.vo.CustomUserDetails;
+import com.kh.board.model.dto.BoardDTO;
 import com.kh.member.model.dto.MemberDTO;
 import com.kh.member.model.service.MemberService;
-import com.kh.member.model.service.MemberValidator;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +46,7 @@ public class MemberController {
 		
 		memberService.updateMember(member);
 		
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 	
 	@DeleteMapping
@@ -88,7 +89,27 @@ public class MemberController {
 		
 	}
 	
+	/**
+	 * 해당 유저가 가장 최근에 작성한 글 3개를 가져와 표시
+	 * 
+	 * @param user
+	 * @return ResponseEntity<List<BoardDTO>>
+	 */
+	@GetMapping("/boards")
+	public ResponseEntity<List<BoardDTO>> selectBoardsByMemberNo(@AuthenticationPrincipal CustomUserDetails user){
+		
+		List<BoardDTO> boards = memberService.selectBoardsByMemberNo(user.getMemberNo());
+		
+		return ResponseEntity.status(HttpStatus.OK).body(boards);
+	}
 	
-	
+	@GetMapping("/activityBoards")
+	public ResponseEntity<List<ActivityListDTO>> selectActivityBoardsByMemberNo(@AuthenticationPrincipal CustomUserDetails user){
+		
+		List<ActivityListDTO> activityBoards = memberService.selectActivityBoardsByMemberNo(user.getMemberNo());
+		
+		return ResponseEntity.status(HttpStatus.OK).body(activityBoards);
+		
+	}
 	
 }

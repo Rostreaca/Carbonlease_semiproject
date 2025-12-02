@@ -114,5 +114,43 @@
 		
 	</update>
 	
+	<select id="selectBoardsByMemberNo" resultType="BoardDTO" parameterType="_long">
+		
+		SELECT
+			   BOARD_NO boardNo
+		     , BOARD_TITLE boardTitle
+		     , ENROLL_DATE enrollDate
+		  FROM
+		       CL_BOARD
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   AND
+		       STATUS = 'Y'
+		 ORDER
+		    BY
+		       ENROLL_DATE DESC
+		OFFSET 0 ROWS FETCH NEXT 3 ROWS ONLY
+		
+		
+	</select>
+	
+	<select id="selectActivityBoardsByMemberNo" resultType="ActivityListDTO" parameterType="_long">
+		SELECT
+		       ACTIVITY_NO activityNo
+		     , ACTIVITY_TITLE activityTitle
+		     , ENROLL_DATE enrollDate
+		  FROM
+		       CL_ACTIVITY_BOARD
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+		   AND
+		       STATUS = 'Y'
+		 ORDER
+		    BY
+		       ENROLL_DATE DESC
+		OFFSET 0 ROWS FETCH NEXT 3 ROWS ONLY
+	</select>
+	
+	
 	
 </mapper>
