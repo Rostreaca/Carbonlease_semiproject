@@ -21,7 +21,6 @@ import com.kh.admin.campaign.model.service.AdminCampaignService;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
-import com.kh.campaign.model.vo.CampaignVO;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -67,9 +66,9 @@ public class AdminCampaignController {
 		    @Valid CampaignDTO campaign,
 		    @RequestParam("thumbnail") MultipartFile thumbnail,
 		    @RequestParam("detailImage") MultipartFile detailImage,
-		    @AuthenticationPrincipal CustomUserDetails user) {
+			@AuthenticationPrincipal CustomUserDetails user) {
 
-		// 캠페인 및 첨부파일 등록, 등록된 캠페인 객체 반환
+		// 캠페인 및 첨부파일 등록
 		adminCampaignService.save(
 			campaign,
 			thumbnail,
@@ -77,7 +76,7 @@ public class AdminCampaignController {
 			user.getMemberNo()
 		);
 
-		// 201(CREATED) 상태와 함께 등록된 캠페인 객체 반환
+		// 201(CREATED) 상태만 반환 (body 없음)
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
@@ -109,26 +108,21 @@ public class AdminCampaignController {
 	 * multipart/form-data 요청(파일 업로드 포함)에서는 @RequestBody로 JSON을 받을 수 없기 때문에, 
 	 * 요청 필드(form-data) 중에서 `파일을 제외한 나머지 일반 텍스트 값들을 자동으로 DTO 필드에 바인딩해주는 역할을 하기 때문이다.
 	 */
-    @PutMapping("/update/{campaignNo}")
-    public ResponseEntity<CampaignDTO> update(
-    		@PathVariable(name="campaignNo") Long campaignNo,
-    		CampaignDTO campaign,
-    		@RequestParam("thumbnail") MultipartFile thumbnail,
- 		    @RequestParam("detailImage") MultipartFile detailImage,
- 		    @AuthenticationPrincipal CustomUserDetails user
-    		){
-    	
-    	CampaignDTO update = adminCampaignService.update(
+	@PutMapping("/{campaignNo}")
+	public ResponseEntity<Void> update(
+		@PathVariable(name="campaignNo") Long campaignNo,
+		CampaignDTO campaign,
+		@RequestParam("thumbnail") MultipartFile thumbnail,
+		@RequestParam("detailImage") MultipartFile detailImage
+	) {
+		adminCampaignService.update(
 			campaign,
 			thumbnail,
 			detailImage,
-			campaignNo,
-			user
+			campaignNo
 		);
-    	
-    	log.info("update:{}", update);
-    	return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
+		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
 
 	/**
 	 * 복구

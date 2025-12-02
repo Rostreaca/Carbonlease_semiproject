@@ -21,13 +21,12 @@ public interface AdminCampaignService {
 	 * @param campaign 캠페인 정보
 	 * @param thumbnail 썸네일 이미지 파일
 	 * @param detailImage 상세 이미지 파일
-	 * @param memberNo 작성자 번호
 	 */
-    void save(
-        CampaignDTO campaign,
-        MultipartFile thumbnail,
-        MultipartFile detailImage,
-        Long memberNo);
+	void save(
+		CampaignDTO campaign,
+		MultipartFile thumbnail,
+		MultipartFile detailImage,
+		Long memberNo);
 
 	/**
 	 * 카테고리 목록 조회
@@ -35,12 +34,18 @@ public interface AdminCampaignService {
 	 */
 	List<CategoryDTO> getCategories();
 	
-	CampaignDTO update(
-			CampaignDTO campaign,
-			MultipartFile thumbnail,
-			MultipartFile detailImage,
-			Long campaignNo,
-			CustomUserDetails user);
+	/**
+	 * 캠페인 수정
+	 * @param campaign
+	 * @param thumbnail
+	 * @param detailImage
+	 * @param campaignNo
+	 */
+	void update(
+		CampaignDTO campaign,
+		MultipartFile thumbnail,
+		MultipartFile detailImage,
+		Long campaignNo);
 	
 	/**
 	 * 복구

@@ -40,7 +40,7 @@
 					column="CAMPAIGN_NO"/>
 	</resultMap>
 	
-	
+	<!-- 첨부파일 매핑 -->
 	<resultMap id="campaignAttachmentsMap" type="CampaignAttachmentDTO">
         <id property="fileNo" column="FILE_NO"/>
         <result property="refBno" column="REF_BNO"/>
@@ -51,6 +51,7 @@
         <result property="uploadDate" column="UPLOAD_DATE"/>
     </resultMap>
 
+	<!-- 캠페인 전체 조회 (페이징 처리) -->
 	<select id="findAll" resultMap="campaignResultMap" parameterType="map">
 	  SELECT
 		     P.CAMPAIGN_NO
@@ -76,7 +77,7 @@
 		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 
-
+	<!-- 전체 게시글 수 조회 -->
 	<select id="findAndCountAll" resultType="_int">
 		SELECT
 		       COUNT(*)
@@ -84,8 +85,8 @@
 			   CL_CAMPAIGN
 	</select>
 	
-	
-	<select id="findAttachmentsByNo" resultMap="campaignAttachmentsMap" >
+	<!-- 첨부파일 조회 -->
+	<select id="findAttachmentsByNo" resultMap="campaignAttachmentsMap">
 		   SELECT
 				  FILE_NO
 				, REF_BNO
@@ -101,7 +102,7 @@
 	</select>
 
 	<!-- 캠페인 등록 -->
-    <insert id="save"><!-- vo 바꾸고 나서 parameterType 추가 고려 -->
+	<insert id="save" parameterType="CampaignVO">
 
         <selectKey keyProperty="campaignNo"
                    resultType="long"
@@ -135,7 +136,7 @@
     </insert>
 	
 	<!-- 첨부파일 등록 -->
-	<insert id="insertAttachment" parameterType="CampaignAttachmentDTO">
+	<insert id="insertAttachment" parameterType="CampaignAttachmentVO">
         INSERT 
 		  INTO 
 		       CL_CAMPAIGN_ATTACHMENT 
@@ -178,7 +179,7 @@
 	           CATEGORY_NO
 	</select>
 	
-	<update id="update" parameterType="CampaignDTO">
+	<update id="update" parameterType="CampaignVO">
 		UPDATE
 		       CL_CAMPAIGN
 		   SET
