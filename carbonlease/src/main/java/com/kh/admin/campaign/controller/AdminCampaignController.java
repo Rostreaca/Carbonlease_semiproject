@@ -59,6 +59,8 @@ public class AdminCampaignController {
 	 * @param detailImage  상세 이미지 파일(MultipartFile)
 	 * @param user         인증된 관리자 정보(회원번호)
 	 * @return ResponseEntity<CampaignDTO> 201(CREATED) + 등록된 캠페인 객체(첨부파일 포함)
+	 * 
+	 * 값을 넘길 때 dto 또는 map[v]으로 서비스단으로 넘기기
 	 */
 	@PostMapping("/insert")
 	public ResponseEntity<CampaignDTO> save(
@@ -76,7 +78,7 @@ public class AdminCampaignController {
 		);
 
 		// 201(CREATED) 상태와 함께 등록된 캠페인 객체 반환
-		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+		return ResponseEntity.status(HttpStatus.CREATED).body(saved);// body로 왜 보냈는가? 조회 아닌데 굳이?
 	}
 	
 	
@@ -103,6 +105,12 @@ public class AdminCampaignController {
 	 * @param detailImage  상세 이미지 파일 (Multipart)
 	 * @param user         인증된 관리자 정보 (AuthenticationPrincipal)
 	 * @return             수정 결과 응답 (201 Created)
+	 * 
+	 * 
+	 * 고려 : requestBody 에  campaignNo 를 같이 넣어서 campaignDTO로 보내는게 나을 것 같음 (확신아님)
+	 * 
+	 * multipart/form-data 요청(파일 업로드 포함)에서는 @RequestBody로 JSON을 받을 수 없기 때문에, 
+	 * 요청 필드(form-data) 중에서 `파일을 제외한 나머지 일반 텍스트 값들을 자동으로 DTO 필드에 바인딩해주는 역할을 하기 때문이다.
 	 */
     @PutMapping("/update/{campaignNo}")
     public ResponseEntity<CampaignDTO> update(
@@ -112,15 +120,17 @@ public class AdminCampaignController {
  		    @RequestParam("detailImage") MultipartFile detailImage,
  		    @AuthenticationPrincipal CustomUserDetails user
     		){
-    	CampaignDTO update = adminCampaignService.update(
+    	
+    	CampaignDTO update = adminCampaignService.update( // ??? vo 두개 만들어서 보내 버리기 !! vo 만드는거 서비스에서 관리
 			campaign,
 			thumbnail,
 			detailImage,
 			campaignNo,
 			user
 		);
+    	
     	log.info("update:{}", update);
-    	return ResponseEntity.status(HttpStatus.CREATED).build();
+    	return ResponseEntity.status(HttpStatus.CREATED).build(); // null값이 안나와서 담고 나서 ??? 왜 아무것 안함?? 
     }
 
 	/**
