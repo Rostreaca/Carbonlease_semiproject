@@ -106,9 +106,6 @@ public class AdminCampaignController {
 	 * @param user         인증된 관리자 정보 (AuthenticationPrincipal)
 	 * @return             수정 결과 응답 (201 Created)
 	 * 
-	 * 
-	 * 고려 : requestBody 에  campaignNo 를 같이 넣어서 campaignDTO로 보내는게 나을 것 같음 (확신아님)
-	 * 
 	 * multipart/form-data 요청(파일 업로드 포함)에서는 @RequestBody로 JSON을 받을 수 없기 때문에, 
 	 * 요청 필드(form-data) 중에서 `파일을 제외한 나머지 일반 텍스트 값들을 자동으로 DTO 필드에 바인딩해주는 역할을 하기 때문이다.
 	 */
@@ -121,7 +118,7 @@ public class AdminCampaignController {
  		    @AuthenticationPrincipal CustomUserDetails user
     		){
     	
-    	CampaignDTO update = adminCampaignService.update( // ??? vo 두개 만들어서 보내 버리기 !! vo 만드는거 서비스에서 관리
+    	CampaignDTO update = adminCampaignService.update(
 			campaign,
 			thumbnail,
 			detailImage,
@@ -130,7 +127,7 @@ public class AdminCampaignController {
 		);
     	
     	log.info("update:{}", update);
-    	return ResponseEntity.status(HttpStatus.CREATED).build(); // null값이 안나와서 담고 나서 ??? 왜 아무것 안함?? 
+    	return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 	/**
