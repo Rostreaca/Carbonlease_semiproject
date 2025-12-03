@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.board.model.dao.BoardMapper;
@@ -153,6 +154,7 @@ public class BoardServiceImpl implements BoardService {
 	
 	
 	// 조회수
+	@Transactional
 	@Override
 	public void boardViewCount(int boardNo) {
 		

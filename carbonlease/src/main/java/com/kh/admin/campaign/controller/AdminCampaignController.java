@@ -1,16 +1,26 @@
 package com.kh.admin.campaign.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.admin.campaign.model.service.AdminCampaignService;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.campaign.model.dto.CampaignDTO;
+import com.kh.campaign.model.dto.CategoryDTO;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,29 +29,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @Validated
-@RequestMapping("/admin")
+@RequestMapping("/admin/campaigns")
 @RequiredArgsConstructor
 public class AdminCampaignController {
+	
+	private final AdminCampaignService adminCampaignService;
 
 	/**
-	 * 등록하
-	 * @param campaign
-	 * @param file
-	 * @param user
+	 * 관리자_캠페인 목록조회
+	 * @param pageNo
 	 * @return
 	 */
-<<<<<<< HEAD
-//	@PostMapping
-//	public ResponseEntity<?> insertCampaign(
-//			@Valid CampaignDTO campaign,
-//			@RequestParam(name="file", required=false) MultipartFile file,
-//			@AuthenticationPrincipal CustomUserDetails user){
-//		
-//		
-//	}
-//	
-	
-=======
 	@GetMapping
 	public ResponseEntity<Map<String, Object>> findAll(@RequestParam(name = "pageNo", defaultValue= "1") int pageNo){
 		Map<String, Object> map = new HashMap();
@@ -142,5 +140,4 @@ public class AdminCampaignController {
 	}
 
 
->>>>>>> 0968b8ffe0eb404adeeb9e0c518675eac2ab2f0d
 }

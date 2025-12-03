@@ -68,9 +68,6 @@ public class ActivityFileHandler {
 			throw new RuntimeException("파일 저장 중 오류 발생");
 		}
 	}
-<<<<<<< HEAD
-}
-=======
 	
 	public void deleteExisting(int activityNo) {
 
@@ -99,4 +96,3 @@ public class ActivityFileHandler {
 	
 	
 }
->>>>>>> 0968b8ffe0eb404adeeb9e0c518675eac2ab2f0d
