@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kh.openapi.common.client.OpenApiClient;
@@ -45,22 +46,34 @@ public class MainApiServiceImpl implements MainApiService {
      */
     @Override
     public List<Map<String, Object>> getRegionMapData() {
-        // 1. OpenAPI 호출 및 재시도
-        String json = fetchEnergyJson();
-        if (json == null || json.isBlank()) return List.of();
+        try {
+            // 1. OpenAPI 호출 및 재시도
+            String json = fetchEnergyJson();
+            if (json == null || json.isBlank()) return List.of();
 
-        // 2. JSON 파싱 및 item 추출 (공통 util 사용)
-        List<Map<String, Object>> items = OpenApiResponseUtil.parseApiItems(om, json);
-        if (items.isEmpty()) return List.of();
+            // 2. JSON 파싱 및 item 추출 (공통 util 사용)
+            List<Map<String, Object>> items = OpenApiResponseUtil.parseApiItems(om, json);
+            if (items.isEmpty()) return List.of();
 
-        // 2-1. 전처리: null 값, 형변환 등 필요한 데이터 정제
-        items = preprocessItems(items);
+            // 2-1. 전처리: null 값, 형변환 등 필요한 데이터 정제
+            items = preprocessItems(items);
 
-        // 3. 지역별 사용량 집계
-        Map<String, List<Integer>> regionUsageList = aggregateRegionUsage(items);
-        // 4. 지역별 평균 사용량 계산
-        Map<String, Integer> usageMap = calculateRegionAverage(regionUsageList);
-        return mapRegionStatsWithCoords(usageMap);
+            // 3. 지역별 사용량 집계
+            Map<String, List<Integer>> regionUsageList = aggregateRegionUsage(items);
+            // 4. 지역별 평균 사용량 계산
+            Map<String, Integer> usageMap = calculateRegionAverage(regionUsageList);
+            
+            return mapRegionStatsWithCoords(usageMap);
+
+        } catch (ResourceAccessException e) {
+            log.error("[OpenAPI ResourceAccessException] 외부 API 타임아웃 또는 네트워크 오류", e);
+            throw new RuntimeException("외부 OpenAPI 서버 응답 지연 또는 네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", e);
+        
+        } catch (Exception e) {
+            log.error("[OpenAPI 호출 예외]", e);
+            throw new RuntimeException("OpenAPI 호출 중 알 수 없는 오류가 발생했습니다.", e);
+
+        }
     }
 
     /**
