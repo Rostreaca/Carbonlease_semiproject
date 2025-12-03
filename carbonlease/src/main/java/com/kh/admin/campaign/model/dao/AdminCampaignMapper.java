@@ -64,6 +64,11 @@ public interface AdminCampaignMapper {
 	 * @return
 	 */
 	int restoreStatus(Long campaignNo);
-
+	
+	/**
+	 * 삭제
+	 * @param campaignNo
+	 */
+	void deleteByCampaignNo(Long campaignNo);
 	
 }

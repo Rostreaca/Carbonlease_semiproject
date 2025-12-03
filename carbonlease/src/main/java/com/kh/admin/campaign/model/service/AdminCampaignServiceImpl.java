@@ -13,16 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.admin.campaign.model.dao.AdminCampaignMapper;
-import com.kh.auth.model.vo.CustomUserDetails;
-import com.kh.campaign.model.vo.CampaignAttachmentVO;
-import com.kh.campaign.model.dto.CampaignAttachmentDTO;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
-import com.kh.campaign.model.service.CampaignService;
+import com.kh.campaign.model.vo.CampaignAttachmentVO;
 import com.kh.campaign.model.vo.CampaignVO;
 import com.kh.common.util.Pagination;
-//import com.kh.exception.CustomAuthenticationException;
-import com.kh.exception.CustomAuthenticationException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -207,7 +202,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 
 	}
 	
-
+	
 	/**
 	 * 복구
 	 */
@@ -218,6 +213,12 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 			throw new IllegalStateException("복구할 캠페인이 없거나 이미 활성 상태입니다.");
 		}
 		return result;
+	}
+	
+	
+	@Override
+	public void deleteByCampaignNo(Long campaignNo) {
+		adminCampaignMapper.deleteByCampaignNo(campaignNo);
 	}
 
 }

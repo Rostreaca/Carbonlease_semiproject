@@ -69,6 +69,7 @@ public interface CampaignMapper {
 	 * @return
 	 */
 	int increaseViewCount(Long campaignNo);
+	
 }
 
 	
