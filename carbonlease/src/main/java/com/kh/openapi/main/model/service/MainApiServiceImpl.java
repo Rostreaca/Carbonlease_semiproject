@@ -1,4 +1,3 @@
-
 package com.kh.openapi.main.model.service;
 
 import java.util.List;
@@ -46,7 +45,6 @@ public class MainApiServiceImpl implements MainApiService {
      */
     @Override
     public List<Map<String, Object>> getRegionMapData() {
-
         // 1. OpenAPI 호출 및 재시도
         String json = fetchEnergyJson();
         if (json == null || json.isBlank()) return List.of();
@@ -55,13 +53,32 @@ public class MainApiServiceImpl implements MainApiService {
         List<Map<String, Object>> items = OpenApiResponseUtil.parseApiItems(om, json);
         if (items.isEmpty()) return List.of();
 
+        // 2-1. 전처리: null 값, 형변환 등 필요한 데이터 정제
+        items = preprocessItems(items);
+
         // 3. 지역별 사용량 집계
         Map<String, List<Integer>> regionUsageList = aggregateRegionUsage(items);
-
         // 4. 지역별 평균 사용량 계산
         Map<String, Integer> usageMap = calculateRegionAverage(regionUsageList);
-
         return mapRegionStatsWithCoords(usageMap);
+    }
+
+    /**
+     * OpenAPI 응답 items 전처리: null 값 제거, avgUseQnt 형변환 등
+     */
+    private List<Map<String, Object>> preprocessItems(List<Map<String, Object>> items) {
+        return items.stream()
+            .filter(it -> it.get("avgUseQnt") != null && it.get("lclgvNm") != null)
+            .map(it -> {
+                // avgUseQnt를 Integer로 변환
+                try {
+                    it.put("avgUseQnt", Integer.parseInt(String.valueOf(it.get("avgUseQnt"))));
+                } catch (Exception e) {
+                    it.put("avgUseQnt", 0);
+                }
+                return it;
+            })
+            .toList();
     }
 
     // 1. OpenAPI 호출 및 재시도

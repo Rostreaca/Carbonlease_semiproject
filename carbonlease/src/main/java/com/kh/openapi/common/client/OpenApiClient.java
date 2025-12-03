@@ -34,8 +34,8 @@ public class OpenApiClient {
      */
     public OpenApiClient(OpenApiProperties openApiProperties) {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(3000); // 3초 커넥션 타임아웃
-        factory.setReadTimeout(3000);    // 3초 응답(읽기) 타임아웃
+        factory.setConnectTimeout(8000); // 3초 커넥션 타임아웃
+        factory.setReadTimeout(8000);    // 3초 응답(읽기) 타임아웃
         this.rest = new RestTemplate(factory);
         // 여러 서비스 확장 대비 전체 맵 저장
         this.apiInfoMap = openApiProperties.getServices();
