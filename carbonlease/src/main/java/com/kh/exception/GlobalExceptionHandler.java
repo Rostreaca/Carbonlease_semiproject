@@ -57,4 +57,15 @@ public class GlobalExceptionHandler {
 		error.put("error-message", e.getBindingResult().getFieldError().getDefaultMessage());
 		return ResponseEntity.status(e.getStatusCode()).body(error);
 	}
+	
+	@ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+	public ResponseEntity<Map<String, String>> handleAccessDenied(org.springframework.security.access.AccessDeniedException e){
+	    return createResponseEntity(e, HttpStatus.FORBIDDEN);
+	}
+	
+	@ExceptionHandler(AdminActivityException.class)
+	public ResponseEntity<Map<String, String>> handleAdminError(AdminActivityException e) {
+	    return createResponseEntity(e, HttpStatus.BAD_REQUEST);
+	}
+
 }

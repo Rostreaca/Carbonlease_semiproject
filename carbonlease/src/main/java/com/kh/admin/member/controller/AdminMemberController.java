@@ -1,6 +1,8 @@
 package com.kh.admin.member.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,15 +28,21 @@ public class AdminMemberController {
 	private final AdminMemberService adminMemberService;
 	
 	@GetMapping
-	public ResponseEntity<?> selectMemberList(){
+	public ResponseEntity<List<MemberDTO>> selectMemberList(@RequestParam(name = "orderBy", defaultValue = "memberNo") String orderBy,
+			                                  @RequestParam(name = "keyword") String keyword){
 		
-		List<MemberDTO> members = adminMemberService.selectMemberList();
+		Map<String, String> selectOptions = new HashMap();
+		
+		selectOptions.put("orderBy", orderBy);
+		selectOptions.put("keyword", keyword);
+		
+		List<MemberDTO> members = adminMemberService.selectMemberList(selectOptions);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(members);
 	}
 	
 	@PutMapping("/restore")
-	public ResponseEntity<?> restoreMember(@RequestParam Long memberNo){
+	public ResponseEntity<?> restoreMember(@RequestParam(name = "memberNo") Long memberNo){
 		
 		adminMemberService.restoreMember(memberNo);
 		
@@ -42,7 +50,7 @@ public class AdminMemberController {
 	}
 	
 	@DeleteMapping
-	public ResponseEntity<?> deleteMember(@RequestParam Long memberNo){
+	public ResponseEntity<?> deleteMember(@RequestParam(name = "memberNo") Long memberNo){
 		
 		adminMemberService.deleteMember(memberNo);
 		

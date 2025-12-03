@@ -34,6 +34,6 @@ public interface ActivityService<ReplyDTO> {
 
 	void increaseViewCount(int activityNo);
 
-
+	void updateActivity(ActivityFormDTO activity, MultipartFile file, Long memberNo);
 
 }

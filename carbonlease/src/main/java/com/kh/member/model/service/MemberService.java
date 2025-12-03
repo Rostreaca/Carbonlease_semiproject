@@ -1,5 +1,9 @@
 package com.kh.member.model.service;
 
+import java.util.List;
+
+import com.kh.activity.model.dto.ActivityListDTO;
+import com.kh.board.model.dto.BoardDTO;
 import com.kh.member.model.dto.MemberDTO;
 
 import jakarta.validation.Valid;
@@ -17,5 +21,9 @@ public interface MemberService {
 	void checkNickName(String nickName);
 	
 	void checkEmail(String email);
+
+	List<BoardDTO> selectBoardsByMemberNo(Long memberNo);
+
+	List<ActivityListDTO> selectActivityBoardsByMemberNo(Long memberNo);
 	
 }

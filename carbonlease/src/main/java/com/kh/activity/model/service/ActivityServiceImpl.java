@@ -39,7 +39,7 @@ public class ActivityServiceImpl implements ActivityService{
 	    int listCount = findListCount(filter,keyword);
 	    
 	    
-	    Map<String, Object> params = pagination.pageRequest(pageNo, 6, listCount);
+	    Map<String, Object> params = pagination.pageRequest(pageNo, 8, listCount);
 	    params.put("keyword", keyword);
 	    params.put("filter", filter);
 	    List<ActivityListDTO> activityListDTO = activityMapper.activityAllList(params);
@@ -127,16 +127,17 @@ public class ActivityServiceImpl implements ActivityService{
 
 	    ActivityBoard owner = activityMapper.findBoardOwner(activityNo);
 
-	    if(owner == null){
+	    if (owner == null) {
 	        throw new CustomAuthenticationException("존재하지 않는 게시물입니다.");
 	    }
 
-	    if (owner.getMemberNo() == null || !owner.getMemberNo().equals(loginMemberNo)) {
+	    if (!owner.getMemberNo().equals(loginMemberNo)) {
 	        throw new AccessDeniedException("삭제 권한이 없습니다.");
 	    }
 
 	    return activityMapper.activityDelete(activityNo);
 	}
+
 	
 	@Override
 	public Map<String, Object> selectReplies(int activityNo, int pageNo) {
@@ -185,7 +186,27 @@ public class ActivityServiceImpl implements ActivityService{
 	    activityMapper.updateViewCount(activityNo);
 	}
 
+	@Transactional
+	@Override
+	public void updateActivity(ActivityFormDTO activity, MultipartFile file, Long memberNo) {
 
+	    ActivityBoard owner = activityMapper.findBoardOwner(activity.getActivityNo());
 
+	    if (owner == null) {
+	        throw new CustomAuthenticationException("존재하지 않는 게시물입니다.");
+	    }
+
+	    if (!owner.getMemberNo().equals(memberNo)) {
+	        throw new AccessDeniedException("수정 권한이 없습니다.");
+	    }
+
+	    activityMapper.updateActivityBoard(activity);
+	    activityMapper.updateCertification(activity);
+
+	    if (file != null && !file.isEmpty()) {
+	        fileHandler.deleteExisting(activity.getActivityNo());
+	        fileHandler.store(file, activity.getActivityNo());
+	    }
+	}
 
 }

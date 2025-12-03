@@ -24,22 +24,20 @@ import com.kh.configuration.filter.JwtFilter;
 
 import lombok.RequiredArgsConstructor;
 
-
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfigure {
-	
+
 	private final JwtFilter jwtFilter;
-	
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-		
 		return httpSecurity.formLogin(AbstractHttpConfigurer::disable)
 						   .csrf(AbstractHttpConfigurer::disable)
 						   .cors(Customizer.withDefaults())
 						   .authorizeHttpRequests(requests -> {
+<<<<<<< HEAD
 							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/*/view").permitAll(); // 조회수
 							   requests.requestMatchers(HttpMethod.GET, "/activityBoards/*/replies").permitAll(); // 댓글
 							   requests.requestMatchers(HttpMethod.POST, "/members/**", "/auth/login", "/auth/adminLogin", "/auth/refresh", "/boards/detail/replyInsert").permitAll();
@@ -50,6 +48,22 @@ public class SecurityConfigure {
 							   requests.requestMatchers(HttpMethod.PUT,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
 							   requests.requestMatchers(HttpMethod.DELETE,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
 							   requests.requestMatchers("/admin/**").hasRole("ADMIN");
+=======
+							   requests.requestMatchers(HttpMethod.POST, "/members/**","/auth/login", "/auth/refresh", "/auth/adminLogin").permitAll();
+							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/*/view").permitAll();
+							   requests.requestMatchers(HttpMethod.POST, "/boards", "/activityBoards", "/notices", "/campaigns").authenticated();
+							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/**").authenticated();
+							   requests.requestMatchers(HttpMethod.POST, "/campaigns/*/like").authenticated(); // 좋아요 인증 필요
+							   requests.requestMatchers(HttpMethod.GET,"/members/**", "/boards/**","/activityBoards/**", "/uploads/**", "/notices/**", "/campaigns/**", "/api/region/**").permitAll();
+							   requests.requestMatchers(HttpMethod.PUT,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
+							   requests.requestMatchers(HttpMethod.DELETE,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
+							   requests.requestMatchers(HttpMethod.PUT, "/admin/**").hasAuthority("ROLE_ADMIN");
+							   requests.requestMatchers(HttpMethod.GET, "/admin/**").hasAuthority("ROLE_ADMIN");
+							   requests.requestMatchers(HttpMethod.POST, "/admin/**").hasAuthority("ROLE_ADMIN");
+							   requests.requestMatchers(HttpMethod.PATCH, "/activityBoards/**").authenticated();
+							   requests.requestMatchers(HttpMethod.PATCH, "/admin/**").hasAuthority("ROLE_ADMIN");
+							   requests.requestMatchers(HttpMethod.DELETE, "/admin/**").hasAuthority("ROLE_ADMIN");
+>>>>>>> 0968b8ffe0eb404adeeb9e0c518675eac2ab2f0d
 						   })
 							.sessionManagement(manager ->
 							manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -58,9 +72,10 @@ public class SecurityConfigure {
 						   .build();
 		
 	}
-	
+
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
+<<<<<<< HEAD
 	    CorsConfiguration configuration = new CorsConfiguration();
 	    configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
 	    configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
@@ -71,16 +86,26 @@ public class SecurityConfigure {
 	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 	    source.registerCorsConfiguration("/**", configuration);
 	    return source;
+=======
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+		configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "PATCH", "OPTIONS"));
+		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+		configuration.setAllowCredentials(true);
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+>>>>>>> 0968b8ffe0eb404adeeb9e0c518675eac2ab2f0d
 	}
-	
+
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
-	
+
 	@Bean
-	public AuthenticationManager autheticationManager(AuthenticationConfiguration authConfig) throws Exception {
-		return authConfig.getAuthenticationManager();
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+		return configuration.getAuthenticationManager();
 	}
 }

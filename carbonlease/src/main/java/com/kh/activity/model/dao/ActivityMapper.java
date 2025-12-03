@@ -53,7 +53,14 @@ public interface ActivityMapper {
 
 	void updateViewCount(int activityNo);
 
+	int updateActivityBoard(ActivityFormDTO activity);
 
+	int updateCertification(ActivityFormDTO activity);
 
+<<<<<<< HEAD
 
 }
+=======
+	int deleteAttachments(int activityNo);
+}
+>>>>>>> 0968b8ffe0eb404adeeb9e0c518675eac2ab2f0d
