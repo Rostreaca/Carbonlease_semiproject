@@ -17,13 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class OpenApiClient {
 
-
-
     /**
-     * OpenAPI 서비스 정보 (api.open.services.energy)
+     * OpenAPI 서비스 정보 맵
      */
-    private final OpenApiProperties.ApiInfo apiInfo;
-
+    private final Map<String, OpenApiProperties.ApiInfo> apiInfoMap;
 
     /**
      * RestTemplate: 외부 OpenAPI 호출용 HTTP 클라이언트
@@ -32,7 +29,7 @@ public class OpenApiClient {
     private final RestTemplate rest;
 
     /**
-     * 생성자: RestTemplate에 타임아웃 설정
+     * 생성자: RestTemplate에 타임아웃 설정 및 서비스 정보 맵 초기화
      * (실무에서 OpenAPI 장애/지연 대응 목적)
      */
     public OpenApiClient(OpenApiProperties openApiProperties) {
@@ -40,12 +37,13 @@ public class OpenApiClient {
         factory.setConnectTimeout(3000); // 3초 커넥션 타임아웃
         factory.setReadTimeout(3000);    // 3초 응답(읽기) 타임아웃
         this.rest = new RestTemplate(factory);
-        // energy 서비스 기준(필요시 파라미터화 가능)
-        this.apiInfo = openApiProperties.getServices().get("energy");
+        // 여러 서비스 확장 대비 전체 맵 저장
+        this.apiInfoMap = openApiProperties.getServices();
     }
 
     /**
-     * OpenAPI 호출 메서드
+     * OpenAPI 호출 메서드 (서비스명 지정)
+     * @param serviceName 서비스명 (예: "energy")
      * @param params 쿼리 파라미터 (Map)
      * @return JSON 문자열 (실패 시 null)
      *
@@ -54,8 +52,13 @@ public class OpenApiClient {
      * - 호출 URL은 info 로그로 남김
      * - 예외 발생 시 error 로그
      */
-    public String call(Map<String, String> params) {
+    public String call(String serviceName, Map<String, String> params) {
         try {
+            OpenApiProperties.ApiInfo apiInfo = apiInfoMap.get(serviceName);
+            if (apiInfo == null) {
+                log.error("[OpenAPI] 서비스 정보 없음: {}", serviceName);
+                return null;
+            }
             StringBuilder url = new StringBuilder(apiInfo.getBaseUrl());
             if (apiInfo.getEndpoint() != null && !apiInfo.getEndpoint().isEmpty()) {
                 if (!apiInfo.getBaseUrl().endsWith("/")) url.append("/");

@@ -138,6 +138,10 @@ public class AdminCampaignController {
 			return ResponseEntity.badRequest().body("복구할 캠페인이 없거나 이미 활성 상태입니다.");
 		}
 	}
+	
+//	@DeleteMapping("/{campaignNo}")
+//	public ResponseEntity<?> deleteByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo,
+//			@AuthenticationPrincipal CustomU)
 
 
 }
