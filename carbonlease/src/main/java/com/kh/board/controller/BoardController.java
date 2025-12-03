@@ -82,23 +82,40 @@ public class BoardController {
 	}
 	
 	// 댓글 수정
-	@PostMapping("/replyUpdate")
-	public ResponseEntity<?> boardReplyUpdate(@RequestBody ReplyInsertVO replyVO, @AuthenticationPrincipal CustomUserDetails user) {
-		
-		System.out.println(replyVO);
-		
-		Map<String, Object> resultMap = new HashMap<String, Object>();
-		
-		if (user == null) {
-	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
-		}
-		
-		 int updateOK = boardService.boardReplyUpdate(replyVO, user);
-		
-		 resultMap.put("updateOK", updateOK);
-		 
-		 return ResponseEntity.ok(resultMap); 
-	}
+//	@PostMapping("/replyUpdate")
+//	public ResponseEntity<?> boardReplyUpdate(@RequestBody ReplyInsertVO replyVO, @AuthenticationPrincipal CustomUserDetails user) {
+//		
+//		System.out.println(replyVO);
+//		
+//		Map<String, Object> resultMap = new HashMap<String, Object>();
+//		
+//		if (user == null) {
+//	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+//		}
+//		
+//		 int updateOK = boardService.boardReplyUpdate(replyVO, user);
+//		
+//		 resultMap.put("updateOK", updateOK);
+//		 
+//		 return ResponseEntity.ok(resultMap); 
+//	}
+	
+	
+	// 댓글 삭제
+//    @DeleteMapping("/{replyNo}")
+//    public ResponseEntity<?> deleteReply(@PathVariable("replyNo") int replyNo, @AuthenticationPrincipal CustomUserDetails user) {
+//
+//        if (user == null)
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+//
+//         본인 댓글 확인
+//        BoardReplyDTO reply = boardService.getReplyById(replyNo);
+//        if (reply.getMemberNo() != user.getMemberNo()) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("권한 없음");
+//        }
+//
+//        return ResponseEntity.ok("deleted");
+//    }
 	
 	// 글쓰기
 	@PostMapping("boardInsert")

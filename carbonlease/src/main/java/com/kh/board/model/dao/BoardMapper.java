@@ -32,7 +32,7 @@ public interface BoardMapper {
 	
 	int insertClBoard(BoardDTO boardVO);
 	
-	int replyUpdate(ReplyInsertVO riVO);
+	// int replyUpdate(ReplyInsertVO riVO);
 	
 	void boardViewCount(int boardNo);
 
