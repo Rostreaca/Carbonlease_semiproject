@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.kh.common.util.Pagination;
 import com.kh.notice.model.dao.NoticeMapper;
+import com.kh.notice.model.dto.AttachmentDTO;
 import com.kh.notice.model.dto.NoticeDTO;
 
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,7 @@ public class NoticeServiceImpl implements NoticeService{
 		// (offset) : 목록조회에 필요한 offset값을 저장합니다.
 		// (limit) : 목록조회에 필요한 limit값을 저장합니다.
 		// (pi) : 프론트에서 페이징 처리에 필요한 pageInfo 인자값을 저장합니다.
-		Map<String, Object> params = pagination.pageRequest(pageNo, 2, listCount);
+		Map<String, Object> params = pagination.pageRequest(pageNo, 5, listCount);
 		
 		// 3. 게시글의 목록들을 Map을 인자값으로 받아 조회합니다.
 		// Map에 offset, limit가 저장되어있으니 쿼리문에 #{offset}, #{limit} 추가하면됨.
@@ -69,9 +70,28 @@ public class NoticeServiceImpl implements NoticeService{
 	}
 
 	@Override
-	public NoticeDTO findByNo(Long noticeNo) {
+	public Map<String, Object> findByNo(Long noticeNo) {
 
-		return getNoticeOrThrow(noticeNo);
+		Map<String, Object> map = new HashMap();
+		
+		//조회수 증가
+		addViewCount(noticeNo);
+		
+		map.put("notice", getNoticeOrThrow(noticeNo));
+		map.put("attachment", getAttachment(noticeNo));
+		
+		
+		return map;
+	}
+
+	private void addViewCount(Long noticeNo) {
+
+		log.info("조회수 증가한다 요다야");
+		noticeMapper.addViewCount(noticeNo);
+	}
+
+	private List<AttachmentDTO> getAttachment(Long noticeNo) {
+		return noticeMapper.getAttachment(noticeNo);
 	}
 
 	private NoticeDTO getNoticeOrThrow(Long noticeNo) {

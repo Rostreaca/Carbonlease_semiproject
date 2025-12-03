@@ -40,6 +40,7 @@ public interface CampaignMapper {
 	 */
 	CampaignDTO getCampaignOnly(Long CampaignNo);
 
+
 	/**
 	 * 좋아요 존재 여부 조회
 	 * @param likeDTO

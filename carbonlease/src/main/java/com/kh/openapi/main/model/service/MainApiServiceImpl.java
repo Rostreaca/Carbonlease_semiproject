@@ -51,24 +51,25 @@ public class MainApiServiceImpl implements MainApiService {
     @SuppressWarnings("unchecked")
     public List<Map<String, Object>> getRegionMapData() {
         try {
-            
             // === [OpenApiProperties 기반 energy 서비스 정보 직접 활용] ===
-            // application.yml의 api.open.services.energy.* 구조와 1:1 매핑
-            // 확장성/유지보수성을 위해 서비스별 정보(key, baseUrl, endpoint 등)를 코드에서 직접 사용
             OpenApiProperties.ApiInfo energyApi = openApiProperties.getServices().get("energy");
             log.debug("[OpenAPI 설정] key={}, baseUrl={}, endpoint={}", energyApi.getKey(), energyApi.getBaseUrl(), energyApi.getEndpoint());
 
-            // 실제 인증키 등 파라미터로 전달 (OpenAPI 명세에 따라 필요시)
+            log.info("[OpenAPI 호출 시작] 인증키={}, baseUrl={}, endpoint={}", energyApi.getKey(), energyApi.getBaseUrl(), energyApi.getEndpoint());
             String json = client.call(Map.of(
                 "pageNo", "1",
                 "numOfRows", "17",
-                "serviceKey", energyApi.getKey() // <-- yml에서 주입된 인증키 사용
+                "serviceKey", energyApi.getKey()
             ));
             log.info("[OpenAPI 응답 원문] {}", json);
-            if (json == null) return List.of();
+            if (json == null) {
+                log.error("[OpenAPI 응답] json이 null입니다. 외부 API 장애/네트워크 문제 가능");
+                return List.of();
+            }
 
             // 2. JSON 파싱 및 body 추출
             Object parsed = om.readValue(json, Object.class);
+            log.debug("[OpenAPI 파싱] parsed 타입: {}", parsed == null ? "null" : parsed.getClass());
             Map<String, Object> body;
             if (parsed instanceof Map) {
                 body = (Map<String, Object>) ((Map<String, Object>) parsed).get("body");
@@ -76,9 +77,10 @@ public class MainApiServiceImpl implements MainApiService {
                 log.error("[OpenAPI 응답 body가 List로 내려옴: {}]", parsed.getClass());
                 return List.of();
             } else {
-                log.error("[OpenAPI 응답 body 타입 예외: {}]", parsed.getClass());
+                log.error("[OpenAPI 응답 body 타입 예외: {}]", parsed == null ? "null" : parsed.getClass());
                 return List.of();
             }
+            log.debug("[OpenAPI 파싱] body: {}", body);
 
             // 3. items 파싱 (Map/List 모두 대응)
             Object itemsObj = body.get("items");
@@ -90,6 +92,7 @@ public class MainApiServiceImpl implements MainApiService {
             } else {
                 itemObj = null;
             }
+            log.debug("[OpenAPI 파싱] itemsObj: {}", itemsObj);
 
             // 4. itemObj를 List<Map>으로 변환 (실무형 안전 파싱)
             List<Map<String, Object>> items;
@@ -114,7 +117,7 @@ public class MainApiServiceImpl implements MainApiService {
                 items = List.of();
             }
 
-            // 데이터 누락 시만 경고 로그
+            log.info("[OpenAPI items 파싱 결과] items.size={}", items.size());
             if (items.isEmpty()) {
                 log.warn("[OpenAPI items가 비어있음] 응답 파싱 또는 API 데이터 문제");
             }
@@ -126,6 +129,7 @@ public class MainApiServiceImpl implements MainApiService {
                 int usage = it.get("avgUseQnt") != null ? Integer.parseInt(it.get("avgUseQnt").toString()) : 0;
                 regionUsageList.computeIfAbsent(region, k -> new java.util.ArrayList<>()).add(usage);
             }
+            log.debug("[OpenAPI 파싱] regionUsageList: {}", regionUsageList);
 
             // 6. 광역시/도별 평균 사용량 계산
             Map<String, Integer> usageMap = new java.util.LinkedHashMap<>();
@@ -136,7 +140,7 @@ public class MainApiServiceImpl implements MainApiService {
                 }
             });
 
-            // usageMap이 비어있을 때만 경고
+            log.info("[OpenAPI usageMap] usageMap.size={}, usageMap={}", usageMap.size(), usageMap);
             if (usageMap.isEmpty()) {
                 log.warn("[usageMap이 비어있음] items 파싱 문제 또는 데이터 없음");
             }
@@ -155,7 +159,7 @@ public class MainApiServiceImpl implements MainApiService {
                 }
             });
 
-            // 최종 반환 데이터가 비어있을 때만 경고
+            log.info("[최종 반환 데이터] out.size={}, out={}", out.size(), out);
             if (out.isEmpty()) {
                 log.warn("[지도 반환 데이터 out이 비어있음] usageMap에 좌표 매칭되는 지역 없음");
             }

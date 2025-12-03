@@ -8,6 +8,6 @@ public interface NoticeService {
 
 	Map<String, Object> findAll(int pageNo);
 
-	NoticeDTO findByNo(Long noticeNo);
+	Map<String, Object> findByNo(Long noticeNo);
 
 }
