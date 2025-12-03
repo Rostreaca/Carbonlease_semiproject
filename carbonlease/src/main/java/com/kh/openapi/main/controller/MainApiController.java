@@ -13,7 +13,7 @@ import com.kh.openapi.main.model.service.MainApiService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping(value="api", produces="application/json; charset=UTF-8")
 @RequiredArgsConstructor
 public class MainApiController {
 
@@ -23,7 +23,7 @@ public class MainApiController {
      * 광역시/도별 에너지 사용량 %
      * @return ResponseEntity<List<Map<String, Object>>> (region, lat, lng, value)
      */
-    @GetMapping("/region/map")
+    @GetMapping("region")
     public ResponseEntity<List<Map<String, Object>>> getRegionStats() {
         return ResponseEntity.ok(service.getRegionMapData());
     }
