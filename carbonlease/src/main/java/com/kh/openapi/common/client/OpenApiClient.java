@@ -1,5 +1,20 @@
 package com.kh.openapi.common.client;
 
+/**
+ * [사용법]
+ * OpenApiClient는 외부 OpenAPI를 호출할 때 사용합니다.
+ * 예시:
+ *   @Autowired
+ *   private OpenApiClient openApiClient;
+ *
+ *   String json = openApiClient.call("energy", Map.of("pageNo", "1", "numOfRows", "17"));
+ *   // 반환값은 JSON 문자열이며, 장애/타임아웃 시 null 반환
+ *
+ * - 서비스명은 OpenApiProperties에 등록된 키(예: "energy")를 사용합니다.
+ * - 파라미터는 Map<String, String>으로 전달합니다.
+ * - 장애/타임아웃/네트워크 오류 발생 시 error 로그와 함께 null 반환
+ */
+
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
