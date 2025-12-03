@@ -29,7 +29,6 @@ public class MemberServiceImpl implements MemberService {
 	private final PasswordEncoder passwordEncoder;
 	private final MemberValidator memberValidator;
 
-	
 	@Override
 	public void signUp(MemberDTO member) {
 

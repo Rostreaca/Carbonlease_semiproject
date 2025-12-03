@@ -3,6 +3,7 @@ package com.kh.auth.controller;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,10 @@ import org.springframework.web.client.RestTemplate;
 import com.kh.auth.model.service.AuthService;
 import com.kh.member.model.dto.MemberDTO;
 import com.kh.token.model.service.TokenService;
+import com.kh.token.util.JwtUtil;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,12 +36,16 @@ public class AuthController {
 
 	private final AuthService authService;
 	private final TokenService tokenService;
+
+	private final JwtUtil tokenUtil;
+	
 	@Value("${kakao.client.id}")
 	private String clientId;
 	@Value("${kakao.redirect.uri}")
 	private String redirectUri;
 	@Value("${kakao.client.secret}")
 	private String clientSecret;
+	
 	
 	@PostMapping("/login")
 	public ResponseEntity<Map<String, String>> login(@Valid @RequestBody MemberDTO member){
@@ -69,8 +77,6 @@ public class AuthController {
 	@PostMapping("/kakaoLogin")
 	public ResponseEntity<?> kakaoLogin(@RequestParam(name="code") String code){
 		
-		log.info(code);
-		
 		HttpHeaders headers = new HttpHeaders();
 		
 		headers.add("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
@@ -82,12 +88,15 @@ public class AuthController {
 		params.add("redirect_uri", redirectUri);
 		params.add("code", code);
 		
-		RestTemplate rt = new RestTemplate();
+		authService.kakaoLogin(params, headers);
 		
-		HttpEntity<MultiValueMap<String,String>> httpEntity = new HttpEntity<MultiValueMap<String,String>>(params,headers);
-		ResponseEntity<String> response = rt.postForEntity("https://kauth.kakao.com/oauth/token", httpEntity, String.class);
+
 		
-		return ResponseEntity.status(HttpStatus.OK).body(response.getBody());
+		
+		
+		
+		
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 	
 }

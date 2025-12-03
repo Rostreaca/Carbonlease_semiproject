@@ -99,6 +99,8 @@ public class CampaignServiceImpl implements CampaignService {
 	 * @param campaignNo 캠페인 번호 정보
 	 * @return 캠페인 정보
 	 * @throws InvalidParameterException 캠페인 없을 때
+	 * 
+	 * - [s] public으로 Validator로 빼서 불러오기
 	 */
 	private CampaignDTO getCampaignOrThrow(Long campaignNo) {
 		

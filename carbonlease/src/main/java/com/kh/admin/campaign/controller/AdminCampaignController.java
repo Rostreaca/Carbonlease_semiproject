@@ -59,24 +59,25 @@ public class AdminCampaignController {
 	 * @param detailImage  상세 이미지 파일(MultipartFile)
 	 * @param user         인증된 관리자 정보(회원번호)
 	 * @return ResponseEntity<CampaignDTO> 201(CREATED) + 등록된 캠페인 객체(첨부파일 포함)
+	 * 
 	 */
-	@PostMapping("/insert")
-	public ResponseEntity<CampaignDTO> save(
+	@PostMapping
+	public ResponseEntity<Void> save(
 		    @Valid CampaignDTO campaign,
 		    @RequestParam("thumbnail") MultipartFile thumbnail,
 		    @RequestParam("detailImage") MultipartFile detailImage,
-		    @AuthenticationPrincipal CustomUserDetails user) {
+			@AuthenticationPrincipal CustomUserDetails user) {
 
-		// 캠페인 및 첨부파일 등록, 등록된 캠페인 객체 반환
-		CampaignDTO saved = adminCampaignService.save(
+		// 캠페인 및 첨부파일 등록
+		adminCampaignService.save(
 			campaign,
 			thumbnail,
 			detailImage,
 			user.getMemberNo()
 		);
 
-		// 201(CREATED) 상태와 함께 등록된 캠페인 객체 반환
-		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+		// 201(CREATED) 상태만 반환 (body 없음)
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
 	
@@ -103,32 +104,32 @@ public class AdminCampaignController {
 	 * @param detailImage  상세 이미지 파일 (Multipart)
 	 * @param user         인증된 관리자 정보 (AuthenticationPrincipal)
 	 * @return             수정 결과 응답 (201 Created)
+	 * 
+	 * multipart/form-data 요청(파일 업로드 포함)에서는 @RequestBody로 JSON을 받을 수 없기 때문에, 
+	 * 요청 필드(form-data) 중에서 `파일을 제외한 나머지 일반 텍스트 값들을 자동으로 DTO 필드에 바인딩해주는 역할을 하기 때문이다.
 	 */
-    @PutMapping("/update/{campaignNo}")
-    public ResponseEntity<CampaignDTO> update(
-    		@PathVariable(name="campaignNo") Long campaignNo,
-    		CampaignDTO campaign,
-    		@RequestParam("thumbnail") MultipartFile thumbnail,
- 		    @RequestParam("detailImage") MultipartFile detailImage,
- 		    @AuthenticationPrincipal CustomUserDetails user
-    		){
-    	CampaignDTO update = adminCampaignService.update(
+	@PutMapping("/{campaignNo}")
+	public ResponseEntity<Void> update(
+		@PathVariable(name="campaignNo") Long campaignNo,
+		CampaignDTO campaign,
+		@RequestParam("thumbnail") MultipartFile thumbnail,
+		@RequestParam("detailImage") MultipartFile detailImage
+	) {
+		adminCampaignService.update(
 			campaign,
 			thumbnail,
 			detailImage,
-			campaignNo,
-			user
+			campaignNo
 		);
-    	log.info("update:{}", update);
-    	return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
+		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
 
 	/**
 	 * 복구
 	 * @param campaignNo
 	 * @return
 	 */
-	@PostMapping("/update/{campaignNo}/restore")
+	@PostMapping("/{campaignNo}/restore")
 	public ResponseEntity<?> restoreCampaign(@PathVariable Long campaignNo) {
 		int result = adminCampaignService.restoreCampaign(campaignNo);
 		if (result == 1) {
@@ -137,6 +138,10 @@ public class AdminCampaignController {
 			return ResponseEntity.badRequest().body("복구할 캠페인이 없거나 이미 활성 상태입니다.");
 		}
 	}
+	
+//	@DeleteMapping("/{campaignNo}")
+//	public ResponseEntity<?> deleteByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo,
+//			@AuthenticationPrincipal CustomU)
 
 
 }

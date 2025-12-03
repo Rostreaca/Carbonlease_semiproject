@@ -1,12 +1,20 @@
 package com.kh.auth.model.service;
 
+import java.net.HttpURLConnection;
 import java.util.Map;
 
+import org.springframework.boot.json.GsonJsonParser;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.exception.CustomAuthenticationException;
@@ -25,6 +33,9 @@ public class AuthServiceImpl implements AuthService {
 
 	private final AuthenticationManager authenticationManager;
 	private final TokenService tokenService;
+	
+	private RestTemplate restTemplate = new RestTemplate();
+	private GsonJsonParser jsonParser = new GsonJsonParser();
 	
 	private CustomUserDetails loadUser(MemberDTO member) {
 		
@@ -86,6 +97,45 @@ public class AuthServiceImpl implements AuthService {
 		loginResponse.put("addressLine2", user.getAddressLine2());
 		
 		return loginResponse;
+	}
+
+	@Override
+	public void kakaoLogin(MultiValueMap<String, String> params, HttpHeaders headers) {
+		
+
+		ResponseEntity<String> response = getKaKaoAccessToken(params, headers);
+		
+//		log.info("{}",response);
+		
+		Map<String, Object> tokens = jsonParser.parseMap(response.getBody());
+		
+		String accessToken = (String)tokens.get("access_token");
+
+		getKaKaoId(accessToken);
+		
+		
+	}
+	
+	private ResponseEntity<String> getKaKaoAccessToken(MultiValueMap<String, String> params, HttpHeaders headers){
+		
+		HttpEntity<MultiValueMap<String,String>> httpEntity = new HttpEntity<MultiValueMap<String,String>>(params,headers);
+		ResponseEntity<String> response = restTemplate.postForEntity("https://kauth.kakao.com/oauth/token", httpEntity, String.class);
+		
+		return response;
+	}
+	
+	private void getKaKaoId(String accessToken){
+		
+		HttpHeaders headers = new HttpHeaders();
+		
+		headers.add("Authorization", "Bearer " + accessToken);
+		HttpEntity<String> httpEntity = new HttpEntity<>("",headers);
+		
+		ResponseEntity<String> response = restTemplate.postForEntity("https://kapi.kakao.com/v2/user/me", httpEntity, String.class);
+
+		
+		Map<String, Object> userInfo = jsonParser.parseMap(response.getBody());
+		
 	}
 
 }

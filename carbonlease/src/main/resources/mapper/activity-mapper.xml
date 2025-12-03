@@ -190,48 +190,58 @@
 	<select id="selectDetail"
         resultType="com.kh.activity.model.dto.ActivityDetailDTO">
 
-		    SELECT
-		           B.ACTIVITY_NO AS activityNo
-		         , B.ACTIVITY_TITLE AS activityTitle
-		         , B.ACTIVITY_CONTENT AS activityContent
-		         , TO_CHAR(B.ENROLL_DATE, 'YYYY-MM-DD') AS enrollDate
-		         , B.VIEW_COUNT AS viewCount
-		         , B.LAT AS lat
-		         , B.LNG AS lng
-		         , B.ADDRESS AS address
-		         , M.NICKNAME AS nickName
-		         , M.MEMBER_NO AS memberNo
-		         , (SELECT COUNT(*)
-		              FROM CL_ACTIVITY_BOARD B2
-		             WHERE B2.MEMBER_NO = M.MEMBER_NO
-		               AND B2.STATUS = 'Y'
-		           ) AS certificationCount
-		         , (SELECT NVL(SUM(CC.CARBON_ACCUM), 0)
-		              FROM CL_ACTIVITY_BOARD B3
-		              JOIN CL_ACTIVITY_CERTIFICATION C
-		                ON B3.ACTIVITY_NO = C.ACTIVITY_BOARD_NO
-		              JOIN CL_ACTIVITY_CERTIFICATION_CATEGORY CC
-		                ON C.CERTIFICATION_NO = CC.CERTIFICATION_NO
-		             WHERE B3.MEMBER_NO = M.MEMBER_NO
-		               AND B3.STATUS = 'Y'
-		           ) AS carbonSave
-		         , (SELECT COUNT(*)
-		              FROM CL_ACTIVITY_LIKE L
-		             WHERE L.ACTIVITY_BOARD_NO = B.ACTIVITY_NO
-		           ) AS likeCount
-		         ,
-		           CASE WHEN EXISTS
-		                 (SELECT 1
-		                    FROM CL_ACTIVITY_LIKE L2
-		                   WHERE L2.ACTIVITY_BOARD_NO = B.ACTIVITY_NO
-		                     AND L2.MEMBER_NO = #{loginMemberNo})
-		           THEN 1 ELSE 0 END AS isLiked
-		
-		    FROM CL_ACTIVITY_BOARD B
-		    JOIN CL_MEMBER M ON (B.MEMBER_NO = M.MEMBER_NO)
-		    WHERE B.ACTIVITY_NO = #{activityNo}
-		      AND B.STATUS = 'Y'
+	    SELECT
+	           B.ACTIVITY_NO AS activityNo
+	         , B.ACTIVITY_TITLE AS activityTitle
+	         , B.ACTIVITY_CONTENT AS activityContent
+	         , TO_CHAR(B.ENROLL_DATE, 'YYYY-MM-DD') AS enrollDate
+	         , B.VIEW_COUNT AS viewCount
+	         , B.LAT AS lat
+	         , B.LNG AS lng
+	         , B.ADDRESS AS address
+	         , M.NICKNAME AS nickName
+	         , M.MEMBER_NO AS memberNo
+	         , B.REGION_NO AS regionNo
+	         , C.CERTIFICATION_NO AS certificationNo
+	         , (SELECT COUNT(*)
+	              FROM CL_ACTIVITY_BOARD B2
+	             WHERE B2.MEMBER_NO = M.MEMBER_NO
+	               AND B2.STATUS = 'Y'
+	           ) AS certificationCount
+	         , (SELECT NVL(SUM(CC.CARBON_ACCUM), 0)
+	              FROM CL_ACTIVITY_BOARD B3
+	              JOIN CL_ACTIVITY_CERTIFICATION C2
+	                ON B3.ACTIVITY_NO = C2.ACTIVITY_BOARD_NO
+	              JOIN CL_ACTIVITY_CERTIFICATION_CATEGORY CC
+	                ON C2.CERTIFICATION_NO = CC.CERTIFICATION_NO
+	             WHERE B3.MEMBER_NO = M.MEMBER_NO
+	               AND B3.STATUS = 'Y'
+	           ) AS carbonSave
+	         , (SELECT COUNT(*)
+	              FROM CL_ACTIVITY_LIKE L
+	             WHERE L.ACTIVITY_BOARD_NO = B.ACTIVITY_NO
+	           ) AS likeCount
+	         , CASE WHEN EXISTS
+	                 (SELECT 1
+	                    FROM CL_ACTIVITY_LIKE L2
+	                   WHERE L2.ACTIVITY_BOARD_NO = B.ACTIVITY_NO
+	                     AND L2.MEMBER_NO = #{loginMemberNo})
+	           THEN 1 ELSE 0 END AS isLiked
+	      FROM 
+	           CL_ACTIVITY_BOARD B
+	      JOIN 
+	           CL_MEMBER M 
+	        ON 
+	           B.MEMBER_NO = M.MEMBER_NO
+	      LEFT 
+	      JOIN 
+	           CL_ACTIVITY_CERTIFICATION C ON B.ACTIVITY_NO = C.ACTIVITY_BOARD_NO
+	     WHERE 
+	           B.ACTIVITY_NO = #{activityNo}
+	       AND 
+	           B.STATUS = 'Y'
 	</select>
+
 
 	
 	<select id="selectDetailImage"
@@ -245,18 +255,6 @@
 		 ORDER
 		    BY
 		       FILE_NO ASC
-	</select>
-	
-	<select id="checkLike"
-			resultType="int">
-		SELECT
-			   COUNT(*)
-		  FROM
-		       CL_ACTIVITY_LIKE
-		 WHERE
-		       ACTIVITY_BOARD_NO = #{activityNo}
-		   AND
-		       MEMBER_NO = #{memberNo}
 	</select>
 	
 	<insert id="insertLike">
@@ -287,6 +285,18 @@
 		   AND
 		       MEMBER_NO = #{memberNo}
 	</delete>
+	
+	<select id="checkLike"
+			resultType="int">
+		SELECT
+			   COUNT(*)
+		  FROM
+		       CL_ACTIVITY_LIKE
+		 WHERE
+		       ACTIVITY_BOARD_NO = #{activityNo}
+		   AND
+		       MEMBER_NO = #{memberNo}
+	</select>
 	
 	<select id="findBoardOwner"
 			resultType="com.kh.activity.model.vo.ActivityBoard">
@@ -398,7 +408,35 @@
     	 	   ACTIVITY_NO = #{activityNo}
 	</update>
 
+	<update id="updateActivityBoard">
+    	UPDATE 
+    		   CL_ACTIVITY_BOARD
+           SET 
+           	   ACTIVITY_TITLE = #{title}
+           	 , ACTIVITY_CONTENT = #{content}
+           	 , ADDRESS = #{address}
+           	 , LAT = #{lat}
+           	 , LNG = #{lng}
+           	 , REGION_NO = #{regionNo}
+     	 WHERE 
+     	       ACTIVITY_NO = #{activityNo}
+	</update>
 
-
+	<update id="updateCertification">
+    	UPDATE 
+    	       CL_ACTIVITY_CERTIFICATION
+           SET 
+               CERTIFICATION_NO = #{certificationNo}
+         WHERE 
+               ACTIVITY_BOARD_NO = #{activityNo}
+	</update>
 	
+	<delete id="deleteAttachments">
+    	DELETE 
+    	  FROM 
+    	       CL_ACTIVITY_ATTACHMENT
+         WHERE 
+               REF_BNO = #{activityNo}
+	</delete>
+
 </mapper>
