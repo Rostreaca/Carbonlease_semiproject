@@ -37,7 +37,6 @@ public class AdminCalendarController {
 		
 		map = calendarService.findAllEvents();
 		
-		log.info("1트 요청하기이이:{}", map);
 		return ResponseEntity.ok(map);
 	}
 	
@@ -45,7 +44,6 @@ public class AdminCalendarController {
 	public ResponseEntity<?> addEvent(@Valid @RequestBody EventAdminDTO event,
 									  @AuthenticationPrincipal CustomUserDetails user){
 		
-		log.info("잘들어왓나ㅏㅏㅏㅏㅏㅏㅏㅏㅏ:{}", event);
 		calendarService.addEvent(event, user);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).build();

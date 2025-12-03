@@ -42,8 +42,6 @@ public class AdminCalendarServiceImpl implements AdminCalendarService {
 
 		event.setEventWriter(user.getMemberNo());
 		
-		log.info("드렁오ㅑ냐ㅑㅑㅑㅑㅑ{}", event);
-		
 		calendarMapper.addEvent(event);
 	}
 
