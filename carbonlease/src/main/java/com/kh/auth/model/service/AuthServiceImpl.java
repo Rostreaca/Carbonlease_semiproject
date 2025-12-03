@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.exception.CustomAuthenticationException;
+import com.kh.exception.InvalidValueException;
 import com.kh.member.model.dto.MemberDTO;
 import com.kh.token.model.service.TokenService;
 
@@ -25,10 +26,7 @@ public class AuthServiceImpl implements AuthService {
 	private final AuthenticationManager authenticationManager;
 	private final TokenService tokenService;
 	
-	@Override
-	public Map<String, String> login(MemberDTO member) {
-		
-		//log.info("로그인 시도 ID: {}, pwd: {}", member.getMemberId(), member.getMemberPwd());
+	private CustomUserDetails loadUser(MemberDTO member) {
 		
 		Authentication auth = null;
 		try {
@@ -36,8 +34,15 @@ public class AuthServiceImpl implements AuthService {
 		} catch (AuthenticationException e) {
 			throw new CustomAuthenticationException("로그인 실패. 아이디 또는 비밀번호를 확인해주십시오.");
 		}
-
-		CustomUserDetails user = (CustomUserDetails)auth.getPrincipal();
+		
+		return (CustomUserDetails)auth.getPrincipal();
+	}
+	
+	@Override
+	public Map<String, String> login(MemberDTO member) {
+		//log.info("로그인 시도 ID: {}, pwd: {}", member.getMemberId(), member.getMemberPwd());
+		
+		CustomUserDetails user = loadUser(member);
 		
 		log.info("사용자 권한 : {}", user.getAuthorities().toString());
 		
@@ -61,15 +66,8 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public Map<String, String> adminLogin(MemberDTO member) {
 		//log.info("로그인 시도 ID: {}, pwd: {}", member.getMemberId(), member.getMemberPwd());
-		
-		Authentication auth = null;
-		try {
-			auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(member.getMemberId(),member.getMemberPwd()));
-		} catch (AuthenticationException e) {
-			throw new CustomAuthenticationException("로그인 실패. 아이디 또는 비밀번호를 확인해주십시오.");
-		}
 
-		CustomUserDetails user = (CustomUserDetails)auth.getPrincipal();
+		CustomUserDetails user = loadUser(member);
 		
 		log.info("사용자 권한 : {}", user.getAuthorities().toString());
 		

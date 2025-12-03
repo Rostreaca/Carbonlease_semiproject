@@ -48,10 +48,9 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public void updateMember(MemberDTO member) {
 
+		MemberDTO validMember = memberValidator.validateUpdate(member);
 
-		member = memberValidator.validateUpdate(member);
-
-		memberMapper.updateMember(member);
+		memberMapper.updateMember(validMember);
 
 	}
 
@@ -67,7 +66,7 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public void checkId(String memberId) {
-
+		
 		memberValidator.checkId(memberId);
 
 	}
