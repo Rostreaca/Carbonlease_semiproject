@@ -14,6 +14,7 @@ import com.kh.campaign.model.vo.CampaignVO;
 @Mapper
 public interface AdminCampaignMapper {
 	
+	
 	/**
 	 * 전체조회
 	 * @param
@@ -57,6 +58,21 @@ public interface AdminCampaignMapper {
 	 * @param campaign
 	 */
 	int update(CampaignVO campaignVO);
+	
+	/**
+	 * 캠페인 첨부파일(썸네일/상세) 삭제
+	 * @param campaignNo 캠페인 번호
+	 * @param fileLevel 파일 레벨(0:썸네일, 1:상세)
+	 * @return 삭제 행 수
+	 */
+	int deleteAttachmentByLevel(Long campaignNo, int fileLevel);
+
+	/**
+	 * 캠페인 첨부파일(썸네일/상세) 완전 삭제 (Map 파라미터)
+	 * @param param campaignNo, fileLevel 포함 Map
+	 * @return 삭제된 행 수
+	 */
+	int deleteAttachmentByLevel(Map<String, Object> param);
 
 	/**
 	 * 복구

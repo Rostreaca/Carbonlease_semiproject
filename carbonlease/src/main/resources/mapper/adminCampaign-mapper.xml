@@ -216,5 +216,15 @@
 		       CAMPAIGN_NO = #{campaignNo}
 	</update>
 	
+	<!-- 첨부파일 완전 삭제 - fileLevel별로 삭제 -->
+    <delete id="deleteAttachmentByLevel">
+        DELETE 
+		  FROM 
+		       CL_CAMPAIGN_ATTACHMENT
+         WHERE 
+		       REF_BNO = #{campaignNo}
+           AND 
+		       FILE_LEVEL = #{fileLevel}
+    </delete>
 
 </mapper>

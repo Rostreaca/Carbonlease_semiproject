@@ -38,7 +38,7 @@ public interface CampaignMapper {
 	 * @param CampaignNo
 	 * @return
 	 */
-	CampaignDTO getCampaignOnly(Long CampaignNo);
+	CampaignDTO getCampaignOrThrow(Long CampaignNo);
 
 
 	/**
