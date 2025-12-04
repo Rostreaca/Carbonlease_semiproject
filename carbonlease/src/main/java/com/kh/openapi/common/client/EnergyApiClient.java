@@ -79,7 +79,7 @@ public class EnergyApiClient {
 
             // 데이터 검증
             if (body == null) {
-                log.warn("⚠ JSON 응답은 성공했지만 데이터가 비어 있음");
+                log.warn(" JSON 응답은 성공했지만 데이터가 비어 있음");
                 return lastSuccessCache;
             }
 
