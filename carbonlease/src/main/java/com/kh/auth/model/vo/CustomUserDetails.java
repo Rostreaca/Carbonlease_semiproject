@@ -14,6 +14,7 @@ import lombok.Value;
 public class CustomUserDetails implements UserDetails{
 
 	private Long memberNo;
+	private String memberId;
 	private String username;
 	private String password;
 	private String nickname;
