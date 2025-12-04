@@ -88,15 +88,9 @@ public class AuthController {
 		params.add("redirect_uri", redirectUri);
 		params.add("code", code);
 		
-		authService.kakaoLogin(params, headers);
+		Map<String, String> response = authService.kakaoLogin(params, headers);
 		
-
-		
-		
-		
-		
-		
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	
 }
