@@ -19,6 +19,7 @@ import com.kh.common.util.Pagination;
 import com.kh.notice.model.dao.NoticeMapper;
 import com.kh.notice.model.dto.AttachmentDTO;
 import com.kh.notice.model.dto.NoticeDTO;
+import com.kh.notice.model.service.NoticeValidator;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,21 +34,24 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 	private final AdminNoticeMapper adminNoticeMapper;
 	private final Pagination pagination;
 	private final FileUtil fileUtil;
+	private final NoticeValidator noticeValidator;
 	
-	
+	/*
+	 * 전체 조회
+	 */
 	@Override
 	public Map<String, Object> findAll(int pageNo) {
 
 		// 유효성 검사
-		if( pageNo < 0 ) {
-			throw new InvalidParameterException("유효하지 않은 접근입니다.");
-		}
-		
+		noticeValidator.validatePageNo(pageNo);
+		// 전체 개수 조회
+		int pageSize = 5;
 		int listCount = countAll();
-		
-		Map<String, Object> params = pagination.pageRequest(pageNo, 5, listCount);
-		
+		// pagination 생성 및 전체조회
+		Map<String, Object> params = pagination.pageRequest(pageNo, pageSize, listCount);
 		List<NoticeAdminDTO> notices = adminNoticeMapper.findAllByAdmin(params);
+		// 예외처리
+		noticeValidator.validateResource(notices);
 		
 		Map<String, Object> map = new HashMap();
 		map.put("pageInfo", params.get("pi"));
@@ -56,13 +60,15 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 		return map;
 	}
 
-
 	private int countAll() {
-		
 		return adminNoticeMapper.countAll();
 	}
 
+	/*
+	 * 게시글 등록
+	 */
 	@Override
+	@Transactional
 	public void insert(@Valid NoticeAdminDTO notice, List<MultipartFile> files, CustomUserDetails user) {
 
 		if(files != null) {
@@ -73,9 +79,6 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 				
 				List<AttachmentDTO> ats = saveFiles(files);
 				
-				log.info("파일 어캐됨 {}", ats);
-				
-//				noticeMapper.insertAttachment(ats);
 				for (AttachmentDTO at : ats) {
 					adminNoticeMapper.insertAttachment(at);
 				}
@@ -142,17 +145,13 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 	private NoticeAdminDTO getNoticeOrThrow(Long noticeNo) {
 		
 		// 번호가 유효한가?
-		if(noticeNo < 1) {
-			throw new InvalidParameterException("유효하지 않은 접근입니다.");
-		}
+		noticeValidator.validateNoticeNo(noticeNo);
 		
 		// 조회
 		NoticeAdminDTO notice = adminNoticeMapper.findByNo(noticeNo);
 		
 		// 존재하는 게시물인가?
-		if(notice == null) {
-			throw new InvalidParameterException("유효하지 않은 접근입니다.");
-		}
+		noticeValidator.validateResource(notice);
 		
 		return notice;
 	}

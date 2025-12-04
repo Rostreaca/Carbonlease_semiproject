@@ -1,13 +1,14 @@
 package com.kh.notice.model.service;
 
-import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.common.util.Pagination;
+import com.kh.exception.ResourceNotFoundException;
 import com.kh.notice.model.dao.NoticeMapper;
 import com.kh.notice.model.dto.AttachmentDTO;
 import com.kh.notice.model.dto.NoticeDTO;
@@ -22,32 +23,36 @@ public class NoticeServiceImpl implements NoticeService{
 
 	private final NoticeMapper noticeMapper;
 	private final Pagination pagination;
+	private final NoticeValidator noticeValidator;
 	
+	/*
+	 * 전체 목록 조회 
+	 */
 	@Override
 	public Map<String, Object> findAll(int pageNo) {
 		
-		// 유효성 검사 (분리필요)
-		if( pageNo < 0){
-			throw new InvalidParameterException("유효하지 않은 접근입니다.");
-		}
-		
-		// !!조회!!
-		//RowBounds rb = new RowBounds(pageNo * 2, 2);
+		// 유효성 검사
+		noticeValidator.validatePageNo(pageNo);
 		
 		// 1. 게시물의 총 개수를 조회합니다.
+		int pageSize = 5;
 		int listCount = countAll();
 		
 		// 2. Map에 pageRequest() 메서드를 호출해 반환받은 값을 저장합니다.
-		// 인자값 설명
-		// pageRequest("pageNo: 조회한 페이지 값, int"
-		//			 , "size: 한 페이지 당 보여줄 글 수, int"
-		//			 , "listCount: 1.에서 조회한 게시물의 총 개수, int"
-		// 반환값 설명
-		// (key):(value)
-		// (offset) : 목록조회에 필요한 offset값을 저장합니다.
-		// (limit) : 목록조회에 필요한 limit값을 저장합니다.
-		// (pi) : 프론트에서 페이징 처리에 필요한 pageInfo 인자값을 저장합니다.
-		Map<String, Object> params = pagination.pageRequest(pageNo, 5, listCount);
+		
+		/*
+		 *  인자값 설명
+		 *  pageRequest("pageNo: 조회한 페이지 값, int"
+		 *			  , "size: 한 페이지 당 보여줄 글 수, int"
+		 *			  , "listCount: 1.에서 조회한 게시물의 총 개수, int"
+		 *
+		 * 반환값 설명
+		 * (key):(value)
+		 * (offset) : 목록조회에 필요한 offset값을 저장합니다.
+		 * (limit) : 목록조회에 필요한 limit값을 저장합니다.
+		 * (pi) : 프론트에서 페이징 처리에 필요한 pageInfo 인자값을 저장합니다.
+		 */
+		Map<String, Object> params = pagination.pageRequest(pageNo, pageSize, listCount);
 		
 		// 3. 게시글의 목록들을 Map을 인자값으로 받아 조회합니다.
 		// Map에 offset, limit가 저장되어있으니 쿼리문에 #{offset}, #{limit} 추가하면됨.
@@ -63,53 +68,35 @@ public class NoticeServiceImpl implements NoticeService{
 	}
 
 	private int countAll() {
-
-		int count = noticeMapper.findAndCountAll();
-		
-		return count;
+		return noticeMapper.findAndCountAll();
 	}
 
+	/*
+	 * 상세 조회
+	 */
 	@Override
+	@Transactional
 	public Map<String, Object> findByNo(Long noticeNo) {
 
+		// 유효성 검사
+		noticeValidator.validateNoticeNo(noticeNo);
+		// 조회
+		NoticeDTO notice = noticeMapper.findByNo(noticeNo);
+		// 예외처리: DB 조회 실패
+		noticeValidator.validateResource(notice);
+		// 조회 완료로 인한 조회수 증가
+		noticeMapper.addViewCount(noticeNo);
+		
 		Map<String, Object> map = new HashMap();
 		
-		//조회수 증가
-		addViewCount(noticeNo);
-		
-		map.put("notice", getNoticeOrThrow(noticeNo));
+		map.put("notice", notice);
 		map.put("attachment", getAttachment(noticeNo));
-		
 		
 		return map;
 	}
 
-	private void addViewCount(Long noticeNo) {
-
-		log.info("조회수 증가한다 요다야");
-		noticeMapper.addViewCount(noticeNo);
-	}
-
 	private List<AttachmentDTO> getAttachment(Long noticeNo) {
 		return noticeMapper.getAttachment(noticeNo);
-	}
-
-	private NoticeDTO getNoticeOrThrow(Long noticeNo) {
-
-		// 번호가 유효한가?
-		if(noticeNo < 1) {
-			throw new InvalidParameterException("유효하지 않은 접근입니다.");
-		}
-		
-		// 조회
-		NoticeDTO notice = noticeMapper.findByNo(noticeNo);
-		
-		// 존재하는 게시물인가?
-		if(notice == null) {
-			throw new InvalidParameterException("유효하지 않은 접근입니다.");
-		}
-		
-		return notice;
 	}
 
 }
