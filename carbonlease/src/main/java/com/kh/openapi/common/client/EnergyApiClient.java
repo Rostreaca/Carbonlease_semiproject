@@ -94,7 +94,7 @@ public class EnergyApiClient {
 
             // fallback
             if (lastSuccessCache != null) {
-                log.warn("⚠ 예외 발생 — 마지막 정상 캐시 데이터를 반환합니다.");
+                log.warn("예외 발생 — 마지막 정상 캐시 데이터를 반환합니다.");
                 return lastSuccessCache;
             }
             return null;
