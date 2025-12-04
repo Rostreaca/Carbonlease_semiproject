@@ -133,6 +133,17 @@
 		       REPLY_NO = #{replyNo}
 	</insert>
 	
+	<!-- 댓글 삭제 -->
+	<update id="deleteReply">
+		UPDATE
+			   CL_BOARD_REPLY
+		   SET
+		       STATUS = 'N'
+		 WHERE
+		  	   REPLY_NO = #{replyNo}
+	</update>
+	
+	
 	<!-- 글 쓰기 -->
 	<insert id="insertClBoard" parameterType="com.kh.board.model.dto.BoardDTO">
 		 INSERT
