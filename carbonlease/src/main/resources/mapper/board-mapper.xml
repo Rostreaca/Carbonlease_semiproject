@@ -24,6 +24,8 @@
 		  LEFT 
 		  JOIN
 		   	   CL_BOARD_REPLY R ON (B.BOARD_NO = R.BOARD_NO)
+		 WHERE
+		 	   B.STATUS ='Y'
 		 GROUP 
 		    BY
 			   B.BOARD_NO, B.BOARD_TITLE, B.BOARD_CONTENT, 
@@ -52,12 +54,18 @@
 		      , B.ENROLL_DATE AS enrollDate
 		      , B.VIEW_COUNT AS viewCount
 		      , M.NICKNAME AS nickname
+		      , B.REGION_NO AS regionNo
+		      , RC.REGION_NAME AS regionName
+		      , M.MEMBER_ID AS memberId
 		   FROM 
 		   		CL_BOARD B
 		   JOIN 
 		   		CL_MEMBER M ON B.MEMBER_NO = M.MEMBER_NO
-		  WHERE 
-		  		B.BOARD_NO = #{boardNo}
+		   LEFT 
+		   JOIN CL_REGION_CATEGORY RC ON B.REGION_NO = RC.REGION_NO 
+		  WHERE B.REGION_NO = RC.REGION_NO 
+		  	AND B.STATUS = 'Y'
+		    AND B.BOARD_NO = #{boardNo}
 	</select>
 	
 	<!-- 댓글 조회 -->
@@ -68,6 +76,7 @@
                , B.BOARD_NO boardNo
                , R.MEMBER_NO memberNo
                , M.NICKNAME nickname
+               , R.REPLY_NO as replyNo
 		   FROM 
 		         CL_BOARD B
 		   JOIN 
@@ -78,5 +87,109 @@
 		  ORDER 
 		     BY  R.ENROLL_DATE ASC
 	</select>
+	
+	<!-- 댓글 건수 페이지처리 -->
+	<select id="replyCount" parameterType="long" resultType="_int">
+		SELECT
+				COUNT(R.REPLY_NO)
+		FROM
+				CL_BOARD B
+		JOIN	CL_BOARD_REPLY R ON B.BOARD_NO = R.BOARD_NO 
+		WHERE
+				B.STATUS='Y'
+		  AND
+		  	    B.BOARD_NO = #{boardNo}
+	</select>
+	
+	<!-- 댓글 등록 -->
+	<insert id="replyInsert" parameterType="com.kh.board.model.vo.ReplyInsertVO" >
+		 INSERT
+		   INTO 
+		   		CL_BOARD_REPLY(
+					REPLY_NO 
+				  , BOARD_NO 
+				  , MEMBER_NO 
+				  , REPLY_CONTENT 
+				  , ENROLL_DATE 
+			      )
+			VALUES (
+				  	SEQ_BOARD_REPLY_NO.NEXTVAL
+				  , #{boardNo}
+			      , #{memberNo}
+				  , #{replyContent}
+				  , SYSDATE
+				    )
+	</insert>
+	
+	<!-- 댓글 수정 -->
+	<insert id="replyUpdate" parameterType="ReplyInsertVO">
+		UPDATE
+			   CL_BOARD_REPLY
+		   SET
+		       REPLY_CONTENT = #{replyContent}
+		     , ENROLL_DATE = SYSDATE
+		WHERE
+		       REPLY_NO = #{replyNo}
+	</insert>
+	
+	<!-- 글 쓰기 -->
+	<insert id="insertClBoard" parameterType="com.kh.board.model.dto.BoardDTO">
+		 INSERT
+		   INTO 
+		   		CL_BOARD(
+					 BOARD_NO
+					,BOARD_TITLE
+					,BOARD_CONTENT
+					,VIEW_COUNT
+					,ENROLL_DATE
+					,STATUS
+					,MEMBER_NO
+					,REGION_NO
+			      )
+			VALUES (
+				  	SEQ_BOARD_NO.NEXTVAL
+				  , #{boardTitle}
+			      , #{boardContent}
+				  , 0
+				  , SYSDATE
+				  , 'Y'
+				  , #{memberNo}
+				  , #{regionNo}
+				    )
+	</insert>
+	
+	<!-- 글 수정 하기 -->
+	<insert id="boardUpdateForm" parameterType="BoardDTO">
+		UPDATE
+			    CL_BOARD
+		   SET
+		   	    BOARD_TITLE = #{boardTitle}
+			  , BOARD_CONTENT = #{boardContent}
+			  , REGION_NO = #{regionNo}
+	     WHERE
+	     	    BOARD_NO = #{boardNo}
+	</insert>
+	
+	<!-- 글 삭제 하기 -->
+	<update id="boardDelete" parameterType="Long">
+		  UPDATE
+		         CL_BOARD
+             SET
+		         STATUS = 'N'
+           WHERE
+			     BOARD_NO = #{boardNo}
+	</update>
+	
+	<!-- 조회수 -->
+	<update id="boardViewCount">
+    	UPDATE 
+    	       CL_BOARD
+    	   SET 
+    	   	   VIEW_COUNT = VIEW_COUNT + 1
+    	 WHERE 
+    	 	   BOARD_NO = #{boardNo}
+	</update>
+
+	
 
 </mapper>

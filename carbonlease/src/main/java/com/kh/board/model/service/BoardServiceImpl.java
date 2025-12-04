@@ -6,10 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.board.model.dao.BoardMapper;
 import com.kh.board.model.dto.BoardDTO;
 import com.kh.board.model.dto.BoardReplyDTO;
+import com.kh.board.model.vo.ReplyInsertVO;
 import com.kh.common.util.Pagination;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ public class BoardServiceImpl implements BoardService {
 	private final BoardMapper boardMapper;
 	private final Pagination pagination;
 	
+
 	// 전체 목록 조회
 	@Override
 	public Map<String, Object> findAll(int pageNo) {
@@ -68,11 +72,97 @@ public class BoardServiceImpl implements BoardService {
 		
 		List<BoardReplyDTO> reply = boardMapper.replyList(boardNo);
 		
+		int replyCount = boardMapper.replyCount(boardNo);
+		
+		Map<String, Object> params = pagination.pageRequest(1, 5, replyCount);
+		
 		map.put("boardDetail", board);
 		map.put("replyList", reply);
+		map.put("replyCount", params.get("pi"));
 		
 		return map;
 	}
+	
+	
+	// 글 쓰기
+	@Override
+	public int insertBoard(BoardDTO boardVo) {
 
+		return boardMapper.insertClBoard(boardVo);
+	}
+
+
+	// 글 수정하기
+	@Override
+	public int boardUpdateForm(BoardDTO boardDTO, CustomUserDetails user) {
+		
+		int updateOK = 0;
+		
+		if(user.getUsername().equals(boardDTO.getMemberId())) {
+			
+			updateOK = boardMapper.boardUpdateForm(boardDTO);
+			
+		} else {
+			throw new InvalidParameterException("유효하지 않은 접근입니다.");
+		}
+		
+		return updateOK;
+	}
+	
+	
+	// 글 삭제하기
+	@Override
+	public int boardDelete(BoardDTO boardDTO, CustomUserDetails user) {
+		
+		int deleteOK = 0;
+				
+		System.out.println(user);
+		if(user.getUsername().equals(boardDTO.getMemberId())) {
+			
+			deleteOK = boardMapper.boardDelete(new Integer( boardDTO.getBoardNo()).longValue());
+		} else {
+			throw new InvalidParameterException("유효하지 않은 접근입니다.");
+		}
+		
+		return deleteOK;
+	}
+
+	// 댓글 등록
+	@Override
+	public int boardReplyInsert(ReplyInsertVO riVO) {
+		
+		return boardMapper.replyInsert(riVO);
+	}
+	
+	
+	// 댓글 수정
+//	@Override
+//	public int boardReplyUpdate(ReplyInsertVO riVO, CustomUserDetails user) {
+//		
+//		int updateOK = 0;
+//		
+//		if(user.getUsername().equals(riVO.getMemberId())) {
+//			
+//			updateOK = boardMapper.replyUpdate(riVO);
+//			
+//		} else {
+//			throw new InvalidParameterException("유효하지 않은 접근입니다.");
+//		}
+//		
+//		return updateOK;
+//	}
+
+	
+	// 댓글 삭제
+	
+	
+	
+	// 조회수
+	@Transactional
+	@Override
+	public void boardViewCount(int boardNo) {
+		
+		boardMapper.boardViewCount(boardNo);
+	}
 }
 	
