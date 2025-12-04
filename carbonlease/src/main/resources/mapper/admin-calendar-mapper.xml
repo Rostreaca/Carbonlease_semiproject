@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.admin.notice.model.dao.AdminCalendarMapper">
+
+	<select id="findAllEvents"
+			resultType="EventAdminDTO">
+		SELECT
+				  CALENDAR_NO calendarNo
+				, MEMBER_NO eventWriter
+				, START_DATE AS "start"
+				, END_DATE AS "end"
+				, CALENDAR_TITLE title
+		FROM
+				CL_CALENDAR
+		WHERE
+				STATUS = 'Y'
+	</select>
+	
+	<insert id="addEvent"
+			parameterType="EventAdminDTO">
+		INSERT
+		INTO
+				CL_CALENDAR
+		VALUES
+				(
+				  SEQ_CALENDAR_NO.NEXTVAL
+				, #{eventWriter}
+			   	, #{start}
+			   	, #{end}
+			    , #{title}
+			    , 'Y'
+				)
+	</insert>
+	
+	
+</mapper>
