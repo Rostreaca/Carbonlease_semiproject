@@ -19,8 +19,6 @@ public class EnergyApiClient {
 
 	private final RestTemplate restTemplate;
     private final EnergyApiProperties props;
-
-    
     
     /**
      * 원본 Open API 호출 (전기 사용량)
