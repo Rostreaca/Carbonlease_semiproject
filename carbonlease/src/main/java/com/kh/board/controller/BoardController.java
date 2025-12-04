@@ -102,7 +102,7 @@ public class BoardController {
 	
 	
 	// 댓글 삭제
-    @DeleteMapping("/{replyNo}")
+    @DeleteMapping("detail/replyDelete/{replyNo}")
     public ResponseEntity<?> deleteReply(@PathVariable("replyNo") int replyNo, @AuthenticationPrincipal CustomUserDetails user) {
     	
 		
