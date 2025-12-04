@@ -25,6 +25,8 @@ public class EnergyApiClient {
     /**
      * 원본 Open API 호출 (전기 사용량)
      */
+    
+    
     public ElecResponseVO callElectricityApi(int page, int numOfRows) {
     	
     	String url = props.getBaseUrl() + "/" + props.getEndpoint();
