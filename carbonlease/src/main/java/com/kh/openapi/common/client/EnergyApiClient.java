@@ -4,15 +4,22 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.kh.openapi.common.config.EnergyApiProperties;
+import com.kh.openapi.main.model.service.MainApiServiceImpl;
 import com.kh.openapi.main.model.vo.ElecResponseVO;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class EnergyApiClient {
@@ -29,16 +36,30 @@ public class EnergyApiClient {
     	
     	URI uri = UriComponentsBuilder
     	        .fromUriString(url)
+    	        .queryParam("returnType", "json")
     	        .queryParam("serviceKey", URLEncoder.encode(props.getKey(), StandardCharsets.UTF_8))
     	        .queryParam("pageNo", page)
     	        .queryParam("numOfRows", numOfRows)
-    	        .queryParam("returnType", "json")
     	        .build(true)
     	        .toUri();
+    	
+    	//  JSON 강제 요청 헤더 추가
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Accept", "application/json");
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
 
-    	String raw = restTemplate.getForObject(uri, String.class);
-    	System.out.println("RAW: " + raw);
+        // RAW 로그 (문자열)
+        String raw = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class).getBody();
 
-    	return restTemplate.getForObject(uri, ElecResponseVO.class);
+        if (raw != null && raw.trim().startsWith("<!DOCTYPE html")) {
+            log.error("공공데이터 API가 JSON 대신 HTML을 반환함 (서버 문제)");
+            return null;
+        }
+        
+        // JSON 매핑
+        ResponseEntity<ElecResponseVO> response =
+                restTemplate.exchange(uri, HttpMethod.GET, entity, ElecResponseVO.class);
+
+        return response.getBody();
     }
 }
