@@ -6,18 +6,21 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.notice.model.service.CalendarService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
 @Validated
-@RequestMapping("/notices/api")
+@RequestMapping("/notices/calendar")
 @RequiredArgsConstructor
 public class CalendarController {
 
@@ -30,8 +33,7 @@ public class CalendarController {
 		
 		map = calendarService.findAllEvents();
 		
-//		log.info("제대로 옴????????????{}", map);
-		
 		return ResponseEntity.ok(map);
 	}
+
 }

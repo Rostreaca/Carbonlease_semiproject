@@ -4,14 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import com.kh.admin.notice.model.dto.NoticeAdminDTO;
 import com.kh.admin.notice.model.vo.AdminNoticeVO;
 import com.kh.notice.model.dto.AttachmentDTO;
-import com.kh.notice.model.dto.NoticeDTO;
-
-import jakarta.validation.Valid;
 
 @Mapper
 public interface AdminNoticeMapper {

@@ -23,8 +23,10 @@ public class BoardDTO {
 	private int viewCount;
 	private Date enrollDate;
 	private char status;
-	private int memberNo;
+	private long memberNo;
+	private String memberId;
 	private int regionNo;
+	private String regionName;
 	private String nickname;
 	private int replyCount;
 	private List<BoardReplyDTO> replyList;	// 댓글 목록

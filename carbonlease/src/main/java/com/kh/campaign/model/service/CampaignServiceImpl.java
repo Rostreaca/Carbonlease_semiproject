@@ -32,14 +32,14 @@ public class CampaignServiceImpl implements CampaignService {
 	@Override
 	public Map<String, Object> findAll(int pageNo) {
 
-		if (pageNo < 0) { // 다시 
+		if (pageNo < 0) {
 			throw new CustomInvalidParameterException("유효하지 않은 접근입니다.");
 	    }
 		
-	    int listCount = listCountAll();
-	    							// 다시
+		int listCount = campaignMapper.findAndCountAll();
+	    
 	    Map<String, Object> params = pagination.pageRequest(pageNo, 6, listCount);
-	    List<CampaignDTO> campaigns = campaignMapper.findAll(params); // 다시
+	    List<CampaignDTO> campaigns = campaignMapper.findAll(params);
 	    
 	    params.put("pageInfo", params.get("pi"));
 	    params.put("campaigns", campaigns);
@@ -49,23 +49,12 @@ public class CampaignServiceImpl implements CampaignService {
 	
 	
 	/**
-	 * [책임분리]
-	 * 전체게시글 조회
-	 * @return int 전체게시글 수
-	 */
-	private int listCountAll() {
-		return campaignMapper.findAndCountAll();
-	}
-
-	
-	/**
 	 * 캠페인 조회수 증가
 	 * @param campaignNo 캠페인 번호
 	 * @throws InvalidParameterException 증가 실패 시
 	 * @return void
 	 */
-	@Override
-	public void increaseViewCount(Long campaignNo) {
+	private void increaseViewCount(Long campaignNo) {
 		int result = campaignMapper.increaseViewCount(campaignNo);
 		if (result != 1) {
 			throw new CustomInvalidParameterException("조회수 증가 중 오류 발생");
@@ -85,22 +74,11 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	/**
-	 * 단순 pk로만 조회 (조회수 증가 없음, 수정/관리용)
-	 * @param campaignNo 캠페인 번호 정보
-	 * @return CampaignDTO 캠페인 정보
-	 */
-	public CampaignDTO getCampaignOnly(Long campaignNo) {
-		return getCampaignOrThrow(campaignNo);
-	}
-	
-	
-	/**
 	 * 캠페인 정보 조회 및 예외 처리
 	 * @param campaignNo 캠페인 번호 정보
 	 * @return 캠페인 정보
 	 * @throws InvalidParameterException 캠페인 없을 때
 	 * 
-	 * - [s] public으로 Validator로 빼서 불러오기
 	 */
 	private CampaignDTO getCampaignOrThrow(Long campaignNo) {
 		
@@ -110,7 +88,7 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 		
 		// 조회
-		CampaignDTO campaign = campaignMapper.getCampaignOnly(campaignNo);
+		CampaignDTO campaign = campaignMapper.getCampaignOrThrow(campaignNo);
 		
 		
 		// 존재하는 게시물인가?
@@ -119,7 +97,6 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 		
 		return campaign;
-		
 	}
 	
 	

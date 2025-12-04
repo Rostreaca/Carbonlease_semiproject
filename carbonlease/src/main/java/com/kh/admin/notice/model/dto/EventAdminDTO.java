@@ -1,4 +1,4 @@
-package com.kh.board.model.dto;
+package com.kh.admin.notice.model.dto;
 
 import java.sql.Date;
 
@@ -13,12 +13,14 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class BoardReplyDTO {
+public class EventAdminDTO {
 
-	private int replyNo;
-	private int memberNo;
-	private String replyContent;
-	private Date enrollDate;
-	private char status;
-	private String nickname;
+	private Long calendarNo;
+	private Long eventWriter;
+	private Date start;
+	private Date end;
+	private String title;
+	private String status;
+	
+	
 }

@@ -24,21 +24,6 @@ public interface CampaignService {
 	
 	
 	/**
-	 * 상세 조회 (조회수 증가 없음, 수정/관리용)
-	 * @param campaignNo 캠페인 번호 정보
-	 * @return CampaignDTO 캠페인 정보
-	 */
-	CampaignDTO getCampaignOnly(Long campaignNo);
-	
-	/**
-	 * 조회수 증가
-	 * @param campaignNo
-	 * @return void
-	 */
-	void increaseViewCount(Long campaignNo);
-	
-	
-	/**
 	 * 좋아요 토글
 	 * @param campaignNo
 	 * @param memberNo

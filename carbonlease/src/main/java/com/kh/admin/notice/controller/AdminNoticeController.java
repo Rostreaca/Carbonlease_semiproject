@@ -41,8 +41,6 @@ public class AdminNoticeController {
 		
 		map = adminNoticeService.findAll(pageNo);
 		
-//		log.info("???{}", map);
-		
 		return ResponseEntity.ok(map);
 	}
 	
@@ -52,7 +50,6 @@ public class AdminNoticeController {
 	        @RequestParam(name = "files", required = false) List<MultipartFile> files,
 	        @AuthenticationPrincipal CustomUserDetails user
 			){
-//	    log.info("받은 데이터 = {}, files = {}", notice, files);
 
 	    adminNoticeService.insert(notice, files, user);
 
@@ -61,8 +58,6 @@ public class AdminNoticeController {
 	
 	@GetMapping("detail/{noticeNo}")
 	public ResponseEntity<?> findByNo(@PathVariable(name="noticeNo")Long noticeNo){
-		
-//		log.info("왤케 안오오오옹오옴{}", noticeNo);
 		
 		NoticeAdminDTO notice = adminNoticeService.findByNo(noticeNo);
 		
@@ -76,8 +71,6 @@ public class AdminNoticeController {
 	        @AuthenticationPrincipal CustomUserDetails user
 			){
 		
-//		log.info("담겻나?{}", notice); //담겨요
-		
 		adminNoticeService.update(notice, files, user);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -86,7 +79,6 @@ public class AdminNoticeController {
 	@PutMapping("delete/{noticeNo}")
 	public ResponseEntity<?> delete(@PathVariable(name="noticeNo")Long noticeNo){
 		
-//		log.info("삭제할거야ㅑㅑㅑㅑ{}",noticeNo);
 		adminNoticeService.delete(noticeNo);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).build();
