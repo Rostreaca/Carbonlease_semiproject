@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.activity.model.service.ActivityFileHandler;
@@ -44,6 +45,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
 	}
 
 	@Override
+	@Transactional
 	public void hideBoard(int no) {
 	    int result = mapper.hideBoard(no);
 	    if (result == 0) {
@@ -52,6 +54,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
 	}
 
 	@Override
+	@Transactional
 	public void restoreBoard(int no) {
 	    int result = mapper.restoreBoard(no);
 	    if (result == 0) {
@@ -60,6 +63,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteBoard(int no) {
 	    int result = mapper.deleteBoard(no);
 	    if (result == 0) {
@@ -75,6 +79,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
 	}
 
 	@Override
+	@Transactional                                                 
 	public void updateBoard(int id, String title, String content, String category, MultipartFile thumbnailFile) {
 
 	    AdminActivityDTO dto = mapper.selectDetail(id);
