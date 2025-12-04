@@ -4,7 +4,7 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.member.model.dao.MemberMapper">
 	
-	<select id="loadUser" parameterType="string" resultType="com.kh.member.model.dto.MemberDTO">
+	<sql id="memberColumn">
 		SELECT
 		       MEMBER_NO memberNo
 		     , MEMBER_ID memberId
@@ -19,55 +19,45 @@
 		       CL_MEMBER
 		 WHERE
 		       STATUS = 'Y'
+	</sql>
+	
+	<sql id="countBy">
+		SELECT
+		       COUNT(*)
+		  FROM 
+		       CL_MEMBER
+		
+	</sql>
+	
+	<select id="loadUser" parameterType="string" resultType="com.kh.member.model.dto.MemberDTO">
+	<include refid="memberColumn" />
 		   AND
 		       MEMBER_ID = #{username}
 		
 	</select>
 	
-		<select id="loadUserByUserNo" parameterType="_long" resultType="com.kh.member.model.dto.MemberDTO">
-		SELECT
-		       MEMBER_NO memberNo
-		     , MEMBER_ID memberId
-		     , MEMBER_PWD memberPwd
-		     , NICKNAME
-		     , EMAIL
-		     , ADDRESS_LINE_1 addressLine1
-		     , ADDRESS_LINE_2 addressLine2
-		     , ROLE
-		     , ENROLL_DATE enrollDate
-		  FROM
-		       CL_MEMBER
-		 WHERE
-		       STATUS = 'Y'
+	<select id="loadUserByUserNo" parameterType="_long" resultType="com.kh.member.model.dto.MemberDTO">
+	<include refid="memberColumn" />
 		   AND
 		       MEMBER_NO = #{userNo}
 		
 	</select>
 	
 	<select id="countByMemberId" parameterType="string">
-		SELECT
-		       COUNT(*)
-		  FROM
-		       CL_MEMBER
+	<include refid="countBy" />
 		 WHERE
 		       MEMBER_ID = #{memberId}
 		
 	</select>
 	
 	<select id="countByNickName" parameterType="string">
-		SELECT
-		       COUNT(*)
-		  FROM 
-		       CL_MEMBER
+	<include refid="countBy" />
 		 WHERE
 		       NICKNAME = #{nickName}
 	</select>
 	
 	<select id="countByEmail" parameterType="string">
-		SELECT
-		       COUNT(*)
-		  FROM
-		       CL_MEMBER
+	<include refid="countBy" />
 		 WHERE
 		       EMAIL = #{email}
 	</select>
@@ -114,14 +104,7 @@
 		
 	</update>
 	
-	<select id="selectBoardsByMemberNo" resultType="BoardDTO" parameterType="_long">
-		
-		SELECT
-			   BOARD_NO boardNo
-		     , BOARD_TITLE boardTitle
-		     , ENROLL_DATE enrollDate
-		  FROM
-		       CL_BOARD
+	<sql id="boardCondition">
 		 WHERE
 		       MEMBER_NO = #{memberNo}
 		   AND
@@ -130,6 +113,18 @@
 		    BY
 		       ENROLL_DATE DESC
 		OFFSET 0 ROWS FETCH NEXT 3 ROWS ONLY
+		
+	</sql>
+	
+	<select id="selectBoardsByMemberNo" resultType="BoardDTO" parameterType="_long">
+		
+		SELECT
+			   BOARD_NO boardNo
+		     , BOARD_TITLE boardTitle
+		     , ENROLL_DATE enrollDate
+		  FROM
+		       CL_BOARD
+	<include refid="boardCondition" />
 		
 		
 	</select>
@@ -141,14 +136,7 @@
 		     , ENROLL_DATE enrollDate
 		  FROM
 		       CL_ACTIVITY_BOARD
-		 WHERE
-		       MEMBER_NO = #{memberNo}
-		   AND
-		       STATUS = 'Y'
-		 ORDER
-		    BY
-		       ENROLL_DATE DESC
-		OFFSET 0 ROWS FETCH NEXT 3 ROWS ONLY
+	<include refid="boardCondition" />
 	</select>
 	
 	

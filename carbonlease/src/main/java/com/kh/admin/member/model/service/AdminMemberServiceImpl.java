@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class AdminMemberServiceImpl implements AdminMemberService{
 
-	//private final AdminMemberMapper adminMemberMapper;
 	private final AdminMemberMapper adminMemberMapper;
 	
 	@Override
@@ -52,7 +51,7 @@ public class AdminMemberServiceImpl implements AdminMemberService{
 		int result = adminMemberMapper.deleteMember(memberNo);
 		
 		if(result != 1) {
-			throw new UserNotFoundException("존재하지 않는 계정입니다.");
+			throw new UserNotFoundException("계정이 존재하지 않거나 이미 탈퇴하였습니다.");
 		}
 		
 	}

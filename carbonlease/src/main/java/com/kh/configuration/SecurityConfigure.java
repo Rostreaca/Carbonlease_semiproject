@@ -37,7 +37,7 @@ public class SecurityConfigure {
 						   .csrf(AbstractHttpConfigurer::disable)
 						   .cors(Customizer.withDefaults())
 						   .authorizeHttpRequests(requests -> {
-							   requests.requestMatchers(HttpMethod.POST, "/members/**","/auth/login", "/auth/refresh", "/auth/adminLogin").permitAll();
+							   requests.requestMatchers(HttpMethod.POST, "auth/kakaoLogin", "/members/**","/auth/login", "/auth/refresh", "/auth/adminLogin").permitAll();
 							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/*/view", "/boards/*/view").permitAll();
 							   requests.requestMatchers(HttpMethod.POST, "/boards/**", "/activityBoards", "/notices", "/campaigns").authenticated();
 							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/**").authenticated();
