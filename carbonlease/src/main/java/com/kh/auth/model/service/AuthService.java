@@ -15,6 +15,6 @@ public interface AuthService {
 
 	Map<String, String> adminLogin(@Valid MemberDTO member);
 
-	void kakaoLogin(MultiValueMap<String, String> params, HttpHeaders headers);
+	Map<String, String> kakaoLogin(MultiValueMap<String, String> params, HttpHeaders headers);
 	
 }
