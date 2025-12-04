@@ -54,5 +54,10 @@ public interface AdminCampaignService {
 	 */
 	int restoreCampaign(Long campaignNo);
 
-
+	/**
+	 * 삭제
+	 * @param campaignNo
+	 */
+	void deleteByCampaignNo(Long campaignNo);
+	
 }
