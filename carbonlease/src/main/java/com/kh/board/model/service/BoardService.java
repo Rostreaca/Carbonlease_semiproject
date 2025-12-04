@@ -22,7 +22,9 @@ public interface BoardService {
 	
 	int boardDelete(BoardDTO boardDTO, CustomUserDetails user);
 
-	// int boardReplyUpdate(ReplyInsertVO riVO, CustomUserDetails user);
+	int boardReplyUpdate(ReplyInsertVO riVO, CustomUserDetails user);
+	
+	int deleteReply(int replyNo);
 	
 	void boardViewCount(int boardNo);
 	

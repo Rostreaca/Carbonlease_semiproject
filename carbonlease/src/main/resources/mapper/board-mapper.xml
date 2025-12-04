@@ -75,6 +75,7 @@
                , R.ENROLL_DATE enrollDate
                , B.BOARD_NO boardNo
                , R.MEMBER_NO memberNo
+               , M.MEMBER_ID memberId
                , M.NICKNAME nickname
                , R.REPLY_NO as replyNo
 		   FROM 
