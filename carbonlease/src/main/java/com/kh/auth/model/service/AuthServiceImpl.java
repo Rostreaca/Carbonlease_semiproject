@@ -1,15 +1,24 @@
 package com.kh.auth.model.service;
 
+import java.net.HttpURLConnection;
 import java.util.Map;
 
+import org.springframework.boot.json.GsonJsonParser;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.exception.CustomAuthenticationException;
+import com.kh.exception.InvalidValueException;
 import com.kh.member.model.dto.MemberDTO;
 import com.kh.token.model.service.TokenService;
 
@@ -25,10 +34,10 @@ public class AuthServiceImpl implements AuthService {
 	private final AuthenticationManager authenticationManager;
 	private final TokenService tokenService;
 	
-	@Override
-	public Map<String, String> login(MemberDTO member) {
-		
-		//log.info("로그인 시도 ID: {}, pwd: {}", member.getMemberId(), member.getMemberPwd());
+	private RestTemplate restTemplate = new RestTemplate();
+	private GsonJsonParser jsonParser = new GsonJsonParser();
+	
+	private CustomUserDetails loadUser(MemberDTO member) {
 		
 		Authentication auth = null;
 		try {
@@ -36,8 +45,15 @@ public class AuthServiceImpl implements AuthService {
 		} catch (AuthenticationException e) {
 			throw new CustomAuthenticationException("로그인 실패. 아이디 또는 비밀번호를 확인해주십시오.");
 		}
-
-		CustomUserDetails user = (CustomUserDetails)auth.getPrincipal();
+		
+		return (CustomUserDetails)auth.getPrincipal();
+	}
+	
+	@Override
+	public Map<String, String> login(MemberDTO member) {
+		//log.info("로그인 시도 ID: {}, pwd: {}", member.getMemberId(), member.getMemberPwd());
+		
+		CustomUserDetails user = loadUser(member);
 		
 		log.info("사용자 권한 : {}", user.getAuthorities().toString());
 		
@@ -47,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
 		
 		log.info("로그인 성공");
 		
-		Map<String, String> loginResponse = tokenService.generateToken(user);
+		Map<String, String> loginResponse = tokenService.generateToken(user.getMemberNo());
 		loginResponse.put("memberId", user.getUsername());
 		loginResponse.put("nickName", user.getNickname());
 		loginResponse.put("role", user.getAuthorities().toString());
@@ -61,15 +77,8 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public Map<String, String> adminLogin(MemberDTO member) {
 		//log.info("로그인 시도 ID: {}, pwd: {}", member.getMemberId(), member.getMemberPwd());
-		
-		Authentication auth = null;
-		try {
-			auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(member.getMemberId(),member.getMemberPwd()));
-		} catch (AuthenticationException e) {
-			throw new CustomAuthenticationException("로그인 실패. 아이디 또는 비밀번호를 확인해주십시오.");
-		}
 
-		CustomUserDetails user = (CustomUserDetails)auth.getPrincipal();
+		CustomUserDetails user = loadUser(member);
 		
 		log.info("사용자 권한 : {}", user.getAuthorities().toString());
 		
@@ -79,7 +88,7 @@ public class AuthServiceImpl implements AuthService {
 		
 		log.info("로그인 성공");
 		
-		Map<String, String> loginResponse = tokenService.generateToken(user);
+		Map<String, String> loginResponse = tokenService.generateToken(user.getMemberNo());
 		loginResponse.put("memberId", user.getUsername());
 		loginResponse.put("nickName", user.getNickname());
 		loginResponse.put("role", user.getAuthorities().toString());
@@ -88,6 +97,45 @@ public class AuthServiceImpl implements AuthService {
 		loginResponse.put("addressLine2", user.getAddressLine2());
 		
 		return loginResponse;
+	}
+
+	@Override
+	public void kakaoLogin(MultiValueMap<String, String> params, HttpHeaders headers) {
+		
+
+		ResponseEntity<String> response = getKaKaoAccessToken(params, headers);
+		
+//		log.info("{}",response);
+		
+		Map<String, Object> tokens = jsonParser.parseMap(response.getBody());
+		
+		String accessToken = (String)tokens.get("access_token");
+
+		getKaKaoId(accessToken);
+		
+		
+	}
+	
+	private ResponseEntity<String> getKaKaoAccessToken(MultiValueMap<String, String> params, HttpHeaders headers){
+		
+		HttpEntity<MultiValueMap<String,String>> httpEntity = new HttpEntity<MultiValueMap<String,String>>(params,headers);
+		ResponseEntity<String> response = restTemplate.postForEntity("https://kauth.kakao.com/oauth/token", httpEntity, String.class);
+		
+		return response;
+	}
+	
+	private void getKaKaoId(String accessToken){
+		
+		HttpHeaders headers = new HttpHeaders();
+		
+		headers.add("Authorization", "Bearer " + accessToken);
+		HttpEntity<String> httpEntity = new HttpEntity<>("",headers);
+		
+		ResponseEntity<String> response = restTemplate.postForEntity("https://kapi.kakao.com/v2/user/me", httpEntity, String.class);
+
+		
+		Map<String, Object> userInfo = jsonParser.parseMap(response.getBody());
+		
 	}
 
 }

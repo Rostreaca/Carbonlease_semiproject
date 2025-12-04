@@ -158,6 +158,7 @@ public class ActivityServiceImpl implements ActivityService{
 	}
 
 	@Override
+	@Transactional
 	public int insertReply(String content, int activityNo, Long memberNo) {
 	    Map<String, Object> map = new HashMap<>();
 	    map.put("replyContent", content);
@@ -167,11 +168,13 @@ public class ActivityServiceImpl implements ActivityService{
 	}
 
 	@Override
+	@Transactional
 	public int deleteReply(int replyNo) {
 	    return activityMapper.deleteReply(replyNo);
 	}
 	
 	@Override
+	@Transactional
 	public int updateReply(int replyNo, String content, Long writerNo) {
 	    Map<String, Object> map = new HashMap<>();
 	    map.put("replyNo", replyNo);
@@ -182,6 +185,7 @@ public class ActivityServiceImpl implements ActivityService{
 	}
 	
 	@Override
+	@Transactional
 	public void increaseViewCount(int activityNo) {
 	    activityMapper.updateViewCount(activityNo);
 	}

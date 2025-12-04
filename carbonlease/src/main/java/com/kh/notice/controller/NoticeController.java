@@ -40,8 +40,10 @@ public class NoticeController {
 	@GetMapping("detail/{noticeNo}")
 	public ResponseEntity<?> findByNo(@PathVariable(name="noticeNo")Long noticeNo){
 		
-		NoticeDTO notice = noticeService.findByNo(noticeNo);
+		Map<String, Object> map = new HashMap();
 		
-		return ResponseEntity.ok(notice);
+		map = noticeService.findByNo(noticeNo);
+		
+		return ResponseEntity.ok(map);
 	}
 }

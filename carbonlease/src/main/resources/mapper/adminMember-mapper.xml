@@ -58,6 +58,8 @@
 		   SET
 		       STATUS = 'N'
 		 WHERE
+		 	   STATUS = 'Y'
+		   AND
 		       MEMBER_NO = #{memberNo}
 		   
 		

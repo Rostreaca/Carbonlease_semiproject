@@ -110,7 +110,7 @@
 	</select>-->
 	
 	
-	<select id="getCampaignOnly" parameterType="long" resultMap="campaignResultMap">
+	<select id="getCampaignOrThrow" parameterType="long" resultMap="campaignResultMap">
 	    <include refid="campaignColumn"/>
 	    WHERE P.CAMPAIGN_NO = #{campaignNo}
 	</select>

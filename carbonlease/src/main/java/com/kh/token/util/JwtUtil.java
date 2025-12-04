@@ -29,10 +29,9 @@ public class JwtUtil {
     }
 
     // Access Token 생성
-    public String getAccessToken(Long memberNo, String role) {
+    public String getAccessToken(String memberNo) {
         return Jwts.builder()
                 .subject(String.valueOf(memberNo))
-                .claim("role", role)
                 .issuedAt(new Date())
                 .expiration(Date.from(Instant.now().plus(Duration.ofDays(1))))
                 .signWith(key)
@@ -40,10 +39,9 @@ public class JwtUtil {
     }
 
     // Refresh Token 생성
-    public String getRefreshToken(Long memberNo, String role) {
+    public String getRefreshToken(String memberNo) {
         return Jwts.builder()
                 .subject(String.valueOf(memberNo))
-                .claim("role", role)
                 .issuedAt(new Date())
                 .expiration(Date.from(Instant.now().plus(Duration.ofDays(3))))
                 .signWith(key)

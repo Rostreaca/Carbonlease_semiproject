@@ -13,16 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.admin.campaign.model.dao.AdminCampaignMapper;
-import com.kh.auth.model.vo.CustomUserDetails;
-import com.kh.campaign.model.vo.CampaignAttachmentVO;
-import com.kh.campaign.model.dto.CampaignAttachmentDTO;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
-import com.kh.campaign.model.service.CampaignService;
+import com.kh.campaign.model.vo.CampaignAttachmentVO;
 import com.kh.campaign.model.vo.CampaignVO;
 import com.kh.common.util.Pagination;
-//import com.kh.exception.CustomAuthenticationException;
-import com.kh.exception.CustomAuthenticationException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +37,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	 */
 	@Override
 	public Map<String, Object> findAll(int pageNo) {
+
 		if (pageNo < 0) {
 			throw new InvalidParameterException("유효하지 않은 접근입니다.");
 		}
@@ -141,11 +137,13 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		String changeName = info.get("changeName");
 		String savePath = info.get("savePath");
 		String fullPath = savePath + changeName;
+
 		try {
 			file.transferTo(new File(fullPath));
 		} catch (Exception e) {
 			throw new RuntimeException("파일 저장 실패", e);
 		}
+		
 		String fileUrl = "http://localhost:80/uploads/campaign/images/" + changeName;
 
 		return CampaignAttachmentVO.builder()
@@ -157,6 +155,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 			.status("Y")
 			.build();
 	}
+	
 	/**
 	 * 카테고리 조회
 	 */
@@ -188,12 +187,14 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 				.status(campaignDTO.getStatus())
 				.build();
 
-		// 2. 첨부파일 처리 (각각 한 번씩만 insert)
+		// 2. 첨부파일 처리 (수정 시 기존 파일 먼저 삭제/비활성화)
 		if (thumbnail != null && !thumbnail.isEmpty()) {
+			deleteAttachment(campaignNo, 0); // 기존 썸네일 삭제
 			CampaignAttachmentVO thumbVo = saveAttachment(thumbnail, campaignNo, 0);
 			adminCampaignMapper.insertAttachment(thumbVo);
 		}
 		if (detailImage != null && !detailImage.isEmpty()) {
+			deleteAttachment(campaignNo, 1); // 기존 상세이미지 삭제
 			CampaignAttachmentVO detailVo = saveAttachment(detailImage, campaignNo, 1);
 			adminCampaignMapper.insertAttachment(detailVo);
 		}
@@ -204,20 +205,40 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		if (result == 0) {
 			throw new IllegalStateException("수정할 캠페인이 없거나 이미 삭제된 상태입니다.");
 		}
+	}
 
+	/**
+	 * 첨부파일 삭제 (Map 파라미터 활용)
+	 */
+	private void deleteAttachment(Long campaignNo, int fileLevel) {
+		Map<String, Object> param = new HashMap<>();
+		param.put("campaignNo", campaignNo);
+		param.put("fileLevel", fileLevel);
+		adminCampaignMapper.deleteAttachmentByLevel(param);
 	}
 	
-
+	
 	/**
 	 * 복구
 	 */
 	@Override
 	public int restoreCampaign(Long campaignNo) {
+
 		int result = adminCampaignMapper.restoreStatus(campaignNo);
+
 		if (result != 1) {
 			throw new IllegalStateException("복구할 캠페인이 없거나 이미 활성 상태입니다.");
 		}
+
 		return result;
 	}
+	
+	
+	@Override
+	public void deleteByCampaignNo(Long campaignNo) {
+		adminCampaignMapper.deleteByCampaignNo(campaignNo);
+	}
+
+	
 
 }
