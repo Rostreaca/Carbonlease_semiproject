@@ -20,18 +20,14 @@ public class MemberDTO {
 
 	private Long memberNo;
 	@Pattern(regexp = "^[A-Za-z0-9]{4,20}$", message = "아이디는 4-20자 사이의 영어-숫자만 사용할 수 있습니다.")
-	//@NotBlank(message = "아이디는 비어있을 수 없습니다.")
-	@Size(min = 4, max = 20, message = "아이디는 4-20자만 사용할 수 있습니다.")
+//	@Size(min = 4, max = 20, message = "아이디는 4-20자만 사용할 수 있습니다.") // 정규표현식에 이미 글자수 제한이 있음
 	private String memberId;
 	@Pattern(regexp = "^[A-Za-z0-9]{4,20}$", message = "비밀번호는 4-20자 사이의 영어-숫자만 사용할 수 있습니다.")
-	//@NotBlank(message = "비밀번호는 비어있을 수 없습니다.")
-	@Size(min = 4, max = 20, message = "비밀번호는 4-20자만 사용할 수 있습니다.")
+//	@Size(min = 4, max = 20, message = "비밀번호는 4-20자만 사용할 수 있습니다.")
 	private String memberPwd;
-	@Size(min = 2, max = 12, message = "닉네임은 2-12자 사이로만 사용 가능합니다.")
-	//@NotBlank(message = "닉네임은 비어있을 수 없습니다.")
+//	@Size(min = 2, max = 12, message = "닉네임은 2-12자 사이로만 사용 가능합니다.")
 	@Pattern(regexp = "^[A-Za-z0-9ㄱ-ㅎㅏ-ㅣ가-힣]{2,12}$", message = "닉네임은 공백없이 2-12자 사이로만 사용할 수 있습니다.")
 	private String nickName;
-	//@NotBlank(message = "이메일은 비어있을 수 없습니다.")
 	@Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$" , message = "잘못된 이메일 형식입니다.")
 	private String email;
 	private String addressLine1;

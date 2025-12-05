@@ -68,9 +68,6 @@ public class MemberValidator {
 	}
 
 	public MemberDTO validateUpdate(MemberDTO member) {
-		// 불필요한 코드
-//		checkBlank(member.getNickName(), "닉네임은 비어있을 수 없습니다.");
-//		checkBlank(member.getEmail(), "이메일은 비어있을 수 없습니다.");
 		
 		CustomUserDetails user = comparePassword(member.getMemberPwd());
 		// 기존 사용했던 닉네임은 변경(유지) 가능 / 그 외 중복검사
