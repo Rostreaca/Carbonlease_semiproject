@@ -74,6 +74,7 @@ public class AuthController {
 		return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
 	}
 	
+	
 	@PostMapping("/kakaoLogin")
 	public ResponseEntity<?> kakaoLogin(@RequestParam(name="code") String code){
 		

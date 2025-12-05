@@ -36,6 +36,8 @@ public class EnergyApiClient {
      * - 예외 대비 try-catch
      * - fallback 캐싱 전략
      */
+    
+    
     public ElecResponseVO callElectricityApi(int page, int numOfRows) {
 
         String url = props.getBaseUrl() + "/" + props.getEndpoint();
