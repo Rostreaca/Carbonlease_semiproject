@@ -1,28 +1,28 @@
 package com.kh.auth.model.service;
 
-import java.net.HttpURLConnection;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.exception.CustomAuthenticationException;
-import com.kh.exception.InvalidValueException;
+import com.kh.member.model.dao.MemberMapper;
 import com.kh.member.model.dto.MemberDTO;
 import com.kh.token.model.service.TokenService;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,6 +33,8 @@ public class AuthServiceImpl implements AuthService {
 
 	private final AuthenticationManager authenticationManager;
 	private final TokenService tokenService;
+	
+	private final MemberMapper memberMapper;
 	
 	private RestTemplate restTemplate = new RestTemplate();
 	private GsonJsonParser jsonParser = new GsonJsonParser();
@@ -100,9 +102,8 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public void kakaoLogin(MultiValueMap<String, String> params, HttpHeaders headers) {
+	public Map<String, String> kakaoLogin(MultiValueMap<String, String> params, HttpHeaders headers) {
 		
-
 		ResponseEntity<String> response = getKaKaoAccessToken(params, headers);
 		
 //		log.info("{}",response);
@@ -110,9 +111,33 @@ public class AuthServiceImpl implements AuthService {
 		Map<String, Object> tokens = jsonParser.parseMap(response.getBody());
 		
 		String accessToken = (String)tokens.get("access_token");
-
-		getKaKaoId(accessToken);
 		
+		String kakaoId = getKaKaoId(accessToken);
+		
+		log.info(kakaoId);
+		
+		int checkId = memberMapper.countByMemberId(kakaoId);
+		
+		String password = kakaoId+123;
+		
+		// 이미 카카오로 가입한 아이디가 존재한다면 바로 로그인
+		if(checkId == 1) {
+			
+			MemberDTO member = new MemberDTO();
+			
+			member.setMemberId(kakaoId);
+			member.setMemberPwd(password);
+			
+			return login(member);
+		}
+		
+		// 처음 카카오로 로그인 시 회원가입에 사용할 정보
+		Map<String, String> signUpInfo = new HashMap(); 
+		
+		signUpInfo.put("memberId", kakaoId);
+		signUpInfo.put("memberPwd", password);
+		
+		return signUpInfo;
 		
 	}
 	
@@ -124,7 +149,7 @@ public class AuthServiceImpl implements AuthService {
 		return response;
 	}
 	
-	private void getKaKaoId(String accessToken){
+	private String getKaKaoId(String accessToken){
 		
 		HttpHeaders headers = new HttpHeaders();
 		
@@ -132,10 +157,10 @@ public class AuthServiceImpl implements AuthService {
 		HttpEntity<String> httpEntity = new HttpEntity<>("",headers);
 		
 		ResponseEntity<String> response = restTemplate.postForEntity("https://kapi.kakao.com/v2/user/me", httpEntity, String.class);
-
 		
-		Map<String, Object> userInfo = jsonParser.parseMap(response.getBody());
+		Double id = (Double)jsonParser.parseMap(response.getBody()).get("id");
 		
+		return "Kakao"+id.longValue();
 	}
 
 }

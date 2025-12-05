@@ -74,6 +74,7 @@ public class AuthController {
 		return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
 	}
 	
+	
 	@PostMapping("/kakaoLogin")
 	public ResponseEntity<?> kakaoLogin(@RequestParam(name="code") String code){
 		
@@ -88,15 +89,9 @@ public class AuthController {
 		params.add("redirect_uri", redirectUri);
 		params.add("code", code);
 		
-		authService.kakaoLogin(params, headers);
+		Map<String, String> response = authService.kakaoLogin(params, headers);
 		
-
-		
-		
-		
-		
-		
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	
 }

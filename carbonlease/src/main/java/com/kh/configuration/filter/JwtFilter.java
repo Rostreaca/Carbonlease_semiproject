@@ -42,9 +42,9 @@ public class JwtFilter extends OncePerRequestFilter{
 		String uri = request.getRequestURI();
 		
 		String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
-		if(authorization == null || uri.equals("/auth/login")) {
-			filterChain.doFilter(request, response);
-			return;
+		if (authorization == null || !authorization.startsWith("Bearer ")) {
+		    filterChain.doFilter(request, response);
+		    return;
 		}
 		
 		String token = authorization.split(" ")[1];
@@ -92,20 +92,22 @@ public class JwtFilter extends OncePerRequestFilter{
 		filterChain.doFilter(request, response);
 	}
 	
+	
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
+
 	    String method = request.getMethod();
 	    String uri = request.getRequestURI();
 
 	    if (method.equalsIgnoreCase("OPTIONS")) return true;
-	    if (uri.startsWith("/auth/login")) return true;
+	    if (uri.startsWith("/api/main/")) return true;
+	    if (uri.startsWith("/auth/")) return true;
+	    if (uri.startsWith("/uploads/")) return true;
 	    if (uri.startsWith("/admin")) return false;
 	    if (uri.startsWith("/activityBoards") && method.equals("GET")) return true;
 
 	    return false;
 	}
 
-
-	
 
 }
