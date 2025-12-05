@@ -45,5 +45,17 @@ public class AdminCalendarServiceImpl implements AdminCalendarService {
 		calendarMapper.addEvent(event);
 	}
 
+	@Override
+	public void updateEvent(@Valid EventAdminDTO event) {
+	
+		calendarMapper.updateEvent(event);
+	}
+
+	@Override
+	public void deleteEvent(Long id) {
+
+		calendarMapper.deleteEvent(id);
+	}
+
 	
 }

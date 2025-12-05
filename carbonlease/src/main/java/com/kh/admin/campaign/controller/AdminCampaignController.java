@@ -64,10 +64,13 @@ public class AdminCampaignController {
 	 */
 	@PostMapping
 	public ResponseEntity<Void> save(
-		    @Valid CampaignDTO campaign,
-		    @RequestParam("thumbnail") MultipartFile thumbnail,
-		    @RequestParam("detailImage") MultipartFile detailImage,
+			@Valid CampaignDTO campaign,
+			@RequestParam("thumbnail") MultipartFile thumbnail,
+			@RequestParam("detailImage") MultipartFile detailImage,
 			@AuthenticationPrincipal CustomUserDetails user) {
+
+		// 인증 정보로 memberNo를 DTO에 직접 set
+		campaign.setMemberNo(user.getMemberNo());
 
 		// 캠페인 및 첨부파일 등록
 		adminCampaignService.save(
