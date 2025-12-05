@@ -2,8 +2,52 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.kh.admin.model.dao.AdminMapper">
+<mapper namespace="com.kh.admin.main.model.dao.AdminMainMapper">
 
-	
-	
+        <!-- 1. 전체 게시글 수 조회 (실제 테이블명 기준) -->
+        <select id="getUsersAllBoardsCount" resultType="map">
+            SELECT 'board' AS boardType, COUNT(*) AS count FROM CL_BOARD WHERE STATUS = 'Y'
+            UNION ALL
+            SELECT 'activity' AS boardType, COUNT(*) AS count FROM CL_ACTIVITY_BOARD WHERE STATUS = 'Y'
+            UNION ALL
+            SELECT 'campaign' AS boardType, COUNT(*) AS count FROM CL_CAMPAIGN WHERE STATUS = 'Y'
+            UNION ALL
+            SELECT 'notice' AS boardType, COUNT(*) AS count FROM CL_NOTICE WHERE STATUS = 'Y'
+        </select>
+
+        <!-- 2. 삭제된 게시글 수 조회 (실제 테이블명 기준) -->
+        <select id="getUsersDeleteAllBoardsCount" resultType="map">
+            SELECT 'board' AS boardType, COUNT(*) AS count FROM CL_BOARD WHERE STATUS = 'N'
+            UNION ALL
+            SELECT 'activity' AS boardType, COUNT(*) AS count FROM CL_ACTIVITY_BOARD WHERE STATUS = 'N'
+            UNION ALL
+            SELECT 'campaign' AS boardType, COUNT(*) AS count FROM CL_CAMPAIGN WHERE STATUS = 'N'
+            UNION ALL
+            SELECT 'notice' AS boardType, COUNT(*) AS count FROM CL_NOTICE WHERE STATUS = 'N'
+        </select>
+
+        <!-- 3. 지역별 커뮤니티 활동량 집계 (회원/게시글/지역 조인) -->
+        <select id="getUsersActivityBoards" resultType="map">
+            SELECT r.REGION_NAME, COUNT(b.BOARD_NO) AS activityCount
+            FROM CL_BOARD b
+            JOIN CL_REGION_CATEGORY r ON b.REGION_NO = r.REGION_NO
+            WHERE b.STATUS = 'Y'
+            GROUP BY r.REGION_NAME
+        </select>
+
+        <!-- 4. 인기글 Top 5 조회 (조회수 기준, 각 게시판별 UNION) -->
+        <select id="getAllCountTop5" resultType="map">
+            SELECT * FROM (
+                SELECT BOARD_TITLE AS title, VIEW_COUNT AS views, 'board' AS boardType FROM CL_BOARD WHERE STATUS = 'Y'
+                UNION ALL
+                SELECT ACTIVITY_TITLE AS title, VIEW_COUNT AS views, 'activity' AS boardType FROM CL_ACTIVITY_BOARD WHERE STATUS = 'Y'
+                UNION ALL
+                SELECT CAMPAIGN_TITLE AS title, VIEW_COUNT AS views, 'campaign' AS boardType FROM CL_CAMPAIGN WHERE STATUS = 'Y'
+                UNION ALL
+                SELECT NOTICE_TITLE AS title, VIEW_COUNT AS views, 'notice' AS boardType FROM CL_NOTICE WHERE STATUS = 'Y'
+            ) t
+            ORDER BY views DESC
+            FETCH FIRST 5 ROWS ONLY
+        </select>
+    
 </mapper>
