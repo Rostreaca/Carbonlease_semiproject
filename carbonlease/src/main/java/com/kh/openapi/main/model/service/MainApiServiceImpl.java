@@ -31,7 +31,7 @@ public class MainApiServiceImpl implements MainApiService {
         // 1) 전기 사용량 OpenAPI 호출
         ElecResponseVO response = energyApiClient.callElectricityApi(1, 100);
         if (response == null || response.getBody() == null || response.getBody().getItems() == null) {
-            log.error(" OpenAPI 결과가 비어 있음");
+            log.error("OpenAPI 결과가 비어 있음");
             return new ArrayList<>();
         }
         List<ElecItemVO> items = response.getBody().getItems();
@@ -74,6 +74,7 @@ public class MainApiServiceImpl implements MainApiService {
             KoreaRegionCoordVO coord = coordMap.get(region);
             double lat = coord != null ? coord.getLatitude() : 0.0;
             double lng = coord != null ? coord.getLongitude() : 0.0;
+            
             RegionEnergyUsageDTO dto = RegionEnergyUsageDTO.builder()
                 .topRegionName(region)
                 .avgUseQnt((int) avgUseQnt)
