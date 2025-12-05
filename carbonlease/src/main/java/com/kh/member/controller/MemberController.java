@@ -59,6 +59,24 @@ public class MemberController {
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 	
+	@PutMapping("/kakao")
+	public ResponseEntity<?> updateSocialMember(@Valid @RequestBody MemberDTO member, @AuthenticationPrincipal CustomUserDetails user){
+		
+		member.setMemberNo(user.getMemberNo());
+		
+		memberService.updateSocialMember(member);
+		
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+	
+	@DeleteMapping("/kakao")
+	public ResponseEntity<?> deleteSocialMember(@AuthenticationPrincipal CustomUserDetails user){
+		
+		memberService.deleteSocialMember(user);
+		
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+	
 	
 	@PostMapping("/checkId")
 	public ResponseEntity<?> checkId(@Valid @RequestBody MemberDTO member){

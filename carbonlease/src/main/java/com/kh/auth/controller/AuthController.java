@@ -76,7 +76,7 @@ public class AuthController {
 	
 	
 	@PostMapping("/kakaoLogin")
-	public ResponseEntity<?> kakaoLogin(@RequestParam(name="code") String code){
+	public ResponseEntity<Map<String, String>> kakaoLogin(@RequestParam(name="code") String code){
 		
 		HttpHeaders headers = new HttpHeaders();
 		

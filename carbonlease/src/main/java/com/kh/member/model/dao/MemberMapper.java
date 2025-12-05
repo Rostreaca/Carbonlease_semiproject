@@ -25,12 +25,15 @@ public interface MemberMapper {
 	
 	void signUp(MemberVO member);
 
-	void updateMember(MemberDTO member);
+	int updateMember(MemberDTO member);
 
 	int deleteMember(Long memberNo);
 
 	List<BoardDTO> selectBoardsByMemberNo(Long memberNo);
 
 	List<ActivityListDTO> selectActivityBoardsByMemberNo(Long memberNo);
+
+	void restoreKakaoMember(String memberId);
+	
 	
 }

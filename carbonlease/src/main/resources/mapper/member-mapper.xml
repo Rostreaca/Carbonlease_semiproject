@@ -43,6 +43,20 @@
 		
 	</select>
 	
+	<update id="restoreKakaoMember" parameterType="string">
+		UPDATE
+		       CL_MEMBER
+		   SET
+		       STATUS = 'Y'
+		 WHERE
+		       STATUS = 'N'
+		   AND
+		       MEMBER_ID = #{memberId}
+		
+	</update>
+	
+	
+	
 	<select id="countByMemberId" parameterType="string">
 	<include refid="countBy" />
 		 WHERE
