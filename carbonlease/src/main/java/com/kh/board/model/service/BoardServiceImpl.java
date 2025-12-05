@@ -170,5 +170,6 @@ public class BoardServiceImpl implements BoardService {
 		
 		boardMapper.boardViewCount(boardNo);
 	}
+
 }
 	

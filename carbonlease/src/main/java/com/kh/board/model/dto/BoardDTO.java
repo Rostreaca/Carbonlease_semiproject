@@ -31,5 +31,12 @@ public class BoardDTO {
 	private int replyCount;
 	private List<BoardReplyDTO> replyList;	// 댓글 목록
 	
+	// 검색 기능에 필요한 필드값
+    private int pageNo;
+    private int offset;
+    private int limit;
+    private String searchType;
+    private String searchQuery;
+	
 	
 }

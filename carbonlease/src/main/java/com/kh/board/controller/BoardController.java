@@ -49,7 +49,7 @@ public class BoardController {
 		return ResponseEntity.ok(map);
 	}
 	
-	
+	// @PathVariable(name="boardNo") 쓰는건 @GetMapping("detail/{boardNo}") 매핑 안에 boardNo를 변수에 담으라는 뜻
 	// 상세 조회
 	@GetMapping("detail/{boardNo}")
 	public ResponseEntity<?> boardDetail(@PathVariable(name="boardNo") Long boardNo) {
@@ -104,15 +104,19 @@ public class BoardController {
 	// 댓글 삭제
     @DeleteMapping("detail/replyDelete/{replyNo}")
     public ResponseEntity<?> deleteReply(@PathVariable("replyNo") int replyNo, @AuthenticationPrincipal CustomUserDetails user) {
+    	log.info("{}", replyNo);
     	
-		
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+    	
 		if (user == null) {
 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
 		}
 		
-		boardService.deleteReply(replyNo);
+		int deleteOK = boardService.deleteReply(replyNo);
 		
-		return ResponseEntity.ok("deleted");
+		resultMap.put("deleteOK", deleteOK);
+		
+		return ResponseEntity.ok(resultMap);
 		
     }
 	
@@ -132,7 +136,6 @@ public class BoardController {
 		
 	}
 
-	
 	
 	// 글 수정 하기
 	@PostMapping("/boardUpdate")
@@ -176,7 +179,6 @@ public class BoardController {
 	    
 	    return ResponseEntity.ok().build();
 	}
-
 	
-		
 }
+		

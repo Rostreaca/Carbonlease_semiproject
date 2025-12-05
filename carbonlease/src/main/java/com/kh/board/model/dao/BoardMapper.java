@@ -37,6 +37,7 @@ public interface BoardMapper {
 	int replyUpdate(ReplyInsertVO riVO);
 	
 	void boardViewCount(int boardNo);
+	
 
 	
 }

@@ -28,5 +28,8 @@ public interface BoardService {
 	
 	void boardViewCount(int boardNo);
 	
+	
+    
+	
 }
 
