@@ -15,4 +15,8 @@ public interface AdminCalendarService {
 
 	void addEvent(@Valid @RequestBody EventAdminDTO event, CustomUserDetails user);
 
+	void updateEvent(@Valid EventAdminDTO event);
+
+	void deleteEvent(Long id);
+
 }

@@ -34,5 +34,24 @@
 				)
 	</insert>
 	
+	<update id="updateEvent"
+			parameterType="EventAdminDTO">
+		UPDATE
+				CL_CALENDAR
+		SET
+				  START_DATE = #{start}
+				, END_DATE = #{end}
+				, CALENDAR_TITLE = #{title}
+		WHERE
+				CALENDAR_NO = #{calendarNo}
+	</update>
 	
+	<delete id="deleteEvent"
+			parameterType="Long">
+		DELETE
+		FROM
+				CL_CALENDAR
+		WHERE
+				CALENDAR_NO = #{calendarNo}
+	</delete>
 </mapper>

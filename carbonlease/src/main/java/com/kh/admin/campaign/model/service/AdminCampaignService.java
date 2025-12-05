@@ -6,10 +6,8 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
-import com.kh.campaign.model.vo.CampaignVO;
 
 public interface AdminCampaignService {
 	
