@@ -9,7 +9,6 @@ import lombok.Data;
  */
 @Data
 public class ElecBodyVO {
-
     private List<ElecItemVO> items;
     private int numOfRows;
     private int pageNo;
