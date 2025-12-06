@@ -32,21 +32,21 @@ public class AdminMainServiceImpl {
 		}
 	}
 
-	public Map<String, Integer> getUsersDeleteAllBoardsCount() {
+	public List<Map<String, Object>> getUsersDeleteAllBoardsCount() {
 		try {
-			Map<String, Integer> result = adminMainMapper.getUsersDeleteAllBoardsCount();
+			List<Map<String, Object>> result = adminMainMapper.getUsersDeleteAllBoardsCount();
 			log.info("삭제 게시글 수 조회 결과: {}", result);
 			return result;
 		} catch (Exception e) {
 			log.error("삭제 게시글 수 조회 오류", e);
-			return Collections.emptyMap();
+			return Collections.emptyList();
 		}
 	}
 
 	public List<Map<String, Object>> getUsersActivityBoards() {
 		try {
 			List<Map<String, Object>> result = adminMainMapper.getUsersActivityBoards();
-			log.info("지역별 활동량 조회 결과: {}", result);
+			log.info("[데이터 검증] 지역별 활동량(합산) 조회 결과: {}", result);
 			return result;
 		} catch (Exception e) {
 			log.error("지역별 활동량 조회 오류", e);

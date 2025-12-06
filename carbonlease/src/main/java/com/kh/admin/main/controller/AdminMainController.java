@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.admin.main.model.service.AdminMainServiceImpl;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import com.kh.admin.main.model.service.AdminMainServiceImpl;
 
 @Slf4j
 @RestController
@@ -22,21 +22,21 @@ import com.kh.admin.main.model.service.AdminMainServiceImpl;
 public class AdminMainController {
     private final AdminMainServiceImpl adminMainService;
 
-    // 일반게시판/ 인증게시판 총 게시글 수
+    // 각 게시글 총 게시글 수
     @GetMapping("/boardsAllCount")
     public ResponseEntity<List<Map<String, Object>>> getUsersAllBoardsCount() {
         List<Map<String, Object>> result = adminMainService.getUsersAllBoardsCount();
         return ResponseEntity.ok(result);
     }
 
-    // 일반게시판 / 인증게시판 총 삭제된 게시글 수
+    // 각 게시글 총 삭제된 게시글 수
     @GetMapping("/boardsDeletedCount")
-    public ResponseEntity<Map<String, Integer>> getUsersDeleteAllBoardsCount() {
-        Map<String, Integer> result = adminMainService.getUsersDeleteAllBoardsCount();
+    public ResponseEntity<List<Map<String, Object>>> getUsersDeleteAllBoardsCount() {
+        List<Map<String, Object>> result = adminMainService.getUsersDeleteAllBoardsCount();
         return ResponseEntity.ok(result);
     }
 
-    // 지역별 커뮤니티 활동량_activity
+    // 지역별 커뮤니티 활동량_(일반/인증)
     @GetMapping("/activityRegion")
     public ResponseEntity<List<Map<String, Object>>> getUsersActivityBoards() {
         List<Map<String, Object>> result = adminMainService.getUsersActivityBoards();
