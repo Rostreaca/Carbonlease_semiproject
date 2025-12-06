@@ -4,12 +4,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
 @Component
-@ConfigurationProperties(prefix = "api.open.services.energy")
+@Getter
+@Setter
+@ConfigurationProperties(prefix = "api.kepco")
 public class EnergyApiProperties {
+    // 기존 전기 API
     private String key;       // 인증키
-    private String baseUrl;   // https://apis.data.go.kr/B552584/kecoapi/cpointEnrgUsqntStatsService
-    private String endpoint;  // getElec
+    private String baseUrl;
+    private String endpoint;
 }
