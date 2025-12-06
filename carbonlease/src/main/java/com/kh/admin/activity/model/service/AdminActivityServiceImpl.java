@@ -12,7 +12,7 @@ import com.kh.activity.model.service.ActivityFileHandler;
 import com.kh.admin.activity.model.dao.AdminActivityMapper;
 import com.kh.admin.activity.model.dto.AdminActivityDTO;
 import com.kh.common.util.Pagination;
-import com.kh.exception.AdminActivityException;
+import com.kh.exception.AdminBoardsException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +49,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
 	public void hideBoard(int no) {
 	    int result = mapper.hideBoard(no);
 	    if (result == 0) {
-	        throw new AdminActivityException("존재하지 않는 게시글입니다.");
+	        throw new AdminBoardsException("존재하지 않는 게시글입니다.");
 	    }
 	}
 
@@ -58,7 +58,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
 	public void restoreBoard(int no) {
 	    int result = mapper.restoreBoard(no);
 	    if (result == 0) {
-	        throw new AdminActivityException("존재하지 않는 게시글입니다.");
+	        throw new AdminBoardsException("존재하지 않는 게시글입니다.");
 	    }
 	}
 
@@ -67,14 +67,14 @@ public class AdminActivityServiceImpl implements AdminActivityService {
 	public void deleteBoard(int no) {
 	    int result = mapper.deleteBoard(no);
 	    if (result == 0) {
-	        throw new AdminActivityException("존재하지 않는 게시글입니다.");
+	        throw new AdminBoardsException("존재하지 않는 게시글입니다.");
 	    }
 	}
 	
 	@Override
 	public AdminActivityDTO selectDetail(int id) {
 	    AdminActivityDTO dto = mapper.selectDetail(id);
-	    if (dto == null) throw new AdminActivityException("게시글이 존재하지 않습니다.");
+	    if (dto == null) throw new AdminBoardsException("게시글이 존재하지 않습니다.");
 	    return dto;
 	}
 
@@ -84,7 +84,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
 
 	    AdminActivityDTO dto = mapper.selectDetail(id);
 	    if (dto == null) {
-	        throw new AdminActivityException("존재하지 않는 게시글입니다.");
+	        throw new AdminBoardsException("존재하지 않는 게시글입니다.");
 	    }
 
 	    if (thumbnailFile != null && !thumbnailFile.isEmpty()) {

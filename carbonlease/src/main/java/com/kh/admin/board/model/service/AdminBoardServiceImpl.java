@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.admin.board.model.dao.AdminBoardMapper;
 import com.kh.admin.board.model.dto.AdminBoardDTO;
 import com.kh.admin.board.model.dto.AdminBoardUpdate;
 import com.kh.common.util.PageInfo;
 import com.kh.common.util.Pagination;
+import com.kh.exception.AdminBoardsException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,28 +48,48 @@ public class AdminBoardServiceImpl implements AdminBoardService {
     }
 
     @Override
+    @Transactional
     public void hideBoard(Long boardNo) {
-        mapper.hideBoard(boardNo);
+        int result = mapper.hideBoard(boardNo);
+        if (result == 0) {
+        	throw new AdminBoardsException("존재하지 않는 게시글입니다.");
+        }
     }
 
     @Override
+    @Transactional
     public void restoreBoard(Long boardNo) {
-        mapper.restoreBoard(boardNo);
+        int result = mapper.restoreBoard(boardNo);
+        if (result == 0) {
+        	throw new AdminBoardsException("존재하지 않는 게시글입니다.");
+        }
     }
 
     @Override
+    @Transactional
     public void deleteBoard(Long boardNo) {
-        mapper.deleteBoard(boardNo);
+        int result = mapper.deleteBoard(boardNo);
+        if (result == 0) {
+        	throw new AdminBoardsException("존재하지 않는 게시글입니다.");
+        }
     }
     
     @Override
+    @Transactional
     public void updateBoard(Long id, AdminBoardUpdate update) {
-        mapper.updateBoard(id, update.getTitle(), update.getContent(), update.getRegionNo());
+        int result = mapper.updateBoard(id, update.getTitle(), update.getContent(), update.getRegionNo());
+        if (result == 0) {
+        	throw new AdminBoardsException("존재하지 않는 게시글입니다.");
+        }
     }
     
     @Override
     public AdminBoardDTO selectDetail(Long id) {
-        return mapper.selectAdminBoardDetail(id);
+        AdminBoardDTO dto = mapper.selectAdminBoardDetail(id);
+        if (dto == null) {
+        	throw new AdminBoardsException("게시글이 존재하지 않습니다.");
+        }
+        return dto;
     }
 
 
