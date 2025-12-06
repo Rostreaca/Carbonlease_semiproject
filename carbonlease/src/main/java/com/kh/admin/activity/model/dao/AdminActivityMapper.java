@@ -13,7 +13,9 @@ public interface AdminActivityMapper {
 
 	List<AdminActivityDTO> selectAdminActivityList(Map<String, Object> params);
 
-	int getAdminCount();
+	int getAdminCount(@Param("page") int page,
+				      @Param("status") String status,
+					  @Param("keyword") String keyword);
 
 	int hideBoard(int activityNo);
 

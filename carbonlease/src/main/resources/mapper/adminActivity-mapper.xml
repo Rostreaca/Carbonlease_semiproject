@@ -10,37 +10,63 @@
         resultType="com.kh.admin.activity.model.dto.AdminActivityDTO">
 
 	    SELECT
-	        B.ACTIVITY_NO AS activityNo,
-	        B.ACTIVITY_TITLE AS title,
-	        B.MEMBER_NO AS memberNo,
-	        M.NICKNAME AS nickname,
-	        B.STATUS AS status,
-	        TO_CHAR(B.ENROLL_DATE, 'YYYY-MM-DD HH24:MI:SS') AS enrollDate,
-	        B.VIEW_COUNT AS viewCount,
+	           B.ACTIVITY_NO AS activityNo
+	         , B.ACTIVITY_TITLE AS title
+	         , B.MEMBER_NO AS memberNo
+	         , M.NICKNAME AS nickname
+	         , B.STATUS AS status
+	         , TO_CHAR(B.ENROLL_DATE, 'YYYY-MM-DD HH24:MI:SS') AS enrollDate
+	         , B.VIEW_COUNT AS viewCount
+	         , C.CERTIFICATION_NO AS categoryNo
+	         , CC.CERTIFICATION_NAME AS categoryName
+	      FROM 
+	           CL_ACTIVITY_BOARD B
+	      JOIN 
+	           CL_MEMBER M ON B.MEMBER_NO = M.MEMBER_NO
+	      LEFT 
+	      JOIN 
+	           CL_ACTIVITY_CERTIFICATION C ON B.ACTIVITY_NO = C.ACTIVITY_BOARD_NO
+	      LEFT 
+	      JOIN 
+	           CL_ACTIVITY_CERTIFICATION_CATEGORY CC ON C.CERTIFICATION_NO = CC.CERTIFICATION_NO
+	     WHERE 1 = 1
 	
-	        C.CERTIFICATION_NO AS categoryNo,
-	        CC.CERTIFICATION_NAME AS categoryName
+	    <if test="status != null and status != ''">
+	        AND B.STATUS = #{status}
+	    </if>
 	
-	    FROM CL_ACTIVITY_BOARD B
-	    JOIN CL_MEMBER M ON B.MEMBER_NO = M.MEMBER_NO
-	    LEFT JOIN CL_ACTIVITY_CERTIFICATION C 
-	           ON B.ACTIVITY_NO = C.ACTIVITY_BOARD_NO
-	    LEFT JOIN CL_ACTIVITY_CERTIFICATION_CATEGORY CC 
-	           ON C.CERTIFICATION_NO = CC.CERTIFICATION_NO
-	
-	    ORDER BY B.ACTIVITY_NO DESC
+	    <if test="keyword != null and keyword != ''">
+	        AND ( B.ACTIVITY_TITLE LIKE '%' || #{keyword} || '%'
+	           OR M.NICKNAME LIKE '%' || #{keyword} || '%' )
+	    </if>
+	     ORDER 
+	        BY 
+	           B.ACTIVITY_NO DESC
 	    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
-	
 	</select>
+
 
 
     <!-- 전체 개수 -->
     <select id="getAdminCount" resultType="int">
-    	SELECT 
-    		   COUNT(*) 
-          FROM 
-          	   CL_ACTIVITY_BOARD
+	    SELECT 
+	           COUNT(*)
+	      FROM 
+	           CL_ACTIVITY_BOARD B
+	      JOIN 
+	           CL_MEMBER M ON B.MEMBER_NO = M.MEMBER_NO
+	     WHERE 1 = 1
+	
+	    <if test="status != null and status != ''">
+	        AND B.STATUS = #{status}
+	    </if>
+	
+	    <if test="keyword != null and keyword != ''">
+	        AND ( B.ACTIVITY_TITLE LIKE '%' || #{keyword} || '%'
+	           OR M.NICKNAME LIKE '%' || #{keyword} || '%' )
+	    </if>
 	</select>
+
 
 
 

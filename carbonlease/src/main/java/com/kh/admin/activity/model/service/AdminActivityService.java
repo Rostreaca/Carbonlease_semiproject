@@ -8,7 +8,7 @@ import com.kh.admin.activity.model.dto.AdminActivityDTO;
 
 public interface AdminActivityService {
 
-    Map<String, Object> selectAdminList(int page);
+	Map<String, Object> selectAdminList(int page, String status, String keyword);
 
     void hideBoard(int no);
 

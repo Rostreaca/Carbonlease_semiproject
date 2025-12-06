@@ -27,21 +27,21 @@ public class AdminActivityServiceImpl implements AdminActivityService {
 	private final ActivityFileHandler fileHandler;
 
 	@Override
-	public Map<String, Object> selectAdminList(int page) {
+	public Map<String, Object> selectAdminList(int page, String status, String keyword) {
 
-		int count = mapper.getAdminCount();
-		System.out.println("총 게시물 수 = " + count);
+	    int count = mapper.getAdminCount(page, status, keyword);
 
-		Map<String, Object> params = pagination.pageRequest(page, 10, count);
+	    Map<String, Object> params = pagination.pageRequest(page, 10, count);
+	    params.put("status", status);
+	    params.put("keyword", keyword);
 
-		List<AdminActivityDTO> list = mapper.selectAdminActivityList(params);
+	    List<AdminActivityDTO> list = mapper.selectAdminActivityList(params);
 
-		Map<String, Object> result = new HashMap<>();
-		result.put("list", list);
-		result.put("pageInfo", params.get("pi"));
-		
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("list", list);
+	    result.put("pageInfo", params.get("pi"));
 
-		return result;
+	    return result;
 	}
 
 	@Override
@@ -98,7 +98,6 @@ public class AdminActivityServiceImpl implements AdminActivityService {
 
 	    mapper.updateBoard(id, title, content);
 	    
-	    // ⭐ 인증카테고리 업데이트 반드시 호출
 	    mapper.updateCertification(id, category);
 	}
 

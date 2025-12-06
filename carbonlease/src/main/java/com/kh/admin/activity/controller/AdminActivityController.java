@@ -26,8 +26,12 @@ public class AdminActivityController {
 
     // 전체조회
     @GetMapping
-    public ResponseEntity<?> selectList(@RequestParam(name="page", defaultValue = "1") int page) {
-        return ResponseEntity.ok(service.selectAdminList(page));
+    public ResponseEntity<?> selectList(
+            @RequestParam(name="page", defaultValue = "1") int page,
+            @RequestParam(name="status", required = false) String status,
+            @RequestParam(name="keyword", required = false) String keyword
+    ) {
+        return ResponseEntity.ok(service.selectAdminList(page, status, keyword));
     }
 
     // 숨김
