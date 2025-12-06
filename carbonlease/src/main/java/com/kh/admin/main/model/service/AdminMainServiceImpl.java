@@ -3,24 +3,24 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kh.admin.main.model.dao.AdminMainMapper;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class AdminMainServiceImpl {
+@RequiredArgsConstructor
+public class AdminMainServiceImpl implements AdminMainService {
 
 	private final AdminMainMapper adminMainMapper;
 
-	@Autowired
-	public AdminMainServiceImpl(AdminMainMapper adminMainMapper) {
-		this.adminMainMapper = adminMainMapper;
-	}
-
+	/**
+	 * 각 게시글 총 게시글 수
+	 * @return List<Map<String, Object>>
+	 */
 	public List<Map<String, Object>> getUsersAllBoardsCount() {
 		try {
 			List<Map<String, Object>> result = adminMainMapper.getUsersAllBoardsCount();
@@ -32,6 +32,10 @@ public class AdminMainServiceImpl {
 		}
 	}
 
+	/**
+	 * 각 게시글 총 삭제된 게시글 수
+	 * @return List<Map<String, Object>>
+	 */
 	public List<Map<String, Object>> getUsersDeleteAllBoardsCount() {
 		try {
 			List<Map<String, Object>> result = adminMainMapper.getUsersDeleteAllBoardsCount();
@@ -43,6 +47,10 @@ public class AdminMainServiceImpl {
 		}
 	}
 
+	/**
+	 * 지역별 커뮤니티 활동량_(일반/인증)
+	 * @return List<Map<String, Object>>
+	 */
 	public List<Map<String, Object>> getUsersActivityBoards() {
 		try {
 			List<Map<String, Object>> result = adminMainMapper.getUsersActivityBoards();
@@ -54,6 +62,10 @@ public class AdminMainServiceImpl {
 		}
 	}
 
+	/**
+	 * 조회순 기준 인기글 top 5 (일반/인증/캠페인/공지)
+	 * @return List<Map<String, Object>>
+	 */
 	public List<Map<String, Object>> getAllCountTop5() {
 		try {
 			List<Map<String, Object>> result = adminMainMapper.getAllCountTop5();

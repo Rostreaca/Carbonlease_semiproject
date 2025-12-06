@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kh.admin.main.model.service.AdminMainServiceImpl;
+import com.kh.admin.main.model.service.AdminMainService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/admin/home")
 @RequiredArgsConstructor
 public class AdminMainController {
-    private final AdminMainServiceImpl adminMainService;
+    
+    private final AdminMainService adminMainService;
 
     // 각 게시글 총 게시글 수
     @GetMapping("/boardsAllCount")
