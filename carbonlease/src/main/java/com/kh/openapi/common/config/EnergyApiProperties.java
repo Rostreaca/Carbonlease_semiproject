@@ -9,7 +9,7 @@ import lombok.Data;
 @Component
 @ConfigurationProperties(prefix = "api.kepco")
 public class EnergyApiProperties {
-    // 기존 전기 API
+    // 전기 API
     private String key;             // 인증키
     private String baseUrl;         // 기본 URL
     private String endpoint;        // 엔드포인트

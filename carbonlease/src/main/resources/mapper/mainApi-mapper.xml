@@ -7,9 +7,9 @@
 
     <select id="selectRegionCoords" resultType="KoreaRegionCoordVO">
         SELECT
-               TOP_REGION_NAME AS topRegionName
-             , LATITUDE        AS latitude
-             , LONGITUDE       AS longitude
+               TOP_REGION_NAME  topRegionName
+             , LATITUDE         latitude
+             , LONGITUDE        longitude
         FROM 
                CL_REGION_COORD
     </select>

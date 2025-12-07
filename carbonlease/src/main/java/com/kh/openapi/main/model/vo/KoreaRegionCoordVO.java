@@ -3,9 +3,7 @@ package com.kh.openapi.main.model.vo;
 import lombok.Builder;
 import lombok.Data;
 
-/**
- * 시도(서울, 부산, 대구, 인천, ...) 중심 좌표 정보
- */
+
 @Data
 @Builder
 public class KoreaRegionCoordVO {

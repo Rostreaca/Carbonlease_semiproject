@@ -37,6 +37,8 @@ public class MainApiServiceImpl implements MainApiService {
     /**
      * KEPCO 전기 사용량 OpenAPI 조회 후
      * 지도에서 사용할 형태로 변환한 리스트 반환
+     * @Role : 지역별 전력 사용량 + 좌표 정보 포함
+     * @return List<RegionEnergyUsageDTO>
      */
     @Override
     public List<RegionEnergyUsageDTO> getElectricityUsageForMap() {
@@ -60,15 +62,15 @@ public class MainApiServiceImpl implements MainApiService {
             usageMap.put(regionKey, usageMap.getOrDefault(regionKey, 0L) + usage);
         }
 
-        // 4. DB에서 조회한 지역별 좌표 정보 리스트
+        // 4. DB에서 조회한 지역별 좌표 정보 리스트를 가져옴
         List<KoreaRegionCoordVO> coords = mainApiMapper.selectRegionCoords();
-        // 4-1. 지역명 - 좌표정보 Map
+        // 4-1. 시도명 - 좌표정보 Map으로 변환 (key : "시도명", value : 각 지역의 좌표 VO)
         Map<String, KoreaRegionCoordVO> coordMap = coords.stream().collect(Collectors.toMap(
-                KoreaRegionCoordVO::getTopRegionName,
+                KoreaRegionCoordVO::getTopRegionName, // coordMap.get("서울") - 서울의 위도/경도 정보 반환
                 c -> c
         ));
 
-        // 5. 전체 사용량 합계
+        // 5. 전체 사용량 합계(퍼센트 계산용)
         long totalUsage = usageMap.values().stream().mapToLong(Long::longValue).sum();
 
         // 6. 프론트에 전달할 DTO 리스트

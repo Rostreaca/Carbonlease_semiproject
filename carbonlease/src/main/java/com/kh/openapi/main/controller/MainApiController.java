@@ -23,7 +23,7 @@ public class MainApiController {
      * 전기 사용량 OpenAPI 조회 후
      * 지도에서 사용할 형태로 변환한 리스트 반환
      */
-    @GetMapping("/regions")
+    @GetMapping("/regionUsage")
     public ResponseEntity<List<RegionEnergyUsageDTO>> getRegionStats() {
         return ResponseEntity.ok(mainApiService.getElectricityUsageForMap());
     }

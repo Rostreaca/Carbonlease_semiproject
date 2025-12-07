@@ -60,10 +60,13 @@
 		   , C.CATEGORY_NO
 		   , C.CATEGORY_NAME
 		   , CASE
-		        WHEN P.STATUS = 'N' THEN '삭제'
-		        WHEN P.END_DATE &lt; SYSDATE THEN '종료'
-		        ELSE '진행중'
-		     END AS DISPLAY_STATUS
+				  WHEN P.STATUS = 'D' THEN '삭제'
+				  WHEN P.STATUS = 'N' THEN '숨김'
+				  WHEN P.STATUS = 'Y' AND P.START_DATE &gt; SYSDATE THEN '모집예정'
+				  WHEN P.STATUS = 'Y' AND P.END_DATE &lt; SYSDATE THEN '종료'
+				  WHEN P.STATUS = 'Y' AND P.START_DATE &lt;= SYSDATE AND P.END_DATE &gt;= SYSDATE THEN '진행중'
+				  ELSE '숨김'
+			  END AS DISPLAY_STATUS
 		   , P.START_DATE
 		   , P.END_DATE
 		FROM 
@@ -193,9 +196,7 @@
 		   AND
 		       STATUS = 'Y'
 	</update>
-	
-	
-	
+
 	<update id="restoreStatus" parameterType="long">
 	    UPDATE 
 	           CL_CAMPAIGN

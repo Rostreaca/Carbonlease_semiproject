@@ -26,12 +26,6 @@ public class EnergyApiClient {
     private final RestTemplate restTemplate;
     private final EnergyApiProperties props;
 
-    // @Value("${api.kepco.key}")
-    //private String kepcoApiKey;
-
-    // @Value("${api.kepco.baseUrl}")
-    //private String kepcoBaseUrl;
-
     /**
      * @Role: KEPCO(OpenAPI)에서 특정 연도/월의 전력 사용량 데이터를 조회 후 반환
      * @param year : 조회할 연도 (예: "2024")
@@ -47,33 +41,12 @@ public class EnergyApiClient {
             + "&returnType=json"
             + "&apiKey=" + props.getKey();
         try {
-            /*
-            설명 :
-            RestTemplateConfig에서 빈으로 등록한 RestTemplate이
-            EnergyApiClient에 자동으로 주입되어
-            RestTemplate(스프링의 HTTP 클라이언트)로 위에서 만든 URL에 GET 요청을 보냅니다.
-            응답 결과(KEPCO API의 JSON 문자열)를 String으로 받습니다.
-            */
             // 2. KEPCO OpenAPI 호출 및 응답 수신
             String response = restTemplate.getForObject(url, String.class);
-            
-            /*
-            설명 :
-            Jackson의 ObjectMapper로 JSON 문자열을 파싱해서 트리 구조(JsonNode)로 만듭니다.
-            최상위 노드(root)에서 "data"라는 key의 값을 꺼냅니다.
-            KEPCO API의 응답 구조가 { "data": [ {...}, {...}, ... ] } 형태이기 때문입니다.
-            */
             // 3. JSON 파싱 준비
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(response);
             JsonNode dataList = root.path("data");
-            /*
-            설명 :
-            dataList가 배열이면(즉, 여러 지역 데이터가 있으면) 반복문을 돕니다.
-            각 node(지역별 데이터)에서 "metro" 필드(지역명)를 String으로 추출하고,
-            "powerUsage" 필드(전력 사용량)를 Long으로 추출합니다.
-            이를 Map<String, Object>에 담아 리스트에 추가합니다.
-            */
             // 4. 결과 리스트 생성 및 데이터 변환
             List<Map<String, Object>> result = new ArrayList<>();
             if (dataList.isArray()) {
@@ -89,7 +62,7 @@ public class EnergyApiClient {
         } catch (Exception e) {
             /*
             설명 :
-            "빈 리스트 반환" 패턴을 쓰면 null 체크 없이 isEmpty()만으로 안전하게 처리할 수 있음
+            외부 API 호출 결과가 없을 때 "빈 리스트 반환" 패턴을 사용하여 null 체크 없이 isEmpty()만으로 안전하게 처리
             */
             return Collections.emptyList();
         }
