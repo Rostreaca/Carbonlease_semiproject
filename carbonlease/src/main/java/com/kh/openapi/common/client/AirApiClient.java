@@ -94,12 +94,10 @@ public class AirApiClient {
             Object itemsObj = body.get("items");
             if (itemsObj == null) return List.of();
 
-            // items 자체가 바로 List일 수 있음
             if (itemsObj instanceof List<?> list) {
-                return (List<Map<String, Object>>) list;   // 바로 리턴
+                return (List<Map<String, Object>>) list;
             }
 
-            // 혹시 Map 형태로 item 안에 있을 경우 (비정상 응답일 때)
             if (itemsObj instanceof Map<?, ?> map) {
                 Object inner = map.get("item");
                 if (inner instanceof List<?> list2) {
