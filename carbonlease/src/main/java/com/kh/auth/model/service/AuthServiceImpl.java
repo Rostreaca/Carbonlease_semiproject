@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.kh.admin.member.model.dao.AdminMemberMapper;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.exception.CustomAuthenticationException;
 import com.kh.member.model.dao.MemberMapper;
@@ -35,6 +36,7 @@ public class AuthServiceImpl implements AuthService {
 	private final TokenService tokenService;
 	
 	private final MemberMapper memberMapper;
+	private final AdminMemberMapper adminMemberMapper;
 	
 	private RestTemplate restTemplate = new RestTemplate();
 	private GsonJsonParser jsonParser = new GsonJsonParser();
@@ -72,6 +74,8 @@ public class AuthServiceImpl implements AuthService {
 		loginResponse.put("email", user.getEmail());
 		loginResponse.put("addressLine1", user.getAddressLine1());
 		loginResponse.put("addressLine2", user.getAddressLine2());
+		// 프론트엔드에서 소셜 로그인 여부 확인을 위해 추가
+		loginResponse.put("isSocialLogin", "N");
 		
 		return loginResponse;
 	}
@@ -104,31 +108,41 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public Map<String, String> kakaoLogin(MultiValueMap<String, String> params, HttpHeaders headers) {
 		
+		// 토큰 요청 책임분리
 		ResponseEntity<String> response = getKaKaoAccessToken(params, headers);
-		
-//		log.info("{}",response);
-		
+				
+		// Json형식으로 온 값을 추출하기 위해 Gson라이브러리의 GsonJsonParser를 사용하여 파싱
 		Map<String, Object> tokens = jsonParser.parseMap(response.getBody());
 		
 		String accessToken = (String)tokens.get("access_token");
 		
+		// 사용자 정보 요청 책임분리
+		// 카카오 에 accessToken을 보내 ID(사용자 정보) 요청 (후에 닉네임이나 이메일등을 추가로 가져오는 확장성까지 고려함)
 		String kakaoId = getKaKaoId(accessToken);
 		
-		log.info(kakaoId);
+		String password = kakaoId + 123;
 		
-		int checkId = memberMapper.countByMemberId(kakaoId);
-		
-		String password = kakaoId+123;
+		// 회원 정보가 존재하는 지 조회
+		int result = memberMapper.countByMemberId(kakaoId);
 		
 		// 이미 카카오로 가입한 아이디가 존재한다면 바로 로그인
-		if(checkId == 1) {
+		if(result == 1) {
 			
-			MemberDTO member = new MemberDTO();
+			// 탈퇴한 회원 로그인 요청 시 탈퇴여부를 다시 Y로 변경
+			memberMapper.restoreKakaoMember(kakaoId);
 			
-			member.setMemberId(kakaoId);
-			member.setMemberPwd(password);
+			// 로그인 시 보낼 MemberDTO 초기화
+			MemberDTO kakaoMember = new MemberDTO();
 			
-			return login(member);
+			kakaoMember.setMemberId(kakaoId);
+			kakaoMember.setMemberPwd(password);
+			
+			Map<String, String> loginResponse = login(kakaoMember);
+			
+			// 소셜 로그인 시 isSocailLogin키의 밸류를 변경
+			loginResponse.replace("isSocialLogin", "Y");
+			
+			return loginResponse;
 		}
 		
 		// 처음 카카오로 로그인 시 회원가입에 사용할 정보

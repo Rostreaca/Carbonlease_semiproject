@@ -6,11 +6,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.activity.model.dto.ActivityListDTO;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.board.model.dto.BoardDTO;
 import com.kh.exception.CustomAuthenticationException;
+import com.kh.exception.InvalidValueException;
 import com.kh.member.model.dao.MemberMapper;
 import com.kh.member.model.dto.MemberDTO;
 import com.kh.member.model.vo.MemberVO;
@@ -49,17 +51,28 @@ public class MemberServiceImpl implements MemberService {
 
 		MemberDTO validMember = memberValidator.validateUpdate(member);
 
-		memberMapper.updateMember(validMember);
+		int result = memberMapper.updateMember(validMember);
+		
+		if(result != 1) {
+			throw new InvalidValueException("회원 정보 변경 실패");
+		}
 
 	}
 
+	@Transactional
 	@Override
 	public void deleteMember(String password) {
 
 		CustomUserDetails user = memberValidator.comparePassword(password);
 
-		memberMapper.deleteMember(user.getMemberNo());
-		tokenMapper.deleteToken(user.getMemberNo());
+		int tokenResult = tokenMapper.deleteToken(user.getMemberNo());
+		
+		int deleteResult = memberMapper.deleteMember(user.getMemberNo());
+		
+		if(deleteResult * tokenResult != 1) {
+			throw new InvalidValueException("회원 탈퇴 실패.");
+		}
+		
 
 	}
 
@@ -98,6 +111,31 @@ public class MemberServiceImpl implements MemberService {
 		List<ActivityListDTO> activityBoards = memberMapper.selectActivityBoardsByMemberNo(memberNo);
 		
 		return activityBoards;
+	}
+
+	
+	@Transactional
+	@Override
+	public void deleteSocialMember(CustomUserDetails user) {
+
+		int tokenResult = tokenMapper.deleteToken(user.getMemberNo());
+		
+		int deleteResult = memberMapper.deleteMember(user.getMemberNo());
+		
+		if(deleteResult * tokenResult != 1) {
+			throw new InvalidValueException("회원 탈퇴 실패.");
+		}
+		
+	}
+
+	@Override
+	public void updateSocialMember(MemberDTO member) {
+
+		int result = memberMapper.updateMember(member);
+		
+		if(result != 1) {
+			throw new InvalidValueException("회원 정보 변경 실패");
+		}
 	}
 
 }
