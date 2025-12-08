@@ -31,7 +31,7 @@
              SELECT 'notice' AS board_type,
                  (SELECT COUNT(*) FROM CL_NOTICE WHERE STATUS = 'Y') AS total_cnt,
                  (SELECT COUNT(*) FROM CL_NOTICE WHERE STATUS = 'N') AS hidden_cnt,
-                 (SELECT COUNT(*) FROM CL_ACTIVITY_REPLY WHERE STATUS = 'Y') AS comment_cnt,
+                 NULL AS comment_cnt,
                  (SELECT COUNT(*) FROM CL_NOTICE_ATTACHMENT) AS like_cnt
              FROM DUAL
         </select>
