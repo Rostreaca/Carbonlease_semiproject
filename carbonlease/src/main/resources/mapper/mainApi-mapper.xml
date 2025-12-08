@@ -5,50 +5,13 @@
 
 <mapper namespace="com.kh.openapi.main.model.dao.MainApiMapper">
 
-    <!--
-         변경 요약
-        - 기존 resultMap 방식 → 단순 resultType 방식으로 변경
-        - KoreaRegionCoordVO의 필드명이 이미 DB 컬럼 alias와 일치하기 때문에
-          별도의 resultMap이 필요 없음.
-
-         바꾼 이유
-        - SQL에서 AS로 필드명을 Java 필드랑 맞춰줬기 때문에 mapping 자동 처리됨.
-        - 코드가 더 짧고 유지보수 쉬움.
-        - 성능 차이는 거의 없음(둘 다 MyBatis가 자동 매핑 가능)
-
-         반환 데이터 예시
-        - topRegionName : "서울"
-        - latitude      : 37.5665
-        - longitude     : 126.9780
-    -->
-    <select id="selectRegionCoords" resultType="com.kh.openapi.main.model.vo.KoreaRegionCoordVO">
+    <select id="selectRegionCoords" resultType="KoreaRegionCoordVO">
         SELECT
-               TOP_REGION_NAME AS topRegionName
-             , LATITUDE        AS latitude
-             , LONGITUDE       AS longitude
+               TOP_REGION_NAME  topRegionName
+             , LATITUDE         latitude
+             , LONGITUDE        longitude
         FROM 
                CL_REGION_COORD
     </select>
 
-
-    <!--
-        🔻 기존 코드 (지금은 불필요 → 주석 보관)
-        - 별도의 resultMap을 사용해서 컬럼명 매핑하던 방식
-        - alias를 SQL에 직접 지정한 현재 방식이 더 간단함
-
-        <resultMap id="regionCoordMap" type="com.kh.openapi.main.model.vo.KoreaRegionCoordVO">
-            <result property="topRegionName" column="TOP_REGION_NAME"/>
-            <result property="latitude" column="LATITUDE"/>
-            <result property="longitude" column="LONGITUDE"/>
-        </resultMap>
-
-        <select id="selectRegionCoords" resultMap="regionCoordMap">
-            SELECT
-                  TOP_REGION_NAME,
-                  LATITUDE,
-                  LONGITUDE
-            FROM
-                  CL_REGION_COORD
-        </select>
-    -->
 </mapper>

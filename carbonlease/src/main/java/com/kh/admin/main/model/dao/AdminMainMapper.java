@@ -1,9 +1,12 @@
-package com.kh.admin.main.model.service;
+package com.kh.admin.main.model.dao;
 
 import java.util.List;
 import java.util.Map;
 
-public interface AdminMainService {
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface AdminMainMapper {
 	List<Map<String, Object>> getUsersAllBoardsCount();
 	List<Map<String, Object>> getUsersDeleteAllBoardsCount();
 	List<Map<String, Object>> getUsersActivityBoards();
