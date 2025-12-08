@@ -9,6 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class RegionActivityStatsDTO {
+    private int regionNo;
     private String regionName;
     private int totalCount;
     private int boardCount;
