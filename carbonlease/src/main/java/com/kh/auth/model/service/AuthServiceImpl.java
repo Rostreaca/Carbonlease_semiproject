@@ -17,6 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kh.admin.member.model.dao.AdminMemberMapper;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.exception.CustomAuthenticationException;
@@ -39,7 +43,7 @@ public class AuthServiceImpl implements AuthService {
 	private final AdminMemberMapper adminMemberMapper;
 	
 	private RestTemplate restTemplate = new RestTemplate();
-	private GsonJsonParser jsonParser = new GsonJsonParser();
+	private ObjectMapper objectMapper = new ObjectMapper();
 	
 	private CustomUserDetails loadUser(MemberDTO member) {
 		
@@ -107,12 +111,17 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public Map<String, String> kakaoLogin(MultiValueMap<String, String> params, HttpHeaders headers) {
-		
 		// 토큰 요청 책임분리
 		ResponseEntity<String> response = getKaKaoAccessToken(params, headers);
 				
-		// Json형식으로 온 값을 추출하기 위해 Gson라이브러리의 GsonJsonParser를 사용하여 파싱
-		Map<String, Object> tokens = jsonParser.parseMap(response.getBody());
+		// Json형식으로 온 값을 추출하기 위해 Spring Boot에 내장된 Jackson을 사용하여 파싱
+		Map<String, Object> tokens = new HashMap();
+		
+		try {
+			tokens = objectMapper.readValue(response.getBody(), Map.class);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
 		
 		String accessToken = (String)tokens.get("access_token");
 		
@@ -172,9 +181,15 @@ public class AuthServiceImpl implements AuthService {
 		
 		ResponseEntity<String> response = restTemplate.postForEntity("https://kapi.kakao.com/v2/user/me", httpEntity, String.class);
 		
-		Double id = (Double)jsonParser.parseMap(response.getBody()).get("id");
+		long id = 0;
 		
-		return "Kakao"+id.longValue();
+		try {
+			id = (long)objectMapper.readValue(response.getBody(), Map.class).get("id");
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
+		return "Kakao"+id;
 	}
 
 }
