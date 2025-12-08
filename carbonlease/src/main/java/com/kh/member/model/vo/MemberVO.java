@@ -12,7 +12,7 @@ public class MemberVO {
 	private Long memberNo;
 	private String memberId;
 	private String memberPwd;
-	private String nickname;
+	private String nickName;
 	private String email;
 	private String addressLine1;
 	private String addressLine2;

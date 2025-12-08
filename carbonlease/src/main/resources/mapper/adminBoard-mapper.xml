@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kh.admin.board.model.dao.AdminBoardMapper">
+
+    <!-- 공통 상태 조건 -->
+    <sql id="StatusCondition">
+        <if test="status != null and status != ''">
+            AND B.STATUS = #{status}
+        </if>
+    </sql>
+
+    <!-- 공통 검색 조건 -->
+    <sql id="KeywordCondition">
+        <if test="keyword != null and keyword != ''">
+            AND (
+                   B.BOARD_TITLE LIKE '%' || #{keyword} || '%'
+                OR M.NICKNAME   LIKE '%' || #{keyword} || '%'
+                )
+        </if>
+    </sql>
+
+
+    <!-- 일반 게시판 전체 목록 조회 -->
+    <select id="selectAdminBoardList"
+            resultType="com.kh.admin.board.model.dto.AdminBoardDTO">
+
+        SELECT 
+               B.BOARD_NO AS boardNo
+             , B.BOARD_TITLE AS title
+             , B.BOARD_CONTENT AS content
+             , M.NICKNAME AS nickname
+             , R.REGION_NAME AS categoryName
+             , B.REGION_NO AS regionNo
+             , B.STATUS AS status
+             , TO_CHAR(B.ENROLL_DATE, 'YYYY-MM-DD HH24:MI:SS') AS enrollDate
+          FROM 
+               CL_BOARD B
+          JOIN 
+               CL_MEMBER M ON B.MEMBER_NO = M.MEMBER_NO
+          JOIN 
+               CL_REGION_CATEGORY R ON B.REGION_NO = R.REGION_NO
+         WHERE 
+               1 = 1
+               <include refid="StatusCondition" />
+               <include refid="KeywordCondition" />
+         ORDER 
+            BY 
+               B.BOARD_NO DESC
+         OFFSET 
+               #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+
+
+    <!-- 전체 게시글 수 -->
+    <select id="getAdminBoardCount"
+            parameterType="map"
+            resultType="int">
+
+        SELECT 
+               COUNT(*)
+          FROM 
+               CL_BOARD B
+          JOIN 
+               CL_MEMBER M ON B.MEMBER_NO = M.MEMBER_NO
+          JOIN 
+               CL_REGION_CATEGORY R ON B.REGION_NO = R.REGION_NO
+         WHERE 
+               1 = 1
+               <include refid="StatusCondition" />
+               <include refid="KeywordCondition" />
+    </select>
+
+
+
+    <!-- 숨김 처리 -->
+    <update id="hideBoard">
+        UPDATE 
+               CL_BOARD
+           SET 
+               STATUS = 'N'
+         WHERE 
+               BOARD_NO = #{boardNo}
+    </update>
+
+
+    <!-- 복구 처리 -->
+    <update id="restoreBoard">
+        UPDATE 
+               CL_BOARD
+           SET 
+               STATUS = 'Y'
+         WHERE 
+               BOARD_NO = #{boardNo}
+    </update>
+
+
+    <!-- 게시글 삭제 -->
+    <delete id="deleteBoard">
+        DELETE 
+          FROM 
+               CL_BOARD
+         WHERE 
+               BOARD_NO = #{boardNo}
+    </delete>
+
+
+
+    <!-- 관리자 상세 조회 -->
+    <select id="selectAdminBoardDetail"
+            resultType="com.kh.admin.board.model.dto.AdminBoardDTO">
+
+        SELECT
+               B.BOARD_NO AS boardNo
+             , B.BOARD_TITLE AS title
+             , B.BOARD_CONTENT AS content
+             , B.REGION_NO AS regionNo
+             , M.NICKNAME AS nickname
+             , R.REGION_NAME AS categoryName
+             , B.STATUS AS status
+             , TO_CHAR(B.ENROLL_DATE,'YYYY-MM-DD HH24:MI:SS') AS enrollDate
+          FROM 
+               CL_BOARD B
+          JOIN 
+               CL_MEMBER M ON B.MEMBER_NO = M.MEMBER_NO
+          JOIN 
+               CL_REGION_CATEGORY R ON B.REGION_NO = R.REGION_NO
+         WHERE 
+               B.BOARD_NO = #{boardNo}
+    </select>
+
+
+
+    <!-- 게시글 수정 -->
+    <update id="updateBoard">
+        UPDATE 
+               CL_BOARD
+           SET 
+               BOARD_TITLE = #{title},
+               BOARD_CONTENT = #{content},
+               REGION_NO = #{regionNo}
+         WHERE 
+               BOARD_NO = #{id}
+    </update>
+
+</mapper>

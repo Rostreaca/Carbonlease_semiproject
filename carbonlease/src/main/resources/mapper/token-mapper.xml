@@ -16,4 +16,22 @@
 		       )
 	</insert>
 	
+	<select id="findByToken" parameterType="string" resultType="com.kh.token.model.dto.TokenDTO">
+		SELECT
+		       MEMBER_NO memberNo
+		     , TOKEN
+		     , EXPIRATION
+		  FROM
+		       CL_TOKEN
+		 WHERE
+		       TOKEN = #{refreshToken}
+	</select>
+	
+	<delete id="deleteToken" parameterType="_long">
+		DELETE
+		  FROM
+		       CL_TOKEN
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+	</delete>
 </mapper>

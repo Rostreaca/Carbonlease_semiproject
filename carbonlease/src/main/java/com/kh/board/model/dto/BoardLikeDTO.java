@@ -16,8 +16,5 @@ import lombok.ToString;
 public class BoardLikeDTO {
 
 	private int likeNo;
-	private int boardNo;
-	private int memberNo;
 	private Date createDate;
-	
 }

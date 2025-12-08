@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.kh.auth.model.vo.CustomUserDetails;
+import com.kh.exception.CustomAuthenticationException;
 import com.kh.member.model.dao.MemberMapper;
 import com.kh.member.model.dto.MemberDTO;
 import com.kh.token.util.JwtUtil;
@@ -34,7 +35,6 @@ public class JwtFilter extends OncePerRequestFilter{
 
 	private final MemberMapper memberMapper;
 	private final JwtUtil jwtUtil;
-	private final UserDetailsService userDetailsService;
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -42,9 +42,9 @@ public class JwtFilter extends OncePerRequestFilter{
 		String uri = request.getRequestURI();
 		
 		String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
-		if(authorization == null || uri.equals("/auth/login")) {
-			filterChain.doFilter(request, response);
-			return;
+		if (authorization == null || !authorization.startsWith("Bearer ")) {
+		    filterChain.doFilter(request, response);
+		    return;
 		}
 		
 		String token = authorization.split(" ")[1];
@@ -60,7 +60,7 @@ public class JwtFilter extends OncePerRequestFilter{
 						.memberNo(member.getMemberNo())
 		                .username(member.getMemberId())
 		                .password(member.getMemberPwd())
-		                .nickname(member.getNickname())
+		                .nickname(member.getNickName())
 		                .email(member.getEmail())
 		                .addressLine1(member.getAddressLine1())
 		                .addressLine2(member.getAddressLine2())
@@ -68,7 +68,7 @@ public class JwtFilter extends OncePerRequestFilter{
 		                .authorities(Collections.singletonList(new SimpleGrantedAuthority(member.getRole())))
 		                .status(member.getStatus())
 		                .build();
-			
+			log.info("권한 : {}", user.getAuthorities());
 			UsernamePasswordAuthenticationToken authentication
 				= new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 			authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -80,16 +80,34 @@ public class JwtFilter extends OncePerRequestFilter{
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.setContentType("text/html; charset=UTF-8");
 			response.getWriter().write("토큰 만료");
-
 			return;
 
 		} catch(JwtException e) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.setContentType("text/html; charset=UTF-8");
 			response.getWriter().write("유효하지 않은 토큰입니다.");
 			return;
 		}
 		
 		filterChain.doFilter(request, response);
 	}
+	
+	
+	@Override
+	protected boolean shouldNotFilter(HttpServletRequest request) {
+
+	    String method = request.getMethod();
+	    String uri = request.getRequestURI();
+
+	    if (method.equalsIgnoreCase("OPTIONS")) return true;
+	    if (uri.startsWith("/api/main/")) return true;
+	    if (uri.startsWith("/auth/")) return true;
+	    if (uri.startsWith("/uploads/")) return true;
+	    if (uri.startsWith("/admin")) return false;
+	    if (uri.startsWith("/activityBoards") && method.equals("GET")) return true;
+
+	    return false;
+	}
+
 
 }

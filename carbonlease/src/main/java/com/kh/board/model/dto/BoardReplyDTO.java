@@ -1,6 +1,5 @@
 package com.kh.board.model.dto;
 
-
 import java.sql.Date;
 
 import lombok.AllArgsConstructor;
@@ -17,10 +16,10 @@ import lombok.ToString;
 public class BoardReplyDTO {
 
 	private int replyNo;
+	private int memberNo;
+	private String memberId;
 	private String replyContent;
 	private Date enrollDate;
 	private char status;
-	private int boardNo;
-	private int memberNo;
-	
+	private String nickname;
 }

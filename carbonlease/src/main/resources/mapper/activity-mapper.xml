@@ -2,8 +2,531 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.kh.activity.model.dao.ActivityMapper">
 
-	
-	
+    <!-- 공통 LIKE 검색 조건 -->
+    <sql id="LikeCondition">
+        <choose>
+            <when test="filter == 'title'">
+                UPPER(B.ACTIVITY_TITLE) LIKE '%' || UPPER(#{keyword}) || '%'
+            </when>
+            <when test="filter == 'content'">
+                UPPER(B.ACTIVITY_CONTENT) LIKE '%' || UPPER(#{keyword}) || '%'
+            </when>
+            <when test="filter == 'nickname'">
+                UPPER(M.NICKNAME) LIKE '%' || UPPER(#{keyword}) || '%'
+            </when>
+            <otherwise>
+                UPPER(B.ACTIVITY_TITLE) LIKE '%' || UPPER(#{keyword}) || '%'
+            </otherwise>
+        </choose>
+    </sql>
+
+    <!-- 공통 검색 WHERE 조건 -->
+    <sql id="SearchCondition">
+        <if test="keyword != null and keyword != ''">
+            AND (
+                <include refid="LikeCondition" />
+            )
+        </if>
+    </sql>
+
+
+    <!-- 게시글 전체 조회 -->
+    <select id="activityAllList"
+            parameterType="map"
+            resultType="com.kh.activity.model.dto.ActivityListDTO">
+
+        SELECT
+               B.ACTIVITY_NO activityNo
+             , B.ACTIVITY_TITLE activityTitle
+             , B.ACTIVITY_CONTENT activityContent
+             , B.VIEW_COUNT viewCount
+             , B.ENROLL_DATE enrollDate
+             , M.NICKNAME nickname
+             , A.FILE_PATH thumbnailPath
+             , NVL(R.REPLY_COUNT, 0) AS replyCount
+          FROM
+               CL_ACTIVITY_BOARD B
+          JOIN
+               CL_MEMBER M ON (B.MEMBER_NO = M.MEMBER_NO)
+          LEFT
+          JOIN
+               CL_ACTIVITY_ATTACHMENT A ON B.ACTIVITY_NO = A.REF_BNO
+           AND 
+               A.THUMBNAIL_YN = 'Y'
+          LEFT
+          JOIN
+               (
+                SELECT ACTIVITY_BOARD_NO
+                     , COUNT(*) AS REPLY_COUNT
+                  FROM CL_ACTIVITY_REPLY
+                 WHERE STATUS = 'Y'
+                 GROUP BY ACTIVITY_BOARD_NO
+               ) R ON B.ACTIVITY_NO = R.ACTIVITY_BOARD_NO
+         WHERE
+               B.STATUS = 'Y'
+               <include refid="SearchCondition" />
+         ORDER
+            BY
+               B.ACTIVITY_NO DESC
+         OFFSET
+               #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+
+    <!-- 게시글 검색 개수 -->
+    <select id="findListCount"
+            parameterType="map"
+            resultType="int">
+
+        SELECT
+               COUNT(1)
+          FROM
+               CL_ACTIVITY_BOARD B
+          JOIN
+               CL_MEMBER M ON (B.MEMBER_NO = M.MEMBER_NO)
+         WHERE
+               B.STATUS = 'Y'
+               <include refid="SearchCondition" />
+    </select>
+
+
+    <!-- 게시글 등록 -->
+    <insert id="insertBoard"
+            parameterType="com.kh.activity.model.vo.ActivityBoard"
+            keyProperty="activityNo">
+
+        <selectKey keyProperty="activityNo" resultType="int" order="BEFORE">
+            SELECT SEQ_ACTIVITY_NO.NEXTVAL FROM DUAL
+        </selectKey>
+
+        INSERT
+          INTO
+               CL_ACTIVITY_BOARD
+               (
+               ACTIVITY_NO
+             , ACTIVITY_TITLE
+             , ACTIVITY_CONTENT
+             , LAT
+             , LNG
+             , VIEW_COUNT
+             , STATUS
+             , ENROLL_DATE
+             , MEMBER_NO
+             , REGION_NO
+             , ADDRESS
+               )
+        VALUES
+               (
+               #{activityNo}
+             , #{title}
+             , #{content}
+             , #{lat}
+             , #{lng}
+             , DEFAULT
+             , 'Y'
+             , SYSDATE
+             , #{memberNo}
+             , #{regionNo}
+             , #{address}
+               )
+    </insert>
+
+
+    <!-- 첨부파일 업로드 -->
+    <insert id="insertAttachment"
+            parameterType="com.kh.activity.model.vo.ActivityAttachment">
+
+        INSERT
+          INTO
+               CL_ACTIVITY_ATTACHMENT
+               (
+               FILE_NO
+             , REF_BNO
+             , ORIGIN_NAME
+             , CHANGE_NAME
+             , FILE_PATH
+             , UPLOAD_DATE
+             , THUMBNAIL_YN
+               )
+        VALUES
+               (
+               SEQ_ACTIVITY_FILE_NO.NEXTVAL
+             , #{refBno}
+             , #{originName}
+             , #{changeName}
+             , #{filePath}
+             , SYSDATE
+             , DEFAULT
+               )
+    </insert>
+
+
+    <!-- 인증 카테고리 등록 -->
+    <insert id="insertCertification">
+        INSERT 
+          INTO 
+               CL_ACTIVITY_CERTIFICATION 
+               (
+               ACTIVITY_BOARD_NO
+             , CERTIFICATION_NO
+               ) 
+        VALUES 
+               (
+               #{activityNo}
+             , #{certificationNo}
+               )
+    </insert>
+
+
+    <!-- 게시글 수정용 데이터 조회 -->
+    <select id="findById"
+            resultType="com.kh.activity.model.dto.ActivityFormDTO">
+
+        SELECT
+               B.ACTIVITY_NO
+             , B.ACTIVITY_TITLE
+             , B.ACTIVITY_CONTENT
+             , B.LAT
+             , B.LNG
+             , B.REGION_NO
+             , C.CERTIFICATION_NO
+             , A.FILE_PATH thumbnailPath
+             , B.ADDRESS
+          FROM
+               CL_ACTIVITY_BOARD B
+          LEFT
+          JOIN
+               CL_ACTIVITY_ATTACHMENT A ON B.ACTIVITY_NO = A.REF_BNO
+           AND 
+               A.THUMBNAIL_YN = 'Y'
+          LEFT
+          JOIN
+               CL_ACTIVITY_CERTIFICATION C ON B.ACTIVITY_NO = C.ACTIVITY_BOARD_NO
+         WHERE
+               B.ACTIVITY_NO = #{id}
+    </select>
+
+
+    <!-- 게시글 상세 조회 -->
+    <select id="selectDetail"
+            resultType="com.kh.activity.model.dto.ActivityDetailDTO">
+
+        SELECT
+               B.ACTIVITY_NO AS activityNo
+             , B.ACTIVITY_TITLE AS activityTitle
+             , B.ACTIVITY_CONTENT AS activityContent
+             , TO_CHAR(B.ENROLL_DATE, 'YYYY-MM-DD') AS enrollDate
+             , B.VIEW_COUNT AS viewCount
+             , B.LAT AS lat
+             , B.LNG AS lng
+             , B.ADDRESS AS address
+             , M.NICKNAME AS nickName
+             , M.MEMBER_NO AS memberNo
+             , B.REGION_NO AS regionNo
+             , C.CERTIFICATION_NO AS certificationNo
+             , CC2.certificationCount
+             , CS2.carbonSave
+             , (
+                SELECT 
+                       COUNT(1)
+                  FROM 
+                       CL_ACTIVITY_LIKE L
+                 WHERE 
+                       L.ACTIVITY_BOARD_NO = B.ACTIVITY_NO
+               ) AS likeCount
+             , CASE WHEN EXISTS
+                   (
+                    SELECT 
+                           1
+                      FROM 
+                           CL_ACTIVITY_LIKE L2
+                     WHERE 
+                           L2.ACTIVITY_BOARD_NO = B.ACTIVITY_NO
+                       AND 
+                           L2.MEMBER_NO = #{loginMemberNo}
+                   )
+               THEN 1 ELSE 0 END AS isLiked
+          FROM
+               CL_ACTIVITY_BOARD B
+          JOIN
+               CL_MEMBER M ON B.MEMBER_NO = M.MEMBER_NO
+          LEFT
+          JOIN
+               CL_ACTIVITY_CERTIFICATION C ON B.ACTIVITY_NO = C.ACTIVITY_BOARD_NO
+          LEFT
+          JOIN
+               (
+                SELECT 
+                       MEMBER_NO
+                     , COUNT(*) AS certificationCount
+                  FROM 
+                       CL_ACTIVITY_BOARD
+                 WHERE 
+                       STATUS = 'Y'
+                 GROUP 
+                    BY 
+                       MEMBER_NO
+               ) CC2 ON M.MEMBER_NO = CC2.MEMBER_NO
+          LEFT
+          JOIN
+               (
+                SELECT 
+                       B3.MEMBER_NO
+                     , NVL(SUM(CC.CARBON_ACCUM), 0) AS carbonSave
+                  FROM 
+                       CL_ACTIVITY_BOARD B3
+                  JOIN 
+                       CL_ACTIVITY_CERTIFICATION C2 ON B3.ACTIVITY_NO = C2.ACTIVITY_BOARD_NO
+                  JOIN 
+                       CL_ACTIVITY_CERTIFICATION_CATEGORY CC ON C2.CERTIFICATION_NO = CC.CERTIFICATION_NO
+                 WHERE 
+                       B3.STATUS = 'Y'
+                 GROUP 
+                    BY 
+                       B3.MEMBER_NO
+               ) CS2 ON M.MEMBER_NO = CS2.MEMBER_NO
+         WHERE
+               B.ACTIVITY_NO = #{activityNo}
+           AND
+               B.STATUS = 'Y'
+    </select>
+
+
+    <!-- 상세 이미지 조회 -->
+    <select id="selectDetailImage"
+            resultType="string">
+
+        SELECT
+               FILE_PATH
+          FROM
+               CL_ACTIVITY_ATTACHMENT
+         WHERE
+               REF_BNO = #{activityNo}
+         ORDER
+            BY
+               FILE_NO ASC
+    </select>
+
+
+    <!-- 좋아요 등록 -->
+    <insert id="insertLike">
+        INSERT
+          INTO
+               CL_ACTIVITY_LIKE
+               (
+               LIKE_NO
+             , ACTIVITY_BOARD_NO
+             , MEMBER_NO
+             , CREATE_DATE
+               )
+        VALUES
+               (
+               SEQ_ACTIVITY_LIKE_NO.NEXTVAL
+             , #{activityNo}
+             , #{memberNo}
+             , SYSDATE
+               )
+    </insert>
+
+
+    <!-- 좋아요 삭제 -->
+    <delete id="deleteLike">
+        DELETE
+          FROM
+               CL_ACTIVITY_LIKE
+         WHERE
+               ACTIVITY_BOARD_NO = #{activityNo}
+           AND
+               MEMBER_NO = #{memberNo}
+    </delete>
+
+
+    <!-- 좋아요 여부 체크 -->
+    <select id="checkLike"
+            resultType="int">
+
+        SELECT
+               COUNT(1)
+          FROM
+               CL_ACTIVITY_LIKE
+         WHERE
+               ACTIVITY_BOARD_NO = #{activityNo}
+           AND
+               MEMBER_NO = #{memberNo}
+    </select>
+
+
+    <!-- 게시글 작성자 확인 -->
+    <select id="findBoardOwner"
+            resultType="com.kh.activity.model.vo.ActivityBoard">
+
+        SELECT
+               ACTIVITY_NO AS activityNo
+             , MEMBER_NO AS memberNo
+          FROM
+               CL_ACTIVITY_BOARD
+         WHERE
+               ACTIVITY_NO = #{activityNo}
+    </select>
+
+
+    <!-- 게시글 삭제 -->
+    <update id="activityDelete">
+        UPDATE
+               CL_ACTIVITY_BOARD
+           SET
+               STATUS = 'N'
+         WHERE
+               ACTIVITY_NO = #{activityNo}
+    </update>
+
+
+    <!-- 댓글 목록 조회 -->
+    <select id="selectReplies"
+            parameterType="map"
+            resultType="com.kh.activity.model.dto.ReplyDTO">
+
+        SELECT
+               R.REPLY_NO AS replyNo
+             , R.REPLY_CONTENT AS replyContent
+             , TO_CHAR(R.ENROLL_DATE, 'YYYY-MM-DD HH24:MI') AS enrollDate
+             , R.ACTIVITY_BOARD_NO AS activityBoardNo
+             , R.MEMBER_NO AS memberNo
+             , M.NICKNAME AS writer
+          FROM
+               CL_ACTIVITY_REPLY R
+          JOIN
+               CL_MEMBER M ON R.MEMBER_NO = M.MEMBER_NO
+         WHERE
+               R.ACTIVITY_BOARD_NO = #{activityBoardNo}
+           AND
+               R.STATUS = 'Y'
+         ORDER
+            BY
+               R.REPLY_NO DESC
+         OFFSET
+               #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+
+    <!-- 댓글 등록 -->
+    <insert id="insertReply">
+        INSERT
+          INTO
+               CL_ACTIVITY_REPLY
+               (
+               REPLY_NO
+             , REPLY_CONTENT
+             , ENROLL_DATE
+             , STATUS
+             , ACTIVITY_BOARD_NO
+             , MEMBER_NO
+               )
+        VALUES
+               (
+               SEQ_ACTIVITY_REPLY_NO.NEXTVAL
+             , #{replyContent}
+             , SYSDATE
+             , 'Y'
+             , #{activityBoardNo}
+             , #{memberNo}
+               )
+    </insert>
+
+
+    <!-- 댓글 삭제 -->
+    <update id="deleteReply">
+        UPDATE
+               CL_ACTIVITY_REPLY
+           SET
+               STATUS = 'N'
+         WHERE
+               REPLY_NO = #{replyNo}
+    </update>
+
+
+    <!-- 댓글 수정 -->
+    <update id="updateReply">
+        UPDATE
+               CL_ACTIVITY_REPLY
+           SET
+               REPLY_CONTENT = #{replyContent}
+         WHERE
+               REPLY_NO = #{replyNo}
+           AND
+               MEMBER_NO = #{memberNo}
+           AND
+               STATUS = 'Y'
+    </update>
+
+
+    <!-- 댓글 개수 조회 -->
+    <select id="countReplies"
+            resultType="int">
+
+        SELECT
+               COUNT(1)
+          FROM
+               CL_ACTIVITY_REPLY
+         WHERE
+               ACTIVITY_BOARD_NO = #{activityNo}
+           AND
+               STATUS = 'Y'
+    </select>
+
+
+    <!-- 게시글 업데이트 -->
+    <update id="updateActivityBoard">
+        UPDATE
+               CL_ACTIVITY_BOARD
+           SET
+               ACTIVITY_TITLE = #{title}
+             , ACTIVITY_CONTENT = #{content}
+             , ADDRESS = #{address}
+             , LAT = #{lat}
+             , LNG = #{lng}
+             , REGION_NO = #{regionNo}
+         WHERE
+               ACTIVITY_NO = #{activityNo}
+    </update>
+
+
+    <!-- 인증 카테고리 수정 -->
+    <update id="updateCertification">
+        UPDATE
+               CL_ACTIVITY_CERTIFICATION
+           SET
+               CERTIFICATION_NO = #{certificationNo}
+         WHERE
+               ACTIVITY_BOARD_NO = #{activityNo}
+    </update>
+
+
+    <!-- 첨부파일 삭제 -->
+    <delete id="deleteAttachments">
+        DELETE
+          FROM
+               CL_ACTIVITY_ATTACHMENT
+         WHERE
+               REF_BNO = #{activityNo}
+    </delete>
+
+
+    <!-- 댓글 작성자 확인 -->
+    <select id="findReplyWriter"
+            resultType="long">
+
+        SELECT
+               MEMBER_NO
+          FROM
+               CL_ACTIVITY_REPLY
+         WHERE
+               REPLY_NO = #{replyNo}
+           AND
+               STATUS = 'Y'
+    </select>
+
 </mapper>
