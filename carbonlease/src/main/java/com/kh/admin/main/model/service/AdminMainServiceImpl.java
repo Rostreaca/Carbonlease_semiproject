@@ -18,16 +18,16 @@ public class AdminMainServiceImpl implements AdminMainService {
 	private final AdminMainMapper adminMainMapper;
 
 	/**
-	 * 각 게시글 총 게시글 수
+	 * 각 게시글 기능별 게시글 수 (Board/Activity/Campaign/Notice 통계)
 	 * @return List<Map<String, Object>>
 	 */
 	public List<Map<String, Object>> getUsersAllBoardsCount() {
 		try {
-			List<Map<String, Object>> result = adminMainMapper.getUsersAllBoardsCount();
-			log.info("게시글 수 조회 결과: {}", result);
+			List<Map<String, Object>> result = adminMainMapper.selectBoardStats();
+			log.info("게시글 통계 집계 결과: {}", result);
 			return result;
 		} catch (Exception e) {
-			log.error("게시글 수 조회 오류", e);
+			log.error("게시글 통계 집계 오류", e);
 			return Collections.emptyList();
 		}
 	}
