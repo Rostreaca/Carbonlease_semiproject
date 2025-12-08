@@ -26,23 +26,59 @@
 		   	   CL_BOARD_REPLY R ON (B.BOARD_NO = R.BOARD_NO)
 		 WHERE
 		 	   B.STATUS ='Y'
+			 <if test="searchQuery != null and searchQuery != ''">
+	             AND 
+	             <choose>
+	                 <!-- searchType이 TITLE일 경우 (제목 검색) -->
+	                 <when test="searchType == 'TITLE'">
+	                     B.BOARD_TITLE LIKE '%' || #{searchQuery} || '%'
+	                 </when>
+	                 <!-- searchType이 CONTENT일 경우 (내용 검색) -->
+	                 <when test="searchType == 'CONTENT'">
+	                     B.BOARD_CONTENT LIKE '%' || #{searchQuery} || '%'
+	                 </when>
+	                 <!-- searchType이 WRITER일 경우 (닉네임 검색) -->
+	                 <when test="searchType == 'WRITER'">
+	                     M.NICKNAME LIKE '%' || #{searchQuery} || '%'
+	                 </when>
+	             </choose>
+	         </if>
 		 GROUP 
 		    BY
 			   B.BOARD_NO, B.BOARD_TITLE, B.BOARD_CONTENT, 
 			   B.ENROLL_DATE, B.VIEW_COUNT, M.NICKNAME
-		ORDER 
-		   BY
+		 ORDER 
+		    BY
 		   	   B.BOARD_NO DESC) T
 		 OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 	
 	<select id="findAndCountAll" resultType="_int">
 		SELECT
-				COUNT(*)
-		FROM
-				CL_BOARD
-		WHERE
-				STATUS='Y'
+		       COUNT(*)
+		  FROM
+		       CL_BOARD B
+		  JOIN
+    	       CL_MEMBER M ON (B.MEMBER_NO = M.MEMBER_NO)
+		 WHERE
+		       B.STATUS = 'Y'
+		    <if test="searchQuery != null and searchQuery != ''">
+		        AND 
+		        <choose>
+		            <!-- searchType이 TITLE일 경우 (제목 검색) -->
+		            <when test="searchType == 'TITLE'">
+		                B.BOARD_TITLE LIKE '%' || #{searchQuery} || '%'
+		            </when>
+		            <!-- searchType이 CONTENT일 경우 (내용 검색) -->
+		            <when test="searchType == 'CONTENT'">
+		                B.BOARD_CONTENT LIKE '%' || #{searchQuery} || '%'
+		            </when>
+		            <!-- searchType이 WRITER일 경우 (닉네임 검색) -->
+		            <when test="searchType == 'NICKNAME'">
+		                M.NICKNAME LIKE '%' || #{searchQuery} || '%'
+		            </when>
+		        </choose>
+		    </if>
 	</select>
 	
 	<!-- 게시글 상세 조회 -->
@@ -75,6 +111,7 @@
                , R.ENROLL_DATE enrollDate
                , B.BOARD_NO boardNo
                , R.MEMBER_NO memberNo
+               , M.MEMBER_ID memberId
                , M.NICKNAME nickname
                , R.REPLY_NO as replyNo
 		   FROM 
@@ -84,6 +121,7 @@
 		   LEFT 
 		   JOIN  CL_MEMBER M ON R.MEMBER_NO = M.MEMBER_NO  
 		  WHERE  B.BOARD_NO = #{boardNo}
+		    AND  R.STATUS = 'Y'
 		  ORDER 
 		     BY  R.ENROLL_DATE ASC
 	</select>
@@ -131,6 +169,17 @@
 		WHERE
 		       REPLY_NO = #{replyNo}
 	</insert>
+	
+	<!-- 댓글 삭제 -->
+	<update id="deleteReply">
+		UPDATE
+			   CL_BOARD_REPLY
+		   SET
+		       STATUS = 'N'
+		 WHERE
+		  	   REPLY_NO = #{replyNo}
+	</update>
+	
 	
 	<!-- 글 쓰기 -->
 	<insert id="insertClBoard" parameterType="com.kh.board.model.dto.BoardDTO">
