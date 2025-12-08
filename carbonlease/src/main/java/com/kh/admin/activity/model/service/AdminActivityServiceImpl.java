@@ -33,7 +33,7 @@ public class AdminActivityServiceImpl implements AdminActivityService {
 
         int count = mapper.getAdminCount(page, status, keyword);
 
-        Map<String, Object> params = pagination.pageRequest(page, 10, count);
+        Map<String, Object> params = pagination.pageRequest(page, 8, count);
         params.put("status", status);
         params.put("keyword", keyword);
 
