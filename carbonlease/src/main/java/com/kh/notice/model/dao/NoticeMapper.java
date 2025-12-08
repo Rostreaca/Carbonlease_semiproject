@@ -21,4 +21,6 @@ public interface NoticeMapper {
 
 	void addViewCount(Long noticeNo);
 
+	List<NoticeDTO> findByFix();
+
 }
