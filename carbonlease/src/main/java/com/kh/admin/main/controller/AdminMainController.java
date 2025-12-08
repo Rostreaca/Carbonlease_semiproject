@@ -2,6 +2,7 @@ package com.kh.admin.main.controller;
 
 import java.util.List;
 import java.util.Map;
+import com.kh.admin.main.model.dto.RegionActivityStatsDTO;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,24 +24,17 @@ public class AdminMainController {
     
     private final AdminMainService adminMainService;
 
-    // 각 게시글 총 게시글 수
+    // 각 게시글 기능별 게시글 수 (Board/Activity/Campaign/Notice 통계)
     @GetMapping("/boardsAllCount")
     public ResponseEntity<List<Map<String, Object>>> getUsersAllBoardsCount() {
         List<Map<String, Object>> result = adminMainService.getUsersAllBoardsCount();
         return ResponseEntity.ok(result);
     }
 
-    // 각 게시글 총 삭제된 게시글 수
-    @GetMapping("/boardsDeletedCount")
-    public ResponseEntity<List<Map<String, Object>>> getUsersDeleteAllBoardsCount() {
-        List<Map<String, Object>> result = adminMainService.getUsersDeleteAllBoardsCount();
-        return ResponseEntity.ok(result);
-    }
-
-    // 지역별 커뮤니티 활동량_(일반/인증)
+    // 지역별 커뮤니티 활동량(합산/일반/인증) 통합 조회
     @GetMapping("/activityRegion")
-    public ResponseEntity<List<Map<String, Object>>> getUsersActivityBoards() {
-        List<Map<String, Object>> result = adminMainService.getUsersActivityBoards();
+    public ResponseEntity<List<RegionActivityStatsDTO>> getUsersRegionActivityStats() {
+        List<RegionActivityStatsDTO> result = adminMainService.getUsersRegionActivityStats();
         return ResponseEntity.ok(result);
     }
 
