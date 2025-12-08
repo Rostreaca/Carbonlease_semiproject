@@ -1,7 +1,10 @@
 package com.kh.member.controller;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +37,6 @@ public class MemberController {
 	
 	@PostMapping
 	public ResponseEntity<?> signUp(@Valid @RequestBody MemberDTO member){
-		
 		
 		memberService.signUp(member);
 		
