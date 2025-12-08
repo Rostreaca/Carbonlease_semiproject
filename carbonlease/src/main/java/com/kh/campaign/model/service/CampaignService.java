@@ -32,4 +32,17 @@ public interface CampaignService {
 	void toggleLike(Long campaignNo, Long memberNo);
 
 
+	/** 댓글 목록 조회 (페이징) */
+    Map<String, Object> selectReplies(Long campaignNo, int pageNo);
+
+    /** 댓글 등록 */
+    int insertReply(String content, Long campaignNo, Long memberNo);
+
+    /** 댓글 삭제 */
+    int deleteReply(Long replyNo, Long memberNo);
+
+    /** 댓글 수정 */
+    int updateReply(Long replyNo, String replyContent, Long memberNo);
+
+
 }

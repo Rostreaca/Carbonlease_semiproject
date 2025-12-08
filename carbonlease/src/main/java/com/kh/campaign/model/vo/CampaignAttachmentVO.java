@@ -5,8 +5,8 @@ import java.sql.Date;
 import lombok.Builder;
 import lombok.Value;
 
-@Builder
 @Value
+@Builder
 public class CampaignAttachmentVO {
 	
 	private Long fileNo;        // PK
