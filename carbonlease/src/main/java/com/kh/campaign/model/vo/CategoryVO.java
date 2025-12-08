@@ -1,10 +1,12 @@
 package com.kh.campaign.model.vo;
 
+import java.sql.Date;
+
 import lombok.Builder;
 import lombok.Value;
 
-@Builder
 @Value
+@Builder
 public class CategoryVO {
 	
 	private Long categoryNo;			// 카테고리 번호

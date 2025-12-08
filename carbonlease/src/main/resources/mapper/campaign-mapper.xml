@@ -185,5 +185,106 @@
 		       CAMPAIGN_NO = #{campaignNo}
 	</update>
 	
+
+	<!-- 댓글 목록 조회 -->
+    <select id="selectReplies"
+            parameterType="map"
+            resultType="CampaignReplyDTO">
+
+        SELECT
+               R.REPLY_NO AS replyNo
+             , R.REPLY_CONTENT AS replyContent
+             , TO_CHAR(R.ENROLL_DATE, 'YYYY-MM-DD HH24:MI') AS enrollDate
+             , R.CAMPAIGN_NO AS campaignNo
+             , R.MEMBER_NO AS memberNo
+             , M.NICKNAME AS writer
+          FROM
+               CL_CAMPAIGN_REPLY R
+          JOIN
+               CL_MEMBER M ON R.MEMBER_NO = M.MEMBER_NO
+         WHERE
+               R.CAMPAIGN_NO = #{campaignNo}
+           AND
+               R.STATUS = 'Y'
+         ORDER
+            BY
+               R.REPLY_NO DESC
+         OFFSET
+               #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+
+    <!-- 댓글 등록 -->
+    <insert id="insertReply">
+        INSERT
+          INTO
+               CL_CAMPAIGN_REPLY
+               (
+               REPLY_NO
+             , REPLY_CONTENT
+             , ENROLL_DATE
+             , STATUS
+             , CAMPAIGN_NO
+             , MEMBER_NO
+               )
+        VALUES
+               (
+               SEQ_CAMPAIGN_REPLY_NO.NEXTVAL
+             , #{replyContent}
+             , SYSDATE
+             , 'Y'
+             , #{campaignNo}
+             , #{memberNo}
+               )
+    </insert>
+
+    <!-- 댓글 삭제 -->
+    <update id="deleteReply">
+        UPDATE
+               CL_CAMPAIGN_REPLY
+           SET
+               STATUS = 'N'
+         WHERE
+               REPLY_NO = #{replyNo}
+    </update>
+
+
+    <!-- 댓글 수정 -->
+    <update id="updateReply">
+        UPDATE
+               CL_CAMPAIGN_REPLY
+           SET
+               REPLY_CONTENT = #{replyContent}
+         WHERE
+               REPLY_NO = #{replyNo}
+           AND
+               MEMBER_NO = #{memberNo}
+           AND
+               STATUS = 'Y'
+    </update>
+
+    <!-- 댓글 개수 조회 -->
+    <select id="countReplies" resultType="int">
+        SELECT
+               COUNT(1)
+          FROM
+               CL_CAMPAIGN_REPLY
+         WHERE
+               CAMPAIGN_NO = #{campaignNo}
+           AND
+               STATUS = 'Y'
+    </select>
+
+	<!-- 댓글 작성자 확인 -->
+    <select id="findReplyWriter" resultType="long">
+        SELECT
+               MEMBER_NO
+          FROM
+               CL_CAMPAIGN_REPLY
+         WHERE
+               REPLY_NO = #{replyNo}
+           AND
+               STATUS = 'Y'
+    </select>
 	
 </mapper>
