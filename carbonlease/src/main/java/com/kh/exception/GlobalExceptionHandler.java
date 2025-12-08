@@ -63,8 +63,8 @@ public class GlobalExceptionHandler {
 	    return createResponseEntity(e, HttpStatus.FORBIDDEN);
 	}
 	
-	@ExceptionHandler(AdminActivityException.class)
-	public ResponseEntity<Map<String, String>> handleAdminError(AdminActivityException e) {
+	@ExceptionHandler(AdminBoardsException.class)
+	public ResponseEntity<Map<String, String>> handleAdminError(AdminBoardsException e) {
 	    return createResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 
