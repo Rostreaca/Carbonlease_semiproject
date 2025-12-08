@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.kh.notice.model.dao.CalendarMapper;
+import com.kh.notice.model.dto.CalCategoryDTO;
 import com.kh.notice.model.dto.EventDTO;
 
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,18 @@ public class CalendarServiceImpl implements CalendarService {
 		
 		events = calendarMapper.findAllEvents();
 		map.put("events", events);
+		
+		return map;
+	}
+
+	@Override
+	public Map<String, Object> findAllCategory() {
+
+		List<CalCategoryDTO> categories = new ArrayList();
+		Map<String, Object> map = new HashMap();
+		
+		categories = calendarMapper.findAllCategory();
+		map.put("categories", categories);
 		
 		return map;
 	}

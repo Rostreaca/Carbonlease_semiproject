@@ -35,5 +35,15 @@ public class CalendarController {
 		
 		return ResponseEntity.ok(map);
 	}
+	
+	@GetMapping("categories")
+	public ResponseEntity<?> findAllCategory(){
+		
+		Map<String, Object> map = new HashMap();
+		
+		map = calendarService.findAllCategory();
+		
+		return ResponseEntity.ok(map);
+	}
 
 }
