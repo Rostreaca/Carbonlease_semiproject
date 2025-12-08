@@ -10,4 +10,6 @@ public interface NoticeService {
 
 	Map<String, Object> findByNo(Long noticeNo);
 
+	Map<String, Object> findByFix();
+
 }

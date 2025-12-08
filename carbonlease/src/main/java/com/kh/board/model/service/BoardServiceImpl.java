@@ -136,25 +136,31 @@ public class BoardServiceImpl implements BoardService {
 	
 	
 	// 댓글 수정
-//	@Override
-//	public int boardReplyUpdate(ReplyInsertVO riVO, CustomUserDetails user) {
-//		
-//		int updateOK = 0;
-//		
-//		if(user.getUsername().equals(riVO.getMemberId())) {
-//			
-//			updateOK = boardMapper.replyUpdate(riVO);
-//			
-//		} else {
-//			throw new InvalidParameterException("유효하지 않은 접근입니다.");
-//		}
-//		
-//		return updateOK;
-//	}
+	@Override
+	public int boardReplyUpdate(ReplyInsertVO riVO, CustomUserDetails user) {
+		
+		int updateOK = 0;
+		
+		if(user.getUsername().equals(riVO.getMemberId())) {
+			
+			updateOK = boardMapper.replyUpdate(riVO);
+			
+		} else {
+			throw new InvalidParameterException("유효하지 않은 접근입니다.");
+		}
+		
+		return updateOK;
+	}
 
 	
 	// 댓글 삭제
+	@Override
+	@Transactional
+	public int deleteReply(int replyNo) {
+		
+		return boardMapper.deleteReply(replyNo);
 	
+	}
 	
 	
 	// 조회수
@@ -164,5 +170,6 @@ public class BoardServiceImpl implements BoardService {
 		
 		boardMapper.boardViewCount(boardNo);
 	}
+
 }
 	

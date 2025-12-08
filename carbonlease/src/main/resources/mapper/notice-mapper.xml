@@ -85,5 +85,18 @@
 		WHERE
 				STATUS = 'Y'
 	</select>
+	
+		<select id="findByFix"
+			resultType="NoticeDTO">
+		SELECT
+				  NOTICE_NO noticeNo
+				, NOTICE_TITLE noticeTitle
+		FROM
+				CL_NOTICE
+		WHERE
+				STATUS='Y'
+		AND
+				FIX = 'Y'
+	</select>
 				  
 </mapper>

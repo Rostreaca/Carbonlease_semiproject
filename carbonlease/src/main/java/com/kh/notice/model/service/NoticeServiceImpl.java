@@ -99,4 +99,16 @@ public class NoticeServiceImpl implements NoticeService{
 		return noticeMapper.getAttachment(noticeNo);
 	}
 
+	@Override
+	public Map<String, Object> findByFix() {
+
+		List<NoticeDTO> notices = noticeMapper.findByFix();
+		
+		Map<String, Object> map = new HashMap();
+		
+		map.put("notices", notices);
+		
+		return map;
+	}
+
 }
