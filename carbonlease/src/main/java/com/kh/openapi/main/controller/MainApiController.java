@@ -11,7 +11,9 @@ import com.kh.openapi.main.model.dto.RegionEnergyUsageDTO;
 import com.kh.openapi.main.model.service.MainApiService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/main")
 @RequiredArgsConstructor
@@ -25,6 +27,9 @@ public class MainApiController {
      */
     @GetMapping("/regionUsage")
     public ResponseEntity<List<RegionEnergyUsageDTO>> getRegionStats() {
-        return ResponseEntity.ok(mainApiService.getElectricityUsageForMap());
+        log.info("지역별 전력 사용량 조회 API 호출"); 
+        List<RegionEnergyUsageDTO> data = mainApiService.getElectricityUsageForMap();
+        log.info("지역별 전력 사용량 조회 완료: {} 건", data.size());
+        return ResponseEntity.ok(data);
     }
 }
