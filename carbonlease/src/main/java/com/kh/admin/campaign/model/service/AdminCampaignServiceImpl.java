@@ -222,23 +222,29 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	 * 복구
 	 */
 	@Override
-	public int restoreCampaign(Long campaignNo) {
-
+	public int restoreByCampaignNo(Long campaignNo) {
 		int result = adminCampaignMapper.restoreStatus(campaignNo);
-
 		if (result != 1) {
 			throw new IllegalStateException("복구할 캠페인이 없거나 이미 활성 상태입니다.");
 		}
-
 		return result;
 	}
-	
-	
+	/**
+	 * 숨김
+	 */
 	@Override
-	public void deleteByCampaignNo(Long campaignNo) {
-		adminCampaignMapper.deleteByCampaignNo(campaignNo);
+	public void hideByCampaignNo(Long campaignNo) {
+		adminCampaignMapper.hideByCampaignNo(campaignNo);
 	}
 
+	@Override
+	@Transactional
+	public void deleteByCampaignNo(Long campaignNo) {
+		// 첨부파일 먼저 삭제
+		adminCampaignMapper.deleteAllAttachmentsByCampaignNo(campaignNo);
+		// 캠페인 본문 삭제
+		adminCampaignMapper.deleteByCampaignNo(campaignNo);
+	}
 	
 
 }

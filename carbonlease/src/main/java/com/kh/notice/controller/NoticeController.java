@@ -46,4 +46,14 @@ public class NoticeController {
 		
 		return ResponseEntity.ok(map);
 	}
+	
+	@GetMapping("fix")
+	public ResponseEntity<?> findByFix(){
+		
+		Map<String, Object> map = new HashMap();
+		
+		map = noticeService.findByFix();
+		
+		return ResponseEntity.ok(map);
+	}
 }

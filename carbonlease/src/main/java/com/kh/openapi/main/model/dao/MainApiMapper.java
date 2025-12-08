@@ -8,6 +8,5 @@ import com.kh.openapi.main.model.vo.KoreaRegionCoordVO;
 
 @Mapper
 public interface MainApiMapper {
-
 	List<KoreaRegionCoordVO> selectRegionCoords();
 }
