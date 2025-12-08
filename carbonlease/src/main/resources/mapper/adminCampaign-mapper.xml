@@ -64,7 +64,7 @@
 				  WHEN P.STATUS = 'N' THEN '숨김'
 				  WHEN P.STATUS = 'Y' AND P.START_DATE &gt; SYSDATE THEN '모집예정'
 				  WHEN P.STATUS = 'Y' AND P.END_DATE &lt; SYSDATE THEN '종료'
-				  WHEN P.STATUS = 'Y' AND P.START_DATE &lt;= SYSDATE AND P.END_DATE &gt;= SYSDATE THEN '진행중'
+				  WHEN P.STATUS = 'Y' AND P.START_DATE &lt;= SYSDATE AND P.END_DATE &gt;= SYSDATE THEN '정상'
 				  ELSE '숨김'
 			  END AS DISPLAY_STATUS
 		   , P.START_DATE
@@ -182,6 +182,7 @@
 	           CATEGORY_NO
 	</select>
 	
+	<!-- 캠페인 수정 -->
 	<update id="update" parameterType="CampaignVO">
 		UPDATE
 		       CL_CAMPAIGN
@@ -197,6 +198,7 @@
 		       STATUS = 'Y'
 	</update>
 
+	<!-- 캠페인 복원 -->
 	<update id="restoreStatus" parameterType="long">
 	    UPDATE 
 	           CL_CAMPAIGN
@@ -208,7 +210,8 @@
 	           STATUS = 'N'
 	</update>
 	
-	<update id="deleteByCampaignNo">
+	<!-- 캠페인 숨김 -->
+	<update id="hideByCampaignNo">
 		UPDATE
 		       CL_CAMPAIGN
 		   SET
@@ -216,6 +219,24 @@
 		 WHERE
 		       CAMPAIGN_NO = #{campaignNo}
 	</update>
+
+	<!-- 캠페인 본문 삭제 -->
+	<delete id="deleteByCampaignNo">
+		DELETE 
+		  FROM 
+		       CL_CAMPAIGN
+		 WHERE 
+		       CAMPAIGN_NO = #{campaignNo}
+	</delete>
+
+	<!-- 캠페인 첨부파일 전체 삭제 -->
+	<delete id="deleteAllAttachmentsByCampaignNo">
+		DELETE 
+		  FROM 
+		       CL_CAMPAIGN_ATTACHMENT
+		 WHERE 
+		       REF_BNO = #{campaignNo}
+	</delete>
 	
 	<!-- 첨부파일 완전 삭제 - fileLevel별로 삭제 -->
     <delete id="deleteAttachmentByLevel">
