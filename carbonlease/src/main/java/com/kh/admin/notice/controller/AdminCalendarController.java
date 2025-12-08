@@ -44,6 +44,16 @@ public class AdminCalendarController {
 		return ResponseEntity.ok(map);
 	}
 	
+	@GetMapping("/category")
+	public ResponseEntity<?> findAllCategory(){
+		
+		Map<String, Object> map = new HashMap();
+		
+		map = calendarService.findAllCategory();
+				
+		return ResponseEntity.ok(map);
+	}
+	
 	@PostMapping("")
 	public ResponseEntity<?> addEvent(@Valid @RequestBody EventAdminDTO event,
 									  @AuthenticationPrincipal CustomUserDetails user){

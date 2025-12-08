@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.kh.admin.notice.model.dao.AdminCalendarMapper;
+import com.kh.admin.notice.model.dto.CategoryAdminDTO;
 import com.kh.admin.notice.model.dto.EventAdminDTO;
 import com.kh.auth.model.vo.CustomUserDetails;
 
@@ -53,8 +54,20 @@ public class AdminCalendarServiceImpl implements AdminCalendarService {
 
 	@Override
 	public void deleteEvent(Long id) {
-
+		
 		calendarMapper.deleteEvent(id);
+	}
+
+	@Override
+	public Map<String, Object> findAllCategory() {
+		
+		List<CategoryAdminDTO> category = new ArrayList();
+		Map<String, Object> map = new HashMap();
+		
+		category = calendarMapper.findAllCategory();
+		map.put("categories", category);
+		
+		return map;
 	}
 
 	
