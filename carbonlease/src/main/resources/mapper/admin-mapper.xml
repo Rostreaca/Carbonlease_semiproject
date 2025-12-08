@@ -37,6 +37,31 @@
         </select>
 
 
+        <!-- 지역별 커뮤니티 활동량(합산, 일반, 인증) 통합 조회 -->
+        <select id="getUsersRegionActivityStats" resultType="RegionActivityStatsDTO">
+            SELECT
+                r.REGION_NO AS regionNo,
+                r.REGION_NAME AS regionName,
+                NVL(board.boardCount, 0) AS boardCount,
+                NVL(activity.activityCount, 0) AS activityCount,
+                NVL(board.boardCount, 0) + NVL(activity.activityCount, 0) AS totalCount
+            FROM CL_REGION_CATEGORY r
+            LEFT JOIN (
+                SELECT REGION_NO, COUNT(*) AS boardCount
+                FROM CL_BOARD
+                WHERE STATUS = 'Y'
+                GROUP BY REGION_NO
+            ) board ON r.REGION_NO = board.REGION_NO
+            LEFT JOIN (
+                SELECT REGION_NO, COUNT(*) AS activityCount
+                FROM CL_ACTIVITY_BOARD
+                WHERE STATUS = 'Y'
+                GROUP BY REGION_NO
+            ) activity ON r.REGION_NO = activity.REGION_NO
+            ORDER BY totalCount DESC
+        </select>
+
+
         <!-- 1. 전체 게시글 수 조회 (실제 테이블명 기준) -->
         <!-- <select id="getUsersAllBoardsCount" resultType="map">
             SELECT 'board' AS boardType, COUNT(*) AS count FROM CL_BOARD WHERE STATUS = 'Y'
@@ -49,7 +74,7 @@
         </select> -->
 
         <!-- 2. 삭제된 게시글 수 조회 (실제 테이블명 기준) -->
-        <select id="getUsersDeleteAllBoardsCount" resultType="map">
+        <!-- <select id="getUsersDeleteAllBoardsCount" resultType="map">
             SELECT 'board' AS boardType, COUNT(*) AS count FROM CL_BOARD WHERE STATUS = 'N'
             UNION ALL
             SELECT 'activity' AS boardType, COUNT(*) AS count FROM CL_ACTIVITY_BOARD WHERE STATUS = 'N'
@@ -57,10 +82,11 @@
             SELECT 'campaign' AS boardType, COUNT(*) AS count FROM CL_CAMPAIGN WHERE STATUS = 'N'
             UNION ALL
             SELECT 'notice' AS boardType, COUNT(*) AS count FROM CL_NOTICE WHERE STATUS = 'N'
-        </select>
+        </select> -->
 
         <!-- 3. 지역별 커뮤니티 활동량 집계 (회원/게시글/지역 조인) -->
-        <select id="getUsersActivityBoards" resultType="map">
+        <!-- 지역별 커뮤니티 활동 총 수(일반+인증 합산) -->
+        <select id="getUsersActivityBoardsTotal" resultType="map">
             SELECT r.REGION_NO AS regionNo, r.REGION_NAME AS regionName, SUM(t.count) AS totalCount
             FROM (
                 SELECT REGION_NO, COUNT(*) AS count
@@ -78,24 +104,6 @@
             ORDER BY totalCount DESC
         </select>
 
-
-        <!-- 일반 게시판 지역별 등록 게시글 수 -->
-        <select id="getBoardRegionCounts" resultType="map">
-            SELECT r.REGION_NO, r.REGION_NAME, COUNT(*) AS COUNT
-            FROM CL_BOARD b
-            JOIN CL_REGION_CATEGORY r ON b.REGION_NO = r.REGION_NO
-            WHERE b.STATUS = 'Y'
-            GROUP BY r.REGION_NO, r.REGION_NAME
-        </select>
-
-        <!-- 인증 게시판(활동) 지역별 등록 게시글 수 -->
-        <select id="getActivityRegionCounts" resultType="map">
-            SELECT r.REGION_NO, r.REGION_NAME, COUNT(*) AS COUNT
-            FROM CL_ACTIVITY_BOARD a
-            JOIN CL_REGION_CATEGORY r ON a.REGION_NO = r.REGION_NO
-            WHERE a.STATUS = 'Y'
-            GROUP BY r.REGION_NO, r.REGION_NAME
-        </select>
 
         <!-- 4. 인기글 Top 5 조회 (조회수 기준, 각 게시판별 UNION) -->
         <select id="getAllCountTop5" resultType="map">
