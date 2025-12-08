@@ -3,12 +3,16 @@ package com.kh.campaign.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -92,6 +96,65 @@ public class CampaignController {
 		return ResponseEntity.ok().build();
 		
 	}
+
+	 /** 댓글 목록 조회 */
+    @GetMapping("/{campaignNo}/replies")
+    public Map<String, Object> getReplies(
+            @PathVariable("campaignNo") Long campaignNo,
+            @RequestParam(name = "pageNo", defaultValue = "1") int pageNo) {
+
+        return campaignService.selectReplies(campaignNo, pageNo);
+    }
+
+    /** 댓글 등록 */
+    @PostMapping("/{campaignNo}/replies")
+	public ResponseEntity<?> insertReply(
+			@PathVariable("campaignNo") Long campaignNo,
+			@RequestBody Map<String, String> body,
+			@AuthenticationPrincipal CustomUserDetails user) {
+
+		log.info("댓글 등록 요청 - user: {}", user);
+		if (user == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+		}
+
+		String content = body.get("replyContent");
+		Long memberNo = user.getMemberNo();
+
+		int result = campaignService.insertReply(content, campaignNo, memberNo);
+		return ResponseEntity.ok(result);
+	}
+
+    /** 댓글 삭제 */
+    @DeleteMapping("/replies/{replyNo}")
+    public ResponseEntity<?> deleteReply(
+            @PathVariable("replyNo") Long replyNo,
+            @AuthenticationPrincipal CustomUserDetails user) {
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+        }
+
+        campaignService.deleteReply(replyNo, user.getMemberNo());
+        return ResponseEntity.ok("deleted");
+    }
+
+    /** 댓글 수정 */
+    @PutMapping("/replies/{replyNo}")
+    public ResponseEntity<?> updateReply(
+            @PathVariable("replyNo") Long replyNo,
+            @RequestBody Map<String, String> payload,
+            @AuthenticationPrincipal CustomUserDetails user) {
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+        }
+
+        String replyContent = payload.get("replyContent");
+        campaignService.updateReply(replyNo, replyContent, user.getMemberNo());
+
+        return ResponseEntity.ok("updated");
+    }
 	
 
 }
