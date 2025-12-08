@@ -35,7 +35,7 @@ public class AdminBoardServiceImpl implements AdminBoardService {
 
         int count = mapper.getAdminBoardCount(params);
 
-        params = pagination.pageRequest(page, 10, count);
+        params = pagination.pageRequest(page, 8, count);
         params.put("status", status);
         params.put("keyword", keyword);
 

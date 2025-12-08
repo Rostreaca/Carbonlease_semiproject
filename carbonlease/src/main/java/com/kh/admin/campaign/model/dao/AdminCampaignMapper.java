@@ -82,9 +82,15 @@ public interface AdminCampaignMapper {
 	int restoreStatus(Long campaignNo);
 	
 	/**
-	 * 삭제
+	 * 숨김
+	 * @param campaignNo
+	 */
+	void hideByCampaignNo(Long campaignNo);
+
+	/**
+	 * 삭제(+ 전체 첨부파일 삭제)
 	 * @param campaignNo
 	 */
 	void deleteByCampaignNo(Long campaignNo);
-	
+	void deleteAllAttachmentsByCampaignNo(Long campaignNo);
 }

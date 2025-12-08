@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -98,7 +99,6 @@ public class AdminCampaignController {
     }
     
 
-
 	/**
 	 * 캠페인 수정 요청을 처리하는 엔드포인트
 	 * 
@@ -127,6 +127,17 @@ public class AdminCampaignController {
 		);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
+	
+	/**
+	 * 숨김
+	 * @param campaignNo
+	 * @return
+	 */
+	@PostMapping("/{campaignNo}")
+	public ResponseEntity<Void> hideByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo){
+		adminCampaignService.hideByCampaignNo(campaignNo);
+		return ResponseEntity.ok().build();
+	}
 
 	/**
 	 * 복구
@@ -134,17 +145,18 @@ public class AdminCampaignController {
 	 * @return
 	 */
 	@PostMapping("/{campaignNo}/restore")
-	public ResponseEntity<?> restoreCampaign(@PathVariable Long campaignNo) {
-		int result = adminCampaignService.restoreCampaign(campaignNo);
-		if (result == 1) {
-			return ResponseEntity.ok().build();
-		} else {
-			return ResponseEntity.badRequest().body("복구할 캠페인이 없거나 이미 활성 상태입니다.");
-		}
+	public ResponseEntity<Void> restoreByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo) {
+		adminCampaignService.restoreByCampaignNo(campaignNo);
+		return ResponseEntity.ok().build();
 	}
-	
+
+	/**
+	 * 삭제
+	 * @param campaignNo
+	 * @return
+	 */
 	@DeleteMapping("/{campaignNo}")
-	public ResponseEntity<?> deleteByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo){
+	public ResponseEntity<Void> deleteByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo){
 		adminCampaignService.deleteByCampaignNo(campaignNo);
 		return ResponseEntity.ok().build();
 	}

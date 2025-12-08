@@ -7,9 +7,12 @@ import lombok.Data;
 
 @Data
 @Component
-@ConfigurationProperties(prefix = "api.open.services.energy")
+@ConfigurationProperties(prefix = "api.kepco")
 public class EnergyApiProperties {
-    private String key;       // 인증키
-    private String baseUrl;   // https://apis.data.go.kr/B552584/kecoapi/cpointEnrgUsqntStatsService
-    private String endpoint;  // getElec
+    // 전기 API
+    private String key;             // 인증키
+    private String baseUrl;         // 기본 URL
+    private String endpoint;        // 엔드포인트
+    private String fallbackYear;    // 기본 연도
+    private String fallbackMonth;   // 기본 월
 }
