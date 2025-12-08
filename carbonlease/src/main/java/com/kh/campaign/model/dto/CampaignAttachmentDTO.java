@@ -12,6 +12,7 @@ import lombok.ToString;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor 
 @Builder
 public class CampaignAttachmentDTO {
 	

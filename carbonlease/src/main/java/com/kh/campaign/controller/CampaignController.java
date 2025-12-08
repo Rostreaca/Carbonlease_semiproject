@@ -108,33 +108,34 @@ public class CampaignController {
 
     /** 댓글 등록 */
     @PostMapping("/{campaignNo}/replies")
-    public ResponseEntity<?> insertReply(
-            @PathVariable("campaignNo") Long campaignNo,
-            @RequestBody Map<String, String> body,
-            @AuthenticationPrincipal CustomUserDetails loginUser) {
+	public ResponseEntity<?> insertReply(
+			@PathVariable("campaignNo") Long campaignNo,
+			@RequestBody Map<String, String> body,
+			@AuthenticationPrincipal CustomUserDetails user) {
 
-        if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
-        }
+		log.info("댓글 등록 요청 - user: {}", user);
+		if (user == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+		}
 
-        String content = body.get("replyContent");
-        Long memberNo = loginUser.getMemberNo();
+		String content = body.get("replyContent");
+		Long memberNo = user.getMemberNo();
 
-        int result = campaignService.insertReply(content, campaignNo, memberNo);
-        return ResponseEntity.ok(result);
-    }
+		int result = campaignService.insertReply(content, campaignNo, memberNo);
+		return ResponseEntity.ok(result);
+	}
 
     /** 댓글 삭제 */
     @DeleteMapping("/replies/{replyNo}")
     public ResponseEntity<?> deleteReply(
             @PathVariable("replyNo") Long replyNo,
-            @AuthenticationPrincipal CustomUserDetails loginUser) {
+            @AuthenticationPrincipal CustomUserDetails user) {
 
-        if (loginUser == null) {
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
         }
 
-        campaignService.deleteReply(replyNo, loginUser.getMemberNo());
+        campaignService.deleteReply(replyNo, user.getMemberNo());
         return ResponseEntity.ok("deleted");
     }
 
@@ -143,14 +144,14 @@ public class CampaignController {
     public ResponseEntity<?> updateReply(
             @PathVariable("replyNo") Long replyNo,
             @RequestBody Map<String, String> payload,
-            @AuthenticationPrincipal CustomUserDetails loginUser) {
+            @AuthenticationPrincipal CustomUserDetails user) {
 
-        if (loginUser == null) {
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
         }
 
         String replyContent = payload.get("replyContent");
-        campaignService.updateReply(replyNo, replyContent, loginUser.getMemberNo());
+        campaignService.updateReply(replyNo, replyContent, user.getMemberNo());
 
         return ResponseEntity.ok("updated");
     }

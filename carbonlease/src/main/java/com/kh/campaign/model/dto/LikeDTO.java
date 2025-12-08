@@ -10,6 +10,7 @@ import lombok.ToString;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor 
 @Builder
 public class LikeDTO {// 좋아요 => INSERT || 취소 => DELETE || 마이페이지 내가 좋아요한거 => 정렬기준
     private Long campaignNo;

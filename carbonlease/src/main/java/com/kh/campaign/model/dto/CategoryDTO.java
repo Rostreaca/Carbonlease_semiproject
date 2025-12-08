@@ -10,6 +10,7 @@ import lombok.ToString;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor 
 @Builder
 public class CategoryDTO {
 	private Long categoryNo;		// 카테고리 번호
