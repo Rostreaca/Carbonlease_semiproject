@@ -38,5 +38,4 @@ public class BoardDTO {
     private String searchType;
     private String searchQuery;
 	
-	
 }

@@ -16,46 +16,73 @@ import com.kh.activity.model.vo.ActivityBoard;
 @Mapper
 public interface ActivityMapper {
 
-	List<ActivityListDTO> activityAllList(Map<String, Object> params);
+    /** 전체 게시글 목록 조회 (검색 + 페이징) */
+    List<ActivityListDTO> activityAllList(Map<String, Object> params);
 
-	int findListCount(Map<String, String> search);
+    /** 게시글 총 개수 조회 (검색 포함) */
+    int findListCount(Map<String, String> search);
 
-	void insertBoard(ActivityBoard board);
+    /** 게시글 등록 */
+    void insertBoard(ActivityBoard board);
 
-	void insertAttachment(ActivityAttachment at);
+    /** 첨부파일 등록 */
+    void insertAttachment(ActivityAttachment at);
 
-	void insertCertification(Map<String, Integer> of);
-	
-	ActivityDetailDTO selectDetail(@Param("activityNo")int activityNo, @Param("loginMemberNo")Long loginMemberNo);
+    /** 인증 카테고리 연결 */
+    void insertCertification(Map<String, Integer> of);
 
-	List<String> selectDetailImage(int activityNo);
+    /** 게시글 상세 조회 (좋아요 여부 포함) */
+    ActivityDetailDTO selectDetail(@Param("activityNo") int activityNo,
+                                   @Param("loginMemberNo") Long loginMemberNo);
 
-	ActivityBoard findBoardOwner(int activityNo);
+    /** 상세 이미지 목록 조회 */
+    List<String> selectDetailImage(int activityNo);
 
-	
-	int checkLike(@Param("activityNo") int activityNo, @Param("memberNo") Long memberNo);
-	
-	int insertLike(@Param("activityNo") int activityNo, @Param("memberNo") Long memberNo);
+    /** 게시글 작성자 조회 */
+    ActivityBoard findBoardOwner(int activityNo);
 
-	int deleteLike(@Param("activityNo") int activityNo, @Param("memberNo") Long memberNo);
+    /** 좋아요 존재 여부 체크 */
+    int checkLike(@Param("activityNo") int activityNo,
+                  @Param("memberNo") Long memberNo);
 
-	int activityDelete(@Param("activityNo") int activityNo);
-	
-	List<ReplyDTO> selectReplies(Map<String, Object> params);
-	
-	int insertReply(Map<String, Object> map);
-	
-	int deleteReply(int replyNo);
+    /** 좋아요 추가 */
+    int insertLike(@Param("activityNo") int activityNo,
+                   @Param("memberNo") Long memberNo);
 
-	int countReplies(int activityNo);
+    /** 좋아요 삭제 */
+    int deleteLike(@Param("activityNo") int activityNo,
+                   @Param("memberNo") Long memberNo);
 
-	int updateReply(Map<String, Object> map);
+    /** 게시글 삭제 (STATUS='N') */
+    int activityDelete(@Param("activityNo") int activityNo);
 
-	void updateViewCount(int activityNo);
+    /** 댓글 목록 조회 (페이징) */
+    List<ReplyDTO> selectReplies(Map<String, Object> params);
 
-	int updateActivityBoard(ActivityFormDTO activity);
+    /** 댓글 등록 */
+    int insertReply(Map<String, Object> map);
 
-	int updateCertification(ActivityFormDTO activity);
+    /** 댓글 삭제 */
+    int deleteReply(int replyNo);
 
-	int deleteAttachments(int activityNo);
+    /** 댓글 총 개수 */
+    int countReplies(int activityNo);
+
+    /** 댓글 수정 */
+    int updateReply(Map<String, Object> map);
+
+    /** 조회수 증가 */
+    void updateViewCount(int activityNo);
+
+    /** 게시글 수정 */
+    int updateActivityBoard(ActivityFormDTO activity);
+
+    /** 인증 카테고리 수정 */
+    int updateCertification(ActivityFormDTO activity);
+
+    /** 첨부파일 전체 삭제 */
+    int deleteAttachments(int activityNo);
+
+    /** 댓글 작성자 조회 */
+    Long findReplyWriter(int replyNo);
 }
