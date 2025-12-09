@@ -21,26 +21,30 @@ public class CalendarServiceImpl implements CalendarService {
 	
 	private final CalendarMapper calendarMapper;
 	
+	/**
+	 * 일정 조회
+	 * @return Map<String, Object> "일정 목록"
+	 */
 	@Override
 	public Map<String, Object> findAllEvents() {
 		
-		List<EventDTO> events = new ArrayList();
-		Map<String, Object> map = new HashMap();
+		List<EventDTO> events = calendarMapper.findAllEvents();
 		
-		events = calendarMapper.findAllEvents();
-		map.put("events", events);
-		
+		Map<String, Object> map = Map.of("events", events);
+
 		return map;
 	}
 
+	/**
+	 * 일정 카테고리 조회
+	 * @return Map<String, Object> "카테고리"
+	 */
 	@Override
 	public Map<String, Object> findAllCategory() {
 
-		List<CalCategoryDTO> categories = new ArrayList();
-		Map<String, Object> map = new HashMap();
+		List<CalCategoryDTO> categories = calendarMapper.findAllCategory();
 		
-		categories = calendarMapper.findAllCategory();
-		map.put("categories", categories);
+		Map<String, Object> map = Map.of("categories", categories);
 		
 		return map;
 	}

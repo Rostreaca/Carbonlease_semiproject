@@ -1,10 +1,7 @@
 package com.kh.admin.notice.controller;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Delete;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -34,48 +31,44 @@ public class AdminCalendarController {
 
 	private final AdminCalendarService calendarService;
 	
-	@GetMapping("")
-	public ResponseEntity<?> findAllEvents(){
+	@GetMapping
+	public ResponseEntity<Map<String, Object>> findAllEvents(){
 		
-		Map<String, Object> map = new HashMap();
-		
-		map = calendarService.findAllEvents();
+		Map<String, Object> map = calendarService.findAllEvents();
 		
 		return ResponseEntity.ok(map);
 	}
 	
 	@GetMapping("/category")
-	public ResponseEntity<?> findAllCategory(){
+	public ResponseEntity<Map<String, Object>> findAllCategory(){
 		
-		Map<String, Object> map = new HashMap();
-		
-		map = calendarService.findAllCategory();
+		Map<String, Object> map = calendarService.findAllCategory();
 				
 		return ResponseEntity.ok(map);
 	}
 	
-	@PostMapping("")
-	public ResponseEntity<?> addEvent(@Valid @RequestBody EventAdminDTO event,
+	@PostMapping
+	public ResponseEntity<String> addEvent(@Valid @RequestBody EventAdminDTO event,
 									  @AuthenticationPrincipal CustomUserDetails user){
 		
 		calendarService.addEvent(event, user);
 		
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.ok("등록 성공!");
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<?> updateEvent(@Valid @RequestBody EventAdminDTO event){
+	public ResponseEntity<String> updateEvent(@Valid @RequestBody EventAdminDTO event){
 		
 		calendarService.updateEvent(event);
 		
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.ok("수정 성공!");
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteEvent(@PathVariable(name="id")Long id){
+	public ResponseEntity<String> deleteEvent(@PathVariable(name="id")Long id){
 
 		calendarService.deleteEvent(id);
 		
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return ResponseEntity.ok("삭제 성공!");
 	}
 }

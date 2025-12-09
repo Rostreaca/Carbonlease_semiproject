@@ -16,18 +16,19 @@ public interface AdminNoticeMapper {
 
 	List<NoticeAdminDTO> findAllByAdmin(Map<String, Object> params);
 
-	void insertAttachment(AttachmentDTO at);
-
-	void insertNotice(AdminNoticeVO adminNotice);
+	List<AttachmentDTO> getAttachment(Long noticeNo);
 
 	NoticeAdminDTO findByNo(Long noticeNo);
-
-	void delete(Long noticeNo);
-
-	void updateNotice(AdminNoticeVO adminNotice);
+	
+	void insertAttachment(AttachmentDTO at);
+	
+	void insertNotice(AdminNoticeVO adminNotice);
 
 	void resetAttachment(Long noticeNo);
+	
+	void updateNotice(AdminNoticeVO adminNotice);
 
+	void delete(Long noticeNo);
 
 
 
