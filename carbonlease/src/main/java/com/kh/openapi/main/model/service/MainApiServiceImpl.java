@@ -58,11 +58,7 @@ public class MainApiServiceImpl implements MainApiService {
 
         log.debug("KEPCO API 데이터 조회 완료: {} 건", usageList.size());
 
-<<<<<<< HEAD
         // 3.지역명 정규화 + 사용량 집계 (key: 시도명, value: 사용량)
-=======
-        // 3. 지역별(시도별) 전력 사용량 합계 Map (key: 시도명, value: 사용량)
->>>>>>> c163993d0362f11879c38df1d4096eccc361f54c
         Map<String, Long> usageMap = new HashMap<>();
         for (Map<String, Object> item : usageList) { // 예: [{metro: "서울특별시", powerUsage: 12345}, {...}, ...]
             String rawMetro = String.valueOf(item.get("metro"));
@@ -77,18 +73,6 @@ public class MainApiServiceImpl implements MainApiService {
             log.error("DB에서 지역 좌표 데이터를 조회할 수 없습니다.");
             return Collections.emptyList();
         }
-<<<<<<< HEAD
-=======
-
-        log.debug("좌표 데이터 조회 완료: {} 개 지역", coords.size());
-
-        // 4-1. 시도명 - 좌표정보 Map으로 변환
-        Map<String, KoreaRegionCoordVO> coordMap = coords.stream()
-            .collect(Collectors.toMap(
-                KoreaRegionCoordVO::getTopRegionName,
-                c -> c
-            ));
->>>>>>> c163993d0362f11879c38df1d4096eccc361f54c
 
         log.debug("좌표 데이터 조회 완료: {} 개 지역", coords.size());
 
@@ -118,7 +102,6 @@ public class MainApiServiceImpl implements MainApiService {
         List<RegionEnergyUsageDTO> results = new ArrayList<>();
         
         
-<<<<<<< HEAD
         for (String region : filteredUsageMap.keySet()) {
             long usage = filteredUsageMap.get(region);
             double percent = totalUsage > 0 ? (usage * 100.0) / totalUsage : 0;
@@ -127,18 +110,6 @@ public class MainApiServiceImpl implements MainApiService {
             // 이제 coord는 항상 존재 (이미 필터링했으니)
             KoreaRegionCoordVO coord = coordMap.get(region);
             
-=======
-        for (String region : usageMap.keySet()) {
-            long usage = usageMap.get(region);
-            double percent = totalUsage > 0 ? (usage * 100.0) / totalUsage : 0;
-            double roundedPercent = Math.round(percent * 100.0) / 100.0;  // 5.34
-            KoreaRegionCoordVO coord = coordMap.get(region);
-            // 좌표가 없는 지역은 결과에서 제외
-            if (coord == null) {
-                log.warn("좌표를 찾을 수 없는 지역: {}", region);
-                continue;  // 해당 지역은 스킵
-            }
->>>>>>> c163993d0362f11879c38df1d4096eccc361f54c
             results.add(RegionEnergyUsageDTO.builder()
                     .topRegionName(region)
                     .avgUseQnt(usage)
