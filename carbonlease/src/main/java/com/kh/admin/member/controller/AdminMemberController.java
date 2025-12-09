@@ -42,19 +42,19 @@ public class AdminMemberController {
 	}
 	
 	@PutMapping("/restore")
-	public ResponseEntity<?> restoreMember(@RequestParam(name = "memberNo") Long memberNo){
+	public ResponseEntity<String> restoreMember(@RequestParam(name = "memberNo") Long memberNo){
 		
 		adminMemberService.restoreMember(memberNo);
 		
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return ResponseEntity.status(HttpStatus.OK).body("회원 복구 성공");
 	}
 	
 	@DeleteMapping
-	public ResponseEntity<?> deleteMember(@RequestParam(name = "memberNo") Long memberNo){
+	public ResponseEntity<String> deleteMember(@RequestParam(name = "memberNo") Long memberNo){
 		
 		adminMemberService.deleteMember(memberNo);
 		
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return ResponseEntity.status(HttpStatus.OK).body("회원 삭제 성공");
 		
 	}
 	
