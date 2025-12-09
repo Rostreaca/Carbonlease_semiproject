@@ -44,5 +44,4 @@ public interface CampaignService {
     /** 댓글 수정 */
     int updateReply(Long replyNo, String replyContent, Long memberNo);
 
-
 }

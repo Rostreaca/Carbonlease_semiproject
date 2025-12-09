@@ -24,7 +24,7 @@
              SELECT 'campaign' AS board_type,
                  (SELECT COUNT(*) FROM CL_CAMPAIGN WHERE STATUS = 'Y') AS total_cnt,
                  (SELECT COUNT(*) FROM CL_CAMPAIGN WHERE STATUS = 'N') AS hidden_cnt,
-                 NULL AS comment_cnt,
+                 (SELECT COUNT(*) FROM CL_CAMPAIGN_REPLY WHERE STATUS = 'Y') AS comment_cnt,
                  (SELECT COUNT(*) FROM CL_CAMPAIGN_LIKE) AS like_cnt
              FROM DUAL
              UNION ALL

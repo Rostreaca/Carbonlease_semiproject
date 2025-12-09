@@ -160,6 +160,7 @@ public class AdminCampaignController {
 		adminCampaignService.deleteByCampaignNo(campaignNo);
 		return ResponseEntity.ok().build();
 	}
+	
 
 
 }

@@ -60,3 +60,4 @@ public class CampaignDTO {
     // 댓글 수
     private int replyCount;
 }
+
