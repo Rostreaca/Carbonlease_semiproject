@@ -8,7 +8,7 @@ import lombok.Data;
 public class RegionEnergyUsageDTO {
 
     private String topRegionName;     // 시도명 (예: 서울, 부산)
-    private double avgUseQnt;         // 해당 시도의 총 전력사용량 - 버블 크기 기준
+    private long avgUseQnt;         // 해당 시도의 총 전력사용량 - 버블 크기 기준 -> double 에서 long 으로 변경
     private double usagePercent;      // 전체 사용량 대비 비율(%) - 버블 크기 비교용
     private double latitude;          // 위도 - 지도 Marker 위치
     private double longitude;         // 경도 - 지도 Marker 위치
