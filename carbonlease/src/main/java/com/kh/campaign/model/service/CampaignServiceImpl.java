@@ -1,16 +1,21 @@
 package com.kh.campaign.model.service;
 
 import java.security.InvalidParameterException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.campaign.model.dao.CampaignMapper;
 import com.kh.campaign.model.dto.CampaignDTO;
+import com.kh.campaign.model.dto.CampaignReplyDTO;
 import com.kh.campaign.model.dto.LikeDTO;
 import com.kh.common.util.Pagination;
 import com.kh.exception.CustomInvalidParameterException;
+import com.kh.exception.ResourceNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +43,7 @@ public class CampaignServiceImpl implements CampaignService {
 		
 		int listCount = campaignMapper.findAndCountAll();
 	    
-	    Map<String, Object> params = pagination.pageRequest(pageNo, 6, listCount);
+	    Map<String, Object> params = pagination.pageRequest(pageNo, 9, listCount);
 	    List<CampaignDTO> campaigns = campaignMapper.findAll(params);
 	    
 	    params.put("pageInfo", params.get("pi"));
@@ -121,6 +126,76 @@ public class CampaignServiceImpl implements CampaignService {
 	        campaignMapper.insertLike(likeDTO);
 	    }
 	}
+
+
+	/** 댓글 목록 조회 (페이징) */
+    @Override
+	public Map<String, Object> selectReplies(Long campaignNo, int pageNo) {
+		int replyCount = campaignMapper.countReplies(campaignNo);
+		Map<String, Object> params = pagination.pageRequest(pageNo, 5, replyCount);
+		params.put("campaignNo", campaignNo);
+
+		List<CampaignReplyDTO> replyList = campaignMapper.selectReplies(params);
+
+		// ★ 로그 추가
+		log.info("댓글 조회 campaignNo={}, pageNo={}, replyCount={}", campaignNo, pageNo, replyCount);
+		log.info("댓글 목록: {}", replyList);
+
+		Map<String, Object> result = new HashMap<>();
+		result.put("replies", replyList);
+		result.put("pageInfo", params.get("pi"));
+
+		return result;
+	}
+
+    /** 댓글 등록 */
+    @Override
+    @Transactional
+    public int insertReply(String content, Long campaignNo, Long memberNo) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("replyContent", content);
+        map.put("campaignNo", campaignNo);
+        map.put("memberNo", memberNo);
+
+        return campaignMapper.insertReply(map);
+    }
+
+    /** 댓글 삭제 (작성자 검증) */
+    @Override
+    @Transactional
+    public int deleteReply(Long replyNo, Long memberNo) {
+
+        Long writer = campaignMapper.findReplyWriter(replyNo);
+
+        if (writer == null) {
+            throw new ResourceNotFoundException("댓글이 존재하지 않습니다.");
+        }
+
+        if (!writer.equals(memberNo)) {
+            throw new AccessDeniedException("삭제 권한이 없습니다.");
+        }
+
+        return campaignMapper.deleteReply(replyNo);
+    }
+
+    /** 댓글 수정 (작성자 검증) */
+    @Override
+    @Transactional
+    public int updateReply(Long replyNo, String content, Long writerNo) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("replyNo", replyNo);
+        map.put("replyContent", content);
+        map.put("memberNo", writerNo);
+
+        int result = campaignMapper.updateReply(map);
+
+        if (result == 0) {
+            throw new AccessDeniedException("수정 권한이 없거나 댓글이 존재하지 않습니다.");
+        }
+
+        return result;
+    }
+
 
 }
 

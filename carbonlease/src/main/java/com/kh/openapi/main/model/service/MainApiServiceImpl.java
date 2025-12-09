@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.kh.openapi.common.client.EnergyApiClient;
@@ -39,18 +40,23 @@ public class MainApiServiceImpl implements MainApiService {
      * @Role : 지역별 전력 사용량 + 좌표 정보 포함
      * @return List<RegionEnergyUsageDTO>
      */
+    @Cacheable(value = "electricityUsage", unless = "#result == null || #result.isEmpty()")
     @Override
     public List<RegionEnergyUsageDTO> getElectricityUsageForMap() {
+
+        log.info("전력 사용량 조회 시작");
         
         // 1. 유효한 연도/월 파라미터 조회 ( 예 : year=2024, month=05 )
         Map<String, String> date = getValidDateParams();
 
         // 2. KEPCO API에서 받아온 지역별 전력 사용량 데이터 리스트
         List<Map<String, Object>> usageList = energyApiClient.getKepcoUsageByDate(date.get("year"), date.get("month"));
-        if (usageList.isEmpty()) {  // EnergyApiClient에서 null 대신 빈 리스트 반환하므로 null 체크는 필요 없음
-            log.error("KEPCO API 결과가 비어 있음");
+        if (usageList.isEmpty()) { 
+            log.warn("KEPCO API 데이터가 비어있습니다. year={}, month={}", date.get("year"), date.get("month"));
             return Collections.emptyList(); // 데이터 없으면 빈 리스트 반환
         }
+
+        log.debug("KEPCO API 데이터 조회 완료: {} 건", usageList.size());
 
         // 3. 지역별(시도별) 전력 사용량 합계 Map (key: 시도명, value: 사용량)
         Map<String, Long> usageMap = new HashMap<>();
@@ -63,11 +69,19 @@ public class MainApiServiceImpl implements MainApiService {
 
         // 4. DB에서 조회한 지역별 좌표 정보 리스트를 가져옴
         List<KoreaRegionCoordVO> coords = mainApiMapper.selectRegionCoords();
-        // 4-1. 시도명 - 좌표정보 Map으로 변환 (key : "시도명", value : 각 지역의 좌표 VO)
-        Map<String, KoreaRegionCoordVO> coordMap = coords.stream().collect(Collectors.toMap(
-                KoreaRegionCoordVO::getTopRegionName, // coordMap.get("서울") - 서울의 위도/경도 정보 반환
+        if (coords == null || coords.isEmpty()) {
+            log.error("DB에서 지역 좌표 데이터를 조회할 수 없습니다.");
+            return Collections.emptyList();
+        }
+
+        log.debug("좌표 데이터 조회 완료: {} 개 지역", coords.size());
+
+        // 4-1. 시도명 - 좌표정보 Map으로 변환
+        Map<String, KoreaRegionCoordVO> coordMap = coords.stream()
+            .collect(Collectors.toMap(
+                KoreaRegionCoordVO::getTopRegionName,
                 c -> c
-        ));
+            ));
 
         // 5. 전체 사용량 합계(퍼센트 계산용)
         long totalUsage = usageMap.values().stream().mapToLong(Long::longValue).sum();
@@ -75,22 +89,27 @@ public class MainApiServiceImpl implements MainApiService {
         // 6. 프론트에 전달할 DTO 리스트
         List<RegionEnergyUsageDTO> results = new ArrayList<>();
         
+        
         for (String region : usageMap.keySet()) {
             long usage = usageMap.get(region);
             double percent = totalUsage > 0 ? (usage * 100.0) / totalUsage : 0;
+            double roundedPercent = Math.round(percent * 100.0) / 100.0;  // 5.34
             KoreaRegionCoordVO coord = coordMap.get(region);
-            double lat = coord != null ? coord.getLatitude() : 0;
-            double lng = coord != null ? coord.getLongitude() : 0;
+            // 좌표가 없는 지역은 결과에서 제외
+            if (coord == null) {
+                log.warn("좌표를 찾을 수 없는 지역: {}", region);
+                continue;  // 해당 지역은 스킵
+            }
             results.add(RegionEnergyUsageDTO.builder()
                     .topRegionName(region)
                     .avgUseQnt(usage)
-                    .usagePercent(percent)
-                    .latitude(lat)
-                    .longitude(lng)
-                    .key(region + "-" + lat + "-" + lng)
+                    .usagePercent(roundedPercent)
+                    .latitude(coord.getLatitude())
+                    .longitude(coord.getLongitude())
+                    .key(region + "-" + coord.getLatitude() + "-" + coord.getLongitude())
                     .build());
         }
-
+        log.info("전력 사용량 조회 완료: {} 개 지역, 총 사용량: {}", results.size(), totalUsage);
         return results;
     }
 

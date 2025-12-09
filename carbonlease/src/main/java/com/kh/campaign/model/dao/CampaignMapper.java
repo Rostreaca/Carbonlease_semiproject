@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.kh.campaign.model.dto.CampaignDTO;
+import com.kh.campaign.model.dto.CampaignReplyDTO;
 import com.kh.campaign.model.dto.LikeDTO;
 
 
@@ -70,6 +71,23 @@ public interface CampaignMapper {
 	 */
 	int increaseViewCount(Long campaignNo);
 	
+	/** 댓글 목록 조회 (페이징) */
+    List<CampaignReplyDTO> selectReplies(Map<String, Object> params);
+
+    /** 댓글 등록 */
+    int insertReply(Map<String, Object> map);
+
+    /** 댓글 삭제 */
+    int deleteReply(Long replyNo);
+
+    /** 댓글 총 개수 */
+    int countReplies(Long campaignNo);
+
+    /** 댓글 수정 */
+    int updateReply(Map<String, Object> map);
+
+	/** 댓글 작성자 조회 */
+    Long findReplyWriter(Long replyNo);
 }
 
 	

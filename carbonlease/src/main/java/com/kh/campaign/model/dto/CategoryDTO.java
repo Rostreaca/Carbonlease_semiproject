@@ -2,16 +2,15 @@ package com.kh.campaign.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
-@ToString
+@NoArgsConstructor 
 @Builder
 public class CategoryDTO {
 	private Long categoryNo;		// 카테고리 번호
