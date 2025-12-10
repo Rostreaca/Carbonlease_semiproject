@@ -58,9 +58,9 @@ public class MainApiServiceImpl implements MainApiService {
 
         log.debug("KEPCO API 데이터 조회 완료: {} 건", usageList.size());
 
-        // 3. 지역별(시도별) 전력 사용량 합계 Map (key: 시도명, value: 사용량)
+        // 3.지역명 정규화 + 사용량 집계 (key: 시도명, value: 사용량)
         Map<String, Long> usageMap = new HashMap<>();
-        for (Map<String, Object> item : usageList) { // 예: [{metro: "서울특별시", powerUsage: 12345}, {metro: "경기도", powerUsage: 23456}, ...]
+        for (Map<String, Object> item : usageList) { // 예: [{metro: "서울특별시", powerUsage: 12345}, {...}, ...]
             String rawMetro = String.valueOf(item.get("metro"));
             long usage = item.get("powerUsage") != null ? Long.parseLong(String.valueOf(item.get("powerUsage"))) : 0L;
             String regionKey = normalizeRegionName(rawMetro);
@@ -83,23 +83,33 @@ public class MainApiServiceImpl implements MainApiService {
                 c -> c
             ));
 
-        // 5. 전체 사용량 합계(퍼센트 계산용)
-        long totalUsage = usageMap.values().stream().mapToLong(Long::longValue).sum();
+        // 4-2. 좌표 없는 지역 제외
+        Map<String, Long> filteredUsageMap = new HashMap<>();
+        for (String region : usageMap.keySet()) {
+            if (coordMap.containsKey(region)) {
+                filteredUsageMap.put(region, usageMap.get(region));
+            } else {
+                log.warn("좌표를 찾을 수 없는 지역: {}", region);
+            }
+        }
+
+        // 5. 좌표 있는 지역만으로 전체 사용량 계산
+        long totalUsage = filteredUsageMap.values().stream()
+            .mapToLong(Long::longValue)
+            .sum();
 
         // 6. 프론트에 전달할 DTO 리스트
         List<RegionEnergyUsageDTO> results = new ArrayList<>();
         
         
-        for (String region : usageMap.keySet()) {
-            long usage = usageMap.get(region);
+        for (String region : filteredUsageMap.keySet()) {
+            long usage = filteredUsageMap.get(region);
             double percent = totalUsage > 0 ? (usage * 100.0) / totalUsage : 0;
-            double roundedPercent = Math.round(percent * 100.0) / 100.0;  // 5.34
+            double roundedPercent = Math.round(percent * 100.0) / 100.0;
+            
+            // 이제 coord는 항상 존재 (이미 필터링했으니)
             KoreaRegionCoordVO coord = coordMap.get(region);
-            // 좌표가 없는 지역은 결과에서 제외
-            if (coord == null) {
-                log.warn("좌표를 찾을 수 없는 지역: {}", region);
-                continue;  // 해당 지역은 스킵
-            }
+            
             results.add(RegionEnergyUsageDTO.builder()
                     .topRegionName(region)
                     .avgUseQnt(usage)
