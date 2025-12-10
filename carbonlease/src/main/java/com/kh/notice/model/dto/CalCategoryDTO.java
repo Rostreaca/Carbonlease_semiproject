@@ -1,7 +1,5 @@
 package com.kh.notice.model.dto;
 
-import java.sql.Date;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,15 +11,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class EventDTO {
+public class CalCategoryDTO {
 
-	private Long calendarNo;
-	private Long eventWriter;
 	private Long categoryNo;
-	private Date startDate;
-	private Date endDate;
-	private String title;
-	private String status;
-	
-	
+	private String categoryName;
 }
