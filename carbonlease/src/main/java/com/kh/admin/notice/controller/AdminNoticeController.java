@@ -1,6 +1,5 @@
 package com.kh.admin.notice.controller;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,18 +33,16 @@ public class AdminNoticeController {
 
 	private final AdminNoticeService adminNoticeService;
 	
-	@GetMapping("")
-	public ResponseEntity<?> findAll(@RequestParam(name="pageNo", defaultValue = "1")int pageNo){
+	@GetMapping
+	public ResponseEntity<Map<String, Object>> findAll(@RequestParam(name="pageNo", defaultValue = "1")int pageNo){
 		
-		Map<String, Object> map = new HashMap();
-		
-		map = adminNoticeService.findAll(pageNo);
+		Map<String, Object> map = adminNoticeService.findAll(pageNo);
 		
 		return ResponseEntity.ok(map);
 	}
 	
-	@PostMapping("insert")
-	public ResponseEntity<?> insert(
+	@PostMapping
+	public ResponseEntity<String> insert(
 	        @Valid NoticeAdminDTO notice,
 	        @RequestParam(name = "files", required = false) List<MultipartFile> files,
 	        @AuthenticationPrincipal CustomUserDetails user
@@ -53,19 +50,19 @@ public class AdminNoticeController {
 
 	    adminNoticeService.insert(notice, files, user);
 
-	    return ResponseEntity.ok("등록 성공");
+	    return ResponseEntity.ok("등록 성공!");
 	}
 	
 	@GetMapping("detail/{noticeNo}")
-	public ResponseEntity<?> findByNo(@PathVariable(name="noticeNo")Long noticeNo){
+	public ResponseEntity<Map<String, Object>> findByNo(@PathVariable(name="noticeNo")Long noticeNo){
 		
-		NoticeAdminDTO notice = adminNoticeService.findByNo(noticeNo);
+		Map<String, Object> map = adminNoticeService.findByNo(noticeNo);
 		
-		return ResponseEntity.ok(notice);
+		return ResponseEntity.ok(map);
 	}
 	
 	@PutMapping("update/{noticeNo}")
-	public ResponseEntity<?> update(
+	public ResponseEntity<String> update(
 			@Valid NoticeAdminDTO notice,
 	        @RequestParam(name = "files", required = false) List<MultipartFile> files,
 	        @AuthenticationPrincipal CustomUserDetails user
@@ -73,15 +70,15 @@ public class AdminNoticeController {
 		
 		adminNoticeService.update(notice, files, user);
 		
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.ok("수정 성공!");
 	}
 	
 	@PutMapping("delete/{noticeNo}")
-	public ResponseEntity<?> delete(@PathVariable(name="noticeNo")Long noticeNo){
+	public ResponseEntity<String> delete(@PathVariable(name="noticeNo")Long noticeNo){
 		
 		adminNoticeService.delete(noticeNo);
 		
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.ok("삭제 성공!");
 	}
 	
 }

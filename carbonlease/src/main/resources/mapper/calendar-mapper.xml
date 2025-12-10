@@ -9,6 +9,7 @@
 		SELECT
 				  CALENDAR_NO calendarNo
 				, MEMBER_NO eventWriter
+				, CATEGORY_NO categoryNo
 				, START_DATE startDate
 				, END_DATE endDate 
 				, CALENDAR_TITLE title
@@ -16,6 +17,14 @@
 				CL_CALENDAR
 		WHERE
 				STATUS = 'Y'
+	</select>
+	
+	<select id="findAllCategory">
+		SELECT
+				  CATEGORY_NO categoryNo
+				, CATEGORY_NAME categoryName
+		FROM
+				CL_CALENDAR_CATEGORY
 	</select>
 				  
 </mapper>

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.kh.admin.notice.model.dto.CategoryAdminDTO;
 import com.kh.admin.notice.model.dto.EventAdminDTO;
 
 import jakarta.validation.Valid;
@@ -18,5 +19,7 @@ public interface AdminCalendarMapper {
 	void updateEvent(@Valid EventAdminDTO event);
 
 	void deleteEvent(Long id);
+
+	List<CategoryAdminDTO> findAllCategory();
 
 }

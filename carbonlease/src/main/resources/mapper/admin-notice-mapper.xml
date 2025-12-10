@@ -4,24 +4,6 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.admin.notice.model.dao.AdminNoticeMapper">
 
-	<select id="findAll"
-			resultType="NoticeAdminDTO"
-			parameterType="map">
-		SELECT
-				  NOTICE_NO noticeNo
-				, NOTICE_TITLE noticeTitle
-				, ENROLL_DATE createDate
-				, VIEW_COUNT viewCount
-		FROM
-				CL_NOTICE
-		WHERE		
-				STATUS='Y'
-		ORDER
-		BY
-				NOTICE_NO DESC
-		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
-	</select>
-				
 	<select id="countAll"
 			resultType="_int">
 		SELECT
@@ -55,13 +37,16 @@
 	</select>
 	
 	<insert id="insertNotice"
-			parameterType="AdminNoticeVO">
+		    parameterType="AdminNoticeVO">
+		<selectKey keyProperty="noticeNo" order="BEFORE" resultType="long">
+	        SELECT SEQ_NOTICE_NO.NEXTVAL FROM dual
+	    </selectKey>
 		INSERT
 		INTO
 				CL_NOTICE
 		VALUES
 				(
-				  SEQ_NOTICE_NO.NEXTVAL
+				  #{noticeNo}
 				, #{noticeWriter}
 				, #{noticeTitle}
 				, #{noticeContent}
@@ -72,21 +57,22 @@
 				)
 	</insert>
 	
-	<insert id="insertAttachment"
+	<insert id="insertAttachment" 
 			parameterType="AttachmentDTO">
-	    INSERT
+		INSERT 
 		INTO 
 				CL_NOTICE_ATTACHMENT
 		VALUES 
 				(
-	              SEQ_NOTICE_FILE_NO.NEXTVAL
-	            , SEQ_NOTICE_NO.CURRVAL
-	            , #{originName}
-	            , #{changeName}
-	            , #{filePath}
-	            , SYSDATE
-		        )
+				  SEQ_NOTICE_FILE_NO.NEXTVAL,
+				  #{refBno},
+				  #{originName},
+				  #{changeName},
+				  #{filePath},
+				  SYSDATE
+				)
 	</insert>
+
 	
 	<select id="findByNo"
 			parameterType="long"
@@ -133,6 +119,21 @@
 				REF_BNO = #{noticeNo}
 		
 	</delete>
+	
+	<select id="getAttachment"
+			resultType="AttachmentDTO"
+			parameterType="long">
+		SELECT
+				  FILE_NO fileNo
+				, ORIGIN_NAME originName
+				, CHANGE_NAME changeName
+				, FILE_PATH filePath
+				, UPLOAD_DATE uploadDate
+		FROM
+				CL_NOTICE_ATTACHMENT
+		WHERE
+				REF_BNO = #{noticeNo}
+	</select>
 	
 	
 </mapper>
