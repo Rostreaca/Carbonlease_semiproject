@@ -165,7 +165,7 @@
     </insert>
 	
 	
-	<resultMap id="categoryResultMap" type="com.kh.campaign.model.dto.CategoryDTO">
+	<resultMap id="categoryResultMap" type="CategoryDTO">
 	    <id property="categoryNo" column="CATEGORY_NO"/>
 	    <result property="categoryName" column="CATEGORY_NAME"/>
 	</resultMap>
