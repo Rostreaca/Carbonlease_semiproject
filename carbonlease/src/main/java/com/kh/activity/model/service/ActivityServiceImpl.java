@@ -100,7 +100,9 @@ public class ActivityServiceImpl implements ActivityService {
 
         ActivityDetailDTO detail = activityMapper.selectDetail(activityNo, loginMemberNo);
 
-        if (detail == null) return null;
+        if (detail == null) {
+        	throw new ResourceNotFoundException("존재하지 않는 게시물입니다.");
+        }
 
         List<String> image = activityMapper.selectDetailImage(activityNo);
         detail.setImages(image);
