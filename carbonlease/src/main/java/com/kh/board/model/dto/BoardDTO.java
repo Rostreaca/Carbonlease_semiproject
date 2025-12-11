@@ -1,5 +1,41 @@
 package com.kh.board.model.dto;
 
+import java.sql.Date;
+import java.util.List;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class BoardDTO {
 
+	private int boardSeq;  // 게시글순번
+	private int boardNo;
+	private String boardTitle;
+	private String boardContent;
+	private int viewCount;
+	private Date enrollDate;
+	private char status;
+	private long memberNo;
+	private String memberId;
+	private int regionNo;
+	private String regionName;
+	private String nickname;
+	private int replyCount;
+	private List<BoardReplyDTO> replyList;	// 댓글 목록
+	
+	// 검색 기능에 필요한 필드값
+    private int pageNo;
+    private int offset;
+    private int limit;
+    private String searchType;
+    private String searchQuery;
+	
 }

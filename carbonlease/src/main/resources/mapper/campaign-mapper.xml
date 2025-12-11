@@ -3,7 +3,288 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.campaign.model.dao.CampaignMapper">
+	
+	<!-- ResultMap 정의 -->
+	<resultMap id="campaignResultMap" type="CampaignDTO">
+
+	    <!-- 캠페인 기본 -->
+	    <id property="campaignNo" column="CAMPAIGN_NO"/>
+	    <result property="campaignTitle" column="CAMPAIGN_TITLE"/>
+	    <result property="campaignContent" column="CAMPAIGN_CONTENT"/>
+	    <result property="viewCount" column="VIEW_COUNT"/>
+	    <result property="startDate" column="START_DATE"/>
+	    <result property="endDate" column="END_DATE"/>
+	    <result property="enrollDate" column="ENROLL_DATE"/>
+	    <result property="status" column="STATUS"/>
+	    <result property="memberNo" column="MEMBER_NO"/>
+	    
+	    <!-- 카테고리 -->
+	    <association property="category" javaType="com.kh.campaign.model.dto.CategoryDTO">
+	        <result property="categoryNo" column="CATEGORY_NO"/>
+	        <result property="categoryName" column="CATEGORY_NAME"/>
+	    </association>
+	
+	    <!-- 첨부파일 목록 -->
+	    <collection property="attachments" ofType="CampaignAttachmentDTO">
+		    <id property="fileNo" column="FILE_NO"/>
+		    <result property="refBno" column="REF_BNO"/>
+		    <result property="originName" column="ORIGIN_NAME"/>
+		    <result property="changeName" column="CHANGE_NAME"/>
+		    <result property="fileLevel" column="FILE_LEVEL"/>
+		    <result property="filePath" column="FILE_PATH"/>
+		    <result property="uploadDate" column="UPLOAD_DATE"/>
+		</collection>
+	
+	</resultMap>
+	
+	<sql id="campaignColumn">
+      SELECT
+	         P.CAMPAIGN_NO
+	       , P.CAMPAIGN_TITLE
+	       , P.CAMPAIGN_CONTENT
+	       , P.START_DATE
+	       , P.END_DATE
+	       , P.ENROLL_DATE
+	       , P.VIEW_COUNT
+	       , P.STATUS
+	       , P.MEMBER_NO
+	       , C.CATEGORY_NO
+	       , C.CATEGORY_NAME
+	       , A.FILE_NO
+	       , A.REF_BNO
+	       , A.ORIGIN_NAME
+	       , A.CHANGE_NAME
+	       , A.FILE_PATH
+	       , A.FILE_LEVEL
+	       , A.UPLOAD_DATE
+		FROM 
+		     CL_CAMPAIGN P
+		JOIN 
+		     CL_CAMPAIGN_CATEGORY C ON P.CATEGORY_NO = C.CATEGORY_NO
+		LEFT
+		JOIN 
+		     CL_CAMPAIGN_ATTACHMENT A ON P.CAMPAIGN_NO = A.REF_BNO
+	</sql>
 
 	
+	
+	<!-- 전체조회 -->
+	<select id="findAll" resultMap="campaignResultMap" parameterType="map">
+	    <include refid="campaignColumn"/>
+	    WHERE 
+	          A.FILE_LEVEL = 0
+	      AND 
+	          P.STATUS = 'Y'
+	      AND 
+	          (P.END_DATE IS NULL OR P.END_DATE >= SYSDATE)
+		ORDER 
+		   BY P.CAMPAIGN_NO DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+
+	
+	
+	<!-- 상세조회 -->
+	<select id="findDetailByNo" resultMap="campaignResultMap">
+	    <include refid="campaignColumn"/>
+	    WHERE 
+	          A.FILE_LEVEL = 1
+	      AND 
+	          P.STATUS = 'Y'
+	      AND 
+	          (P.END_DATE IS NULL OR P.END_DATE >= SYSDATE)
+	      AND 
+	          P.CAMPAIGN_NO = #{campaignNo}
+	    ORDER 
+	       BY A.FILE_LEVEL ASC
+	</select>
+	
+	<!-- 상세조회_수정용 -->
+	<!--<select id="getCampaignOnly" parameterType="long" resultType="CampaignDTO">
+	    SELECT 
+	           * 
+	      FROM 
+	           CL_CAMPAIGN
+	     WHERE 
+	           CAMPAIGN_NO = #{campaignNo}
+	</select>-->
+	
+	
+	<select id="getCampaignOrThrow" parameterType="long" resultMap="campaignResultMap">
+	    <include refid="campaignColumn"/>
+	    WHERE P.CAMPAIGN_NO = #{campaignNo}
+	</select>
+
+	<!-- 전체 게시글 수 조회 (리스트 조회와 동일 조건) -->
+	<select id="findAndCountAll" resultType="_int">
+       	SELECT
+		       COUNT(*)
+		  FROM 
+		       CL_CAMPAIGN P
+		  JOIN 
+		       CL_CAMPAIGN_CATEGORY C ON P.CATEGORY_NO = C.CATEGORY_NO
+          LEFT 
+		  JOIN 
+		       CL_CAMPAIGN_ATTACHMENT A ON P.CAMPAIGN_NO = A.REF_BNO
+		 WHERE
+		       A.FILE_LEVEL = 0
+		   AND
+			   P.STATUS = 'Y'
+		   AND
+		       (P.END_DATE IS NULL OR P.END_DATE >= SYSDATE)
+	</select>
+	
+	<!-- 좋아요 존재 여부 -->
+	<select id="existsLike" parameterType="com.kh.campaign.model.dto.LikeDTO" resultType="_int">
+	    SELECT 
+	           COUNT(*) 
+	      FROM 
+	           CL_CAMPAIGN_LIKE
+	     WHERE 
+	           CAMPAIGN_NO = #{campaignNo}
+	       AND 
+	           MEMBER_NO = #{memberNo}
+	</select>
+
+	<!-- 좋아요 추가 -->
+	<insert id="insertLike" parameterType="com.kh.campaign.model.dto.LikeDTO">
+	    INSERT 
+	      INTO 
+	           CL_CAMPAIGN_LIKE 
+	           (
+	           LIKE_NO
+	         , CAMPAIGN_NO
+	         , MEMBER_NO
+	           )
+	    VALUES 
+	           (
+	           SEQ_CL_CAMPAIGN_LIKE.NEXTVAL
+	         , #{campaignNo}, #{memberNo}
+	           )
+	</insert>
+
+	<!-- 좋아요 삭제 -->
+	<delete id="deleteLike" parameterType="com.kh.campaign.model.dto.LikeDTO">
+	    DELETE 
+	      FROM 
+	           CL_CAMPAIGN_LIKE
+	     WHERE 
+	           CAMPAIGN_NO = #{campaignNo}
+	       AND 
+	           MEMBER_NO = #{memberNo}
+	</delete>
+
+
+	<!-- 캠페인 조회수 증가 -->
+	<update id="increaseViewCount" parameterType="long">
+		UPDATE 
+		   	   CL_CAMPAIGN
+		   SET 
+		       VIEW_COUNT = VIEW_COUNT + 1
+		 WHERE 
+		       CAMPAIGN_NO = #{campaignNo}
+	</update>
+	
+
+	<!-- 댓글 목록 조회 -->
+    <select id="selectReplies"
+            parameterType="map"
+            resultType="CampaignReplyDTO">
+
+        SELECT
+               R.REPLY_NO AS replyNo
+             , R.REPLY_CONTENT AS replyContent
+             , TO_CHAR(R.ENROLL_DATE, 'YYYY-MM-DD HH24:MI') AS enrollDate
+             , R.CAMPAIGN_NO AS campaignNo
+             , R.MEMBER_NO AS memberNo
+             , M.NICKNAME AS writer
+          FROM
+               CL_CAMPAIGN_REPLY R
+          JOIN
+               CL_MEMBER M ON R.MEMBER_NO = M.MEMBER_NO
+         WHERE
+               R.CAMPAIGN_NO = #{campaignNo}
+           AND
+               R.STATUS = 'Y'
+         ORDER
+            BY
+               R.REPLY_NO DESC
+         OFFSET
+               #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+
+    <!-- 댓글 등록 -->
+    <insert id="insertReply">
+        INSERT
+          INTO
+               CL_CAMPAIGN_REPLY
+               (
+               REPLY_NO
+             , REPLY_CONTENT
+             , ENROLL_DATE
+             , STATUS
+             , CAMPAIGN_NO
+             , MEMBER_NO
+               )
+        VALUES
+               (
+               SEQ_CAMPAIGN_REPLY_NO.NEXTVAL
+             , #{replyContent}
+             , SYSDATE
+             , 'Y'
+             , #{campaignNo}
+             , #{memberNo}
+               )
+    </insert>
+
+    <!-- 댓글 삭제 -->
+    <update id="deleteReply">
+        UPDATE
+               CL_CAMPAIGN_REPLY
+           SET
+               STATUS = 'N'
+         WHERE
+               REPLY_NO = #{replyNo}
+    </update>
+
+
+    <!-- 댓글 수정 -->
+    <update id="updateReply">
+        UPDATE
+               CL_CAMPAIGN_REPLY
+           SET
+               REPLY_CONTENT = #{replyContent}
+         WHERE
+               REPLY_NO = #{replyNo}
+           AND
+               MEMBER_NO = #{memberNo}
+           AND
+               STATUS = 'Y'
+    </update>
+
+    <!-- 댓글 개수 조회 -->
+    <select id="countReplies" resultType="int">
+        SELECT
+               COUNT(1)
+          FROM
+               CL_CAMPAIGN_REPLY
+         WHERE
+               CAMPAIGN_NO = #{campaignNo}
+           AND
+               STATUS = 'Y'
+    </select>
+
+	<!-- 댓글 작성자 확인 -->
+    <select id="findReplyWriter" resultType="long">
+        SELECT
+               MEMBER_NO
+          FROM
+               CL_CAMPAIGN_REPLY
+         WHERE
+               REPLY_NO = #{replyNo}
+           AND
+               STATUS = 'Y'
+    </select>
 	
 </mapper>

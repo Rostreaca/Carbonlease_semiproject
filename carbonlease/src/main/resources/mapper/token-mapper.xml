@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.token.model.dao.TokenMapper">
+	
+	<insert id="saveTokens" parameterType="com.kh.token.model.vo.RefreshToken">
+		INSERT
+		  INTO
+		       CL_TOKEN
+		VALUES
+		       (
+		       #{memberNo}
+		     , #{token} 
+		     , #{expiration}
+		       )
+	</insert>
+	
+	<select id="findByToken" parameterType="string" resultType="com.kh.token.model.dto.TokenDTO">
+		SELECT
+		       MEMBER_NO memberNo
+		     , TOKEN
+		     , EXPIRATION
+		  FROM
+		       CL_TOKEN
+		 WHERE
+		       TOKEN = #{refreshToken}
+	</select>
+	
+	<delete id="deleteToken" parameterType="_long">
+		DELETE
+		  FROM
+		       CL_TOKEN
+		 WHERE
+		       MEMBER_NO = #{memberNo}
+	</delete>
+</mapper>

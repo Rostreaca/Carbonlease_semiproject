@@ -1,5 +1,175 @@
 package com.kh.board.model.service;
 
+import java.security.InvalidParameterException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.kh.auth.model.vo.CustomUserDetails;
+import com.kh.board.model.dao.BoardMapper;
+import com.kh.board.model.dto.BoardDTO;
+import com.kh.board.model.dto.BoardReplyDTO;
+import com.kh.board.model.vo.ReplyInsertVO;
+import com.kh.common.util.Pagination;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService {
 
+	private final BoardMapper boardMapper;
+	private final Pagination pagination;
+	
+
+	// 전체 목록 조회
+	@Override
+	public Map<String, Object> findAll(int pageNo) {
+		
+		// 유효성 검사
+		if( pageNo < 0) {
+			throw new InvalidParameterException("유효하지 않은 접근입니다.");
+		}
+		
+		// 1. 게시물의 총 개수를 조회합니다.
+		int listCount = countAll();
+		
+		Map<String, Object> params = pagination.pageRequest(pageNo, 10, listCount);
+		
+		// 3. 게시글의 목록들을 Map을 인자값으로 받아 조회합니다.
+		// Map에 offset, limit가 저장되어있으니 쿼리문에 #{offset}, #{limit} 추가하면됨.
+		List<BoardDTO> boards = boardMapper.findAll(params);
+		
+		// 4. 새로운 Map 생성하여 조회해온 게시글 목록과 pageInfo를 저장합니다.
+		Map<String, Object> map = new HashMap();
+		map.put("pageInfo", params.get("pi"));
+		map.put("boards", boards);
+		
+		// 5. 생성한 Map 반환
+		return map;
+	}
+
+	private int countAll() {
+
+		int count = boardMapper.findAndCountAll();
+		
+		return count;
+	}
+	
+	
+	// 상세 조회
+	@Override
+	public Map<String, Object> boardDetail(Long boardNo) {
+
+		Map<String, Object> map = new HashMap();
+		
+		BoardDTO board = boardMapper.boardDetail(boardNo);
+		
+		List<BoardReplyDTO> reply = boardMapper.replyList(boardNo);
+		
+		int replyCount = boardMapper.replyCount(boardNo);
+		
+		Map<String, Object> params = pagination.pageRequest(1, 5, replyCount);
+		
+		map.put("boardDetail", board);
+		map.put("replyList", reply);
+		map.put("replyCount", params.get("pi"));
+		
+		return map;
+	}
+	
+	
+	// 글 쓰기
+	@Override
+	public int insertBoard(BoardDTO boardVo) {
+
+		return boardMapper.insertClBoard(boardVo);
+	}
+
+
+	// 글 수정하기
+	@Override
+	public int boardUpdateForm(BoardDTO boardDTO, CustomUserDetails user) {
+		
+		int updateOK = 0;
+		
+		if(user.getUsername().equals(boardDTO.getMemberId())) {
+			
+			updateOK = boardMapper.boardUpdateForm(boardDTO);
+			
+		} else {
+			throw new InvalidParameterException("유효하지 않은 접근입니다.");
+		}
+		
+		return updateOK;
+	}
+	
+	
+	// 글 삭제하기
+	@Override
+	public int boardDelete(BoardDTO boardDTO, CustomUserDetails user) {
+		
+		int deleteOK = 0;
+				
+		System.out.println(user);
+		if(user.getUsername().equals(boardDTO.getMemberId())) {
+			
+			deleteOK = boardMapper.boardDelete(new Integer( boardDTO.getBoardNo()).longValue());
+		} else {
+			throw new InvalidParameterException("유효하지 않은 접근입니다.");
+		}
+		
+		return deleteOK;
+	}
+
+	// 댓글 등록
+	@Override
+	public int boardReplyInsert(ReplyInsertVO riVO) {
+		
+		return boardMapper.replyInsert(riVO);
+	}
+	
+	
+	// 댓글 수정
+	@Override
+	public int boardReplyUpdate(ReplyInsertVO riVO, CustomUserDetails user) {
+		
+		int updateOK = 0;
+		
+		if(user.getUsername().equals(riVO.getMemberId())) {
+			
+			updateOK = boardMapper.replyUpdate(riVO);
+			
+		} else {
+			throw new InvalidParameterException("유효하지 않은 접근입니다.");
+		}
+		
+		return updateOK;
+	}
+
+	
+	// 댓글 삭제
+	@Override
+	@Transactional
+	public int deleteReply(int replyNo) {
+		
+		return boardMapper.deleteReply(replyNo);
+	
+	}
+	
+	
+	// 조회수
+	@Transactional
+	@Override
+	public void boardViewCount(int boardNo) {
+		
+		boardMapper.boardViewCount(boardNo);
+	}
+
 }
+	

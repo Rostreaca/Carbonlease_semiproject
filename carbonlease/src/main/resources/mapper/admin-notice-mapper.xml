@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.admin.notice.model.dao.AdminNoticeMapper">
+
+	<select id="countAll"
+			resultType="_int">
+		SELECT
+				COUNT(*)
+		FROM
+				CL_NOTICE
+	</select>
+	
+	<select id="findAllByAdmin"
+			parameterType="map"
+			resultType="NoticeAdminDTO"
+			>
+		SELECT
+				  N.NOTICE_NO noticeNo
+				, M.MEMBER_ID noticeWriter
+				, N.NOTICE_TITLE noticeTitle
+				, N.ENROLL_DATE createDate
+				, N.VIEW_COUNT viewCount
+				, N.STATUS status
+				, N.FIX fix
+		FROM
+				CL_NOTICE N
+		JOIN
+				CL_MEMBER M
+		ON
+				(N.MEMBER_NO = M.MEMBER_NO)
+		ORDER
+		BY
+				NOTICE_NO DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
+	<insert id="insertNotice"
+		    parameterType="AdminNoticeVO">
+		<selectKey keyProperty="noticeNo" order="BEFORE" resultType="long">
+	        SELECT SEQ_NOTICE_NO.NEXTVAL FROM dual
+	    </selectKey>
+		INSERT
+		INTO
+				CL_NOTICE
+		VALUES
+				(
+				  #{noticeNo}
+				, #{noticeWriter}
+				, #{noticeTitle}
+				, #{noticeContent}
+				, DEFAULT
+				, SYSDATE
+				, 'Y'
+				, #{fix}
+				)
+	</insert>
+	
+	<insert id="insertAttachment" 
+			parameterType="AttachmentDTO">
+		INSERT 
+		INTO 
+				CL_NOTICE_ATTACHMENT
+		VALUES 
+				(
+				  SEQ_NOTICE_FILE_NO.NEXTVAL,
+				  #{refBno},
+				  #{originName},
+				  #{changeName},
+				  #{filePath},
+				  SYSDATE
+				)
+	</insert>
+
+	
+	<select id="findByNo"
+			parameterType="long"
+			resultType="NoticeAdminDTO">
+		SELECT
+				  NOTICE_TITLE noticeTitle
+				, NOTICE_CONTENT noticeContent
+				, VIEW_COUNT viewCount
+				, ENROLL_DATE createDate
+		FROM
+				CL_NOTICE
+		WHERE
+				NOTICE_NO = #{noticeNo}
+	</select>
+
+	<update id="delete"
+			parameterType="long">
+		UPDATE
+				CL_NOTICE
+		SET
+				STATUS = 'N'
+		WHERE
+				NOTICE_NO = #{noticeNo}
+	</update>
+	
+	<update id="updateNotice"
+			parameterType="AdminNoticeVO">
+		UPDATE
+				CL_NOTICE
+		SET
+				  MEMBER_NO = #{noticeWriter}
+				, NOTICE_TITLE = #{noticeTitle}
+				, NOTICE_CONTENT = #{noticeContent}
+				, ENROLL_DATE = SYSDATE
+		WHERE
+				NOTICE_NO=#{noticeNo}
+	</update>
+	
+	<delete id="resetAttachment">
+		DELETE
+		FROM
+				CL_NOTICE_ATTACHMENT
+		WHERE
+				REF_BNO = #{noticeNo}
+		
+	</delete>
+	
+	<select id="getAttachment"
+			resultType="AttachmentDTO"
+			parameterType="long">
+		SELECT
+				  FILE_NO fileNo
+				, ORIGIN_NAME originName
+				, CHANGE_NAME changeName
+				, FILE_PATH filePath
+				, UPLOAD_DATE uploadDate
+		FROM
+				CL_NOTICE_ATTACHMENT
+		WHERE
+				REF_BNO = #{noticeNo}
+	</select>
+	
+	
+</mapper>
