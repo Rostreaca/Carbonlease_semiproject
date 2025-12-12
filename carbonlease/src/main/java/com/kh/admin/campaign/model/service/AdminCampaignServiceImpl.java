@@ -28,9 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminCampaignServiceImpl implements AdminCampaignService {
 
 	private final AdminCampaignMapper adminCampaignMapper;
-	// private final CampaignService campaignService;
 	private final Pagination pagination;
-	//private final CampaignMapper campaignMapper;
 
 	/**
 	 * 관리자_목록조회
@@ -82,12 +80,11 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 			.status("Y")
 			.build();
 
-		// 2) 캠페인 저장 후 PK 추출 (PK 자동 생성)
+		// 2) 캠페인 저장 후 자동 생성된 PK를 추출 (캠페인 첨부파일 저장용)
 		int result = adminCampaignMapper.save(campaignVO);
 		if (result == 0) {
 			throw new RuntimeException("캠페인 등록 실패");
 		}
-
 		Long campaignNo = campaignVO.getCampaignNo();
 
 		// 3) 첨부파일 처리 (각각 한 번씩만 insert)
