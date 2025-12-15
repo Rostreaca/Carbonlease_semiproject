@@ -1,28 +1,25 @@
 package com.kh.openapi.main.model.dao;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
-import com.kh.openapi.main.model.dto.EnergyRegionStatDTO;
-import com.kh.openapi.main.model.vo.EnergyDataVO;
+import com.kh.openapi.main.model.dto.RegionEnergyUsageDTO;
 import com.kh.openapi.main.model.vo.KoreaRegionCoordVO;
 
 @Mapper
 public interface MainApiMapper {
 
-	List<KoreaRegionCoordVO> selectRegionCoords();
+    // 좌표 정보 조회
+    List<KoreaRegionCoordVO> selectRegionCoords();
 
-	// 기간별 에너지 데이터 조회
-	// List<EnergyDataVO> selectEnergyDataByPeriod(Date startDate, Date endDate);
+    // 가공된 데이터 단건 저장
+    void insertRegionEnergyUsage(RegionEnergyUsageDTO dto);
 
-	// // 지역별 에너지 사용 통계 조회
-	// List<EnergyRegionStatDTO> selectEnergyRegionStats(Date startDate, Date endDate);
-
-	 // 에너지 데이터 저장
-    int insertEnergyData(EnergyDataVO vo);
-
-    // 에너지 데이터 업데이트
-    int updateEnergyData(EnergyDataVO vo);
+	// 연/월별 기존 데이터 삭제 (중복 INSERT 방지)
+	int deleteRegionEnergyUsageByYearMonth(@Param("year") String year, @Param("month") String month);
+    
+    // 최신 데이터 조회
+    List<RegionEnergyUsageDTO> selectLatestRegionEnergyUsage();
 }

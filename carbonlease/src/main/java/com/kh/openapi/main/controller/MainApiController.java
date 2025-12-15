@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.openapi.common.scheduler.KepcoScheduler;
 import com.kh.openapi.main.model.dto.RegionEnergyUsageDTO;
 import com.kh.openapi.main.model.service.MainApiService;
 
@@ -20,7 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 public class MainApiController {
 
     private final MainApiService mainApiService;
-    
+    private final KepcoScheduler kepcoScheduler;
+
     /**
      * 전기 사용량 OpenAPI 조회 후
      * 지도에서 사용할 형태로 변환한 리스트 반환
@@ -34,5 +36,15 @@ public class MainApiController {
     }
 
     // 2025-12-10 개선 기능 
+    /**
+     * 관리자용: 스케줄러 수동 실행
+     * GET http://localhost:8080/api/main/refreshData
+     */
+    @GetMapping("/refreshData")
+    public ResponseEntity<String> refreshKepcoData() {
+        log.info("스케줄러 수동 실행 요청");
+        kepcoScheduler.updateKepcoData();
+        return ResponseEntity.ok("KEPCO 데이터 갱신 완료");
+    }
     
 }
