@@ -7,58 +7,61 @@
 
         <!-- 게시판 통계 -->
         <select id="selectBoardStats" resultType="map">
-             SELECT 'board' AS board_type,
-                 (SELECT COUNT(*) FROM CL_BOARD WHERE STATUS = 'Y') AS total_cnt,
-                 (SELECT COUNT(*) FROM CL_BOARD WHERE STATUS = 'N') AS hidden_cnt,
-                 (SELECT COUNT(*) FROM CL_BOARD_REPLY WHERE STATUS = 'Y') AS comment_cnt,
-                 (SELECT COUNT(*) FROM CL_BOARD_LIKE) AS like_cnt
+             SELECT 'board' AS boardType,
+                 (SELECT COUNT(*) FROM CL_BOARD WHERE STATUS = 'Y') AS "totalCount",
+                 (SELECT COUNT(*) FROM CL_BOARD WHERE STATUS = 'N') AS "hiddenCount",
+                 (SELECT COUNT(*) FROM CL_BOARD_REPLY WHERE STATUS = 'Y') AS "commentCount",
+                 (SELECT COUNT(*) FROM CL_BOARD_LIKE) AS "likeCount"
              FROM DUAL
              UNION ALL
-             SELECT 'activity' AS board_type,
-                 (SELECT COUNT(*) FROM CL_ACTIVITY_BOARD WHERE STATUS = 'Y') AS total_cnt,
-                 (SELECT COUNT(*) FROM CL_ACTIVITY_BOARD WHERE STATUS = 'N') AS hidden_cnt,
-                 (SELECT COUNT(*) FROM CL_ACTIVITY_REPLY WHERE STATUS = 'Y') AS comment_cnt,
-                 (SELECT COUNT(*) FROM CL_ACTIVITY_LIKE) AS like_cnt
+             SELECT 'activity' AS boardType,
+                 (SELECT COUNT(*) FROM CL_ACTIVITY_BOARD WHERE STATUS = 'Y') AS "totalCount",
+                 (SELECT COUNT(*) FROM CL_ACTIVITY_BOARD WHERE STATUS = 'N') AS "hiddenCount",
+                 (SELECT COUNT(*) FROM CL_ACTIVITY_REPLY WHERE STATUS = 'Y') AS "commentCount",
+                 (SELECT COUNT(*) FROM CL_ACTIVITY_LIKE) AS "likeCount"
              FROM DUAL
              UNION ALL
-             SELECT 'campaign' AS board_type,
-                 (SELECT COUNT(*) FROM CL_CAMPAIGN WHERE STATUS = 'Y') AS total_cnt,
-                 (SELECT COUNT(*) FROM CL_CAMPAIGN WHERE STATUS = 'N') AS hidden_cnt,
-                 (SELECT COUNT(*) FROM CL_CAMPAIGN_REPLY WHERE STATUS = 'Y') AS comment_cnt,
-                 (SELECT COUNT(*) FROM CL_CAMPAIGN_LIKE) AS like_cnt
+             SELECT 'campaign' AS boardType,
+                 (SELECT COUNT(*) FROM CL_CAMPAIGN WHERE STATUS = 'Y') AS "totalCnt",
+                 (SELECT COUNT(*) FROM CL_CAMPAIGN WHERE STATUS = 'N') AS "hiddenCnt",
+                 (SELECT COUNT(*) FROM CL_CAMPAIGN_REPLY WHERE STATUS = 'Y') AS "commentCnt",
+                 (SELECT COUNT(*) FROM CL_CAMPAIGN_LIKE) AS "likeCount"
              FROM DUAL
              UNION ALL
-             SELECT 'notice' AS board_type,
-                 (SELECT COUNT(*) FROM CL_NOTICE WHERE STATUS = 'Y') AS total_cnt,
-                 (SELECT COUNT(*) FROM CL_NOTICE WHERE STATUS = 'N') AS hidden_cnt,
-                 NULL AS comment_cnt,
-                 (SELECT COUNT(*) FROM CL_NOTICE_ATTACHMENT) AS like_cnt
+             SELECT 'notice' AS boardType,
+                 (SELECT COUNT(*) FROM CL_NOTICE WHERE STATUS = 'Y') AS "totalCnt",
+                 (SELECT COUNT(*) FROM CL_NOTICE WHERE STATUS = 'N') AS "hiddenCnt",
+                 NULL AS "commentCount",
+                 (SELECT COUNT(*) FROM CL_NOTICE_ATTACHMENT) AS "likeCount"
              FROM DUAL
         </select>
 
 
         <!-- 지역별 커뮤니티 활동량(합산, 일반, 인증) 통합 조회 -->
         <select id="getUsersRegionActivityStats" resultType="RegionActivityStatsDTO">
-            SELECT
-                r.REGION_NO AS regionNo,
-                r.REGION_NAME AS regionName,
-                NVL(board.boardCount, 0) AS boardCount,
-                NVL(activity.activityCount, 0) AS activityCount,
-                NVL(board.boardCount, 0) + NVL(activity.activityCount, 0) AS totalCount
-            FROM CL_REGION_CATEGORY r
-            LEFT JOIN (
-                SELECT REGION_NO, COUNT(*) AS boardCount
-                FROM CL_BOARD
-                WHERE STATUS = 'Y'
-                GROUP BY REGION_NO
-            ) board ON r.REGION_NO = board.REGION_NO
-            LEFT JOIN (
-                SELECT REGION_NO, COUNT(*) AS activityCount
-                FROM CL_ACTIVITY_BOARD
-                WHERE STATUS = 'Y'
-                GROUP BY REGION_NO
-            ) activity ON r.REGION_NO = activity.REGION_NO
-            ORDER BY totalCount DESC
+           SELECT
+			    r.REGION_NO AS regionNo,
+			    r.REGION_NAME AS regionName,
+			    NVL(board.boardCount, 0) AS boardCount,
+			    NVL(activity.activityCount, 0) AS activityCount,
+			    NVL(board.boardCount, 0) + NVL(activity.activityCount, 0) AS totalCount,
+			    coord.LATITUDE AS latitude,
+			    coord.LONGITUDE AS longitude
+			FROM CL_REGION_CATEGORY r
+			LEFT JOIN (
+			    SELECT REGION_NO, COUNT(*) AS boardCount
+			    FROM CL_BOARD
+			    WHERE STATUS = 'Y'
+			    GROUP BY REGION_NO
+			) board ON r.REGION_NO = board.REGION_NO
+			LEFT JOIN (
+			    SELECT REGION_NO, COUNT(*) AS activityCount
+			    FROM CL_ACTIVITY_BOARD
+			    WHERE STATUS = 'Y'
+			    GROUP BY REGION_NO
+			) activity ON r.REGION_NO = activity.REGION_NO
+			LEFT JOIN CL_REGION_COORD coord ON r.REGION_NAME = coord.TOP_REGION_NAME
+			ORDER BY totalCount DESC
         </select>
 
 
@@ -86,7 +89,7 @@
 
         <!-- 3. 지역별 커뮤니티 활동량 집계 (회원/게시글/지역 조인) -->
         <!-- 지역별 커뮤니티 활동 총 수(일반+인증 합산) -->
-        <select id="getUsersActivityBoardsTotal" resultType="map">
+        <!-- <select id="getUsersActivityBoardsTotal" resultType="map">
             SELECT r.REGION_NO AS regionNo, r.REGION_NAME AS regionName, SUM(t.count) AS totalCount
             FROM (
                 SELECT REGION_NO, COUNT(*) AS count
@@ -102,21 +105,21 @@
             JOIN CL_REGION_CATEGORY r ON t.REGION_NO = r.REGION_NO
             GROUP BY r.REGION_NO, r.REGION_NAME
             ORDER BY totalCount DESC
-        </select>
+        </select> -->
 
 
         <!-- 4. 인기글 Top 5 조회 (조회수 기준, 각 게시판별 UNION) -->
         <select id="getAllCountTop5" resultType="map">
             SELECT * FROM (
-                SELECT BOARD_TITLE AS title, VIEW_COUNT AS views, 'board' AS boardType FROM CL_BOARD WHERE STATUS = 'Y'
+                SELECT BOARD_TITLE AS "boardTitle", VIEW_COUNT AS "viewCount", 'board' AS "boardType" FROM CL_BOARD WHERE STATUS = 'Y'
                 UNION ALL
-                SELECT ACTIVITY_TITLE AS title, VIEW_COUNT AS views, 'activity' AS boardType FROM CL_ACTIVITY_BOARD WHERE STATUS = 'Y'
+                SELECT ACTIVITY_TITLE AS "boardTitle", VIEW_COUNT AS "viewCount", 'activity' AS "boardType" FROM CL_ACTIVITY_BOARD WHERE STATUS = 'Y'
                 UNION ALL
-                SELECT CAMPAIGN_TITLE AS title, VIEW_COUNT AS views, 'campaign' AS boardType FROM CL_CAMPAIGN WHERE STATUS = 'Y'
+                SELECT CAMPAIGN_TITLE AS "boardTitle", VIEW_COUNT AS "viewCount", 'campaign' AS "boardType" FROM CL_CAMPAIGN WHERE STATUS = 'Y'
                 UNION ALL
-                SELECT NOTICE_TITLE AS title, VIEW_COUNT AS views, 'notice' AS boardType FROM CL_NOTICE WHERE STATUS = 'Y'
+                SELECT NOTICE_TITLE AS "boardTitle", VIEW_COUNT AS "viewCount", 'notice' AS "boardType" FROM CL_NOTICE WHERE STATUS = 'Y'
             ) t
-            ORDER BY views DESC
+            ORDER BY "viewCount" DESC
             FETCH FIRST 5 ROWS ONLY
         </select>
     

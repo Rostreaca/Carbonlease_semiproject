@@ -32,4 +32,7 @@ public class MainApiController {
         log.info("지역별 전력 사용량 조회 완료: {} 건", data.size());
         return ResponseEntity.ok(data);
     }
+
+    // 2025-12-10 개선 기능 
+    
 }

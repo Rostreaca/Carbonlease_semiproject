@@ -27,8 +27,8 @@ public class EnergyApiClient {
     private final RestTemplate restTemplate;
     private final EnergyApiProperties props;
 
-    private static final int MAX_SEARCH_MONTHS = 18;  // 최대 탐색 개월 수
-    private static final int MIN_MONTH = 1;           // 1월
+    private static final int MAX_SEARCH_MONTHS = 3;  // 최대 탐색 개월 수
+    private static final int MIN_MONTH = 1;          // 1월
     private static final int MAX_MONTH = 12;          // 12월
 
     // 공통 KEPCO OpenAPI URL 생성 메서드
@@ -98,7 +98,7 @@ public class EnergyApiClient {
         LocalDate now = LocalDate.now();
         int year = now.getYear();
         int month = now.getMonthValue();
-        // 2.최근 18개월 동안 반복 탐색하여 유효한 연/월 찾기
+        // 2.최근 ~개월 동안 반복 탐색하여 유효한 연/월 찾기
         for (int i = 0; i < MAX_SEARCH_MONTHS; i++) {
             // 2-1. 테스트용 URL 생성 (해당 연/월에 데이터가 있는지 확인)
             String y = String.valueOf(year);
