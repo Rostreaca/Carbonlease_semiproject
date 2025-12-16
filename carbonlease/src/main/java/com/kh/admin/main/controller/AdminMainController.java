@@ -44,4 +44,5 @@ public class AdminMainController {
         List<Map<String, Object>> result = adminMainService.getAllCountTop5();
         return ResponseEntity.ok(result);
     }
+    
 }
