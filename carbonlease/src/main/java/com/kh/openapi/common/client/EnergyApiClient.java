@@ -34,6 +34,7 @@ public class EnergyApiClient {
     // 공통 KEPCO OpenAPI URL 생성 메서드
     private String buildKepcoApiUrl(String year, String month) {
         return props.getBaseUrl()
+            + props.getEndpoint()
             + "?year=" + year
             + "&month=" + month
             + "&returnType=json"
