@@ -43,7 +43,7 @@ public class CampaignServiceImpl implements CampaignService {
 		
 		int listCount = campaignMapper.findAndCountAll();
 	    
-	    Map<String, Object> params = pagination.pageRequest(pageNo, 9, listCount);
+	    Map<String, Object> params = pagination.pageRequest(pageNo, 8, listCount);
 	    List<CampaignDTO> campaigns = campaignMapper.findAll(params);
 	    
 	    params.put("pageInfo", params.get("pi"));

@@ -27,15 +27,12 @@ public class MainApiServiceImpl implements MainApiService {
     public List<RegionEnergyUsageDTO> getElectricityUsageForMap() {
         
         log.info("DB에서 전력 사용량 조회 시작");
-        
         // DB에서 최신 데이터 조회 (년/월 기준 최신)
         List<RegionEnergyUsageDTO> results = mainApiMapper.selectLatestRegionEnergyUsage();
-        
         if (results == null || results.isEmpty()) {
             log.warn("DB에 전력 사용량 데이터가 없습니다. 스케줄러를 먼저 실행하세요.");
             return List.of();
         }
-        
         log.info("전력 사용량 조회 완료: {} 개 지역", results.size());
         return results;
     }

@@ -3,10 +3,12 @@ package com.kh.openapi.main.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.openapi.common.scheduler.KepcoScheduler;
 import com.kh.openapi.main.model.dto.RegionEnergyUsageDTO;
 import com.kh.openapi.main.model.service.MainApiService;
@@ -41,8 +43,8 @@ public class MainApiController {
      * GET http://localhost:8080/api/main/refreshData
      */
     @GetMapping("/refreshData")
-    public ResponseEntity<String> refreshKepcoData() {
-        log.info("스케줄러 수동 실행 요청");
+    public ResponseEntity<String> refreshKepcoData(@AuthenticationPrincipal CustomUserDetails user) {
+        log.info("스케줄러 수동 실행 요청 (by {})", user.getUsername());
         kepcoScheduler.updateKepcoData();
         return ResponseEntity.ok("KEPCO 데이터 갱신 완료");
     }
