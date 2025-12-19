@@ -7,78 +7,77 @@
 
     <select id="selectRegionCoords" resultType="KoreaRegionCoordVO">
         SELECT
-               TOP_REGION_NAME  topRegionName
-             , LATITUDE         latitude
-             , LONGITUDE        longitude
-        FROM 
+              TOP_REGION_NAME  topRegionName
+            , LATITUDE         latitude
+            , LONGITUDE        longitude
+          FROM 
                CL_REGION_COORD
-    </select>
-
-    <select id="existsByYearMonth" resultType="boolean">
-        SELECT 
-            CASE WHEN COUNT(*) &gt; 0 THEN 1 ELSE 0 END
-        FROM 
-            REGION_ENERGY_USAGE
-        WHERE 
-            YEAR = #{year}
-            AND MONTH = #{month}
     </select>
 
     <!--  해당 연/월 데이터 삭제 -->
     <delete id="deleteRegionEnergyUsageByYearMonth">
-        DELETE FROM REGION_ENERGY_USAGE
-        WHERE 
-            YEAR = #{year}
-            AND MONTH = #{month}
+        DELETE 
+          FROM 
+               REGION_ENERGY_USAGE
+         WHERE 
+               YEAR = #{year}
+           AND 
+               MONTH = #{month}
     </delete>
 
     <select id="selectLatestRegionEnergyUsage" resultType="RegionEnergyUsageDTO">
-        SELECT
-            TOP_REGION_NAME     topRegionName,
-            AVG_USE_QNT         avgUseQnt,
-            USAGE_PERCENT       usagePercent,
-            LATITUDE            latitude,
-            LONGITUDE           longitude,
-            REGION_KEY          key,
-            YEAR                year,
-            MONTH               month
+      SELECT
+             TOP_REGION_NAME     topRegionName
+           , AVG_USE_QNT         avgUseQnt
+           , USAGE_PERCENT       usagePercent
+           , LATITUDE            latitude
+           , LONGITUDE           longitude
+           , REGION_KEY          key
+           , YEAR                year
+           , MONTH               month
         FROM 
-            REGION_ENERGY_USAGE
-        WHERE 
-            (YEAR, MONTH) = (
-                SELECT YEAR, MONTH
-                FROM REGION_ENERGY_USAGE
-                ORDER BY TO_NUMBER(YEAR) DESC, TO_NUMBER(MONTH) DESC
-                FETCH FIRST 1 ROW ONLY
-            )
-        ORDER BY 
-            TOP_REGION_NAME
+             REGION_ENERGY_USAGE
+       WHERE 
+             (YEAR, MONTH) = (
+                 SELECT YEAR, MONTH
+                 FROM REGION_ENERGY_USAGE
+                 ORDER BY TO_NUMBER(YEAR) DESC, TO_NUMBER(MONTH) DESC
+                 FETCH FIRST 1 ROW ONLY
+             )
+       ORDER 
+          BY 
+             TOP_REGION_NAME
     </select>
 
     <insert id="insertRegionEnergyUsage">
-        INSERT INTO REGION_ENERGY_USAGE (
-            ID,
-            TOP_REGION_NAME,
-            AVG_USE_QNT,
-            USAGE_PERCENT,
-            LATITUDE,
-            LONGITUDE,
-            REGION_KEY,
-            YEAR,
-            MONTH,
-            UPDATED_AT
-        ) VALUES (
-            REGION_ENERGY_USAGE_SEQ.NEXTVAL,
-            #{topRegionName},
-            #{avgUseQnt},
-            #{usagePercent},
-            #{latitude},
-            #{longitude},
-            #{key},
-            #{year},
-            #{month},
-            SYSTIMESTAMP
-        )
+        INSERT 
+          INTO 
+               REGION_ENERGY_USAGE
+               (
+               ID
+             , TOP_REGION_NAME
+             , AVG_USE_QNT
+             , USAGE_PERCENT
+             , LATITUDE
+             , LONGITUDE
+             , REGION_KEY
+             , YEAR
+             , MONTH
+             , UPDATED_AT
+               ) 
+        VALUES 
+               (
+               REGION_ENERGY_USAGE_SEQ.NEXTVAL
+             , #{topRegionName}
+             , #{avgUseQnt}
+             , #{usagePercent}
+             , #{latitude}
+             , #{longitude}
+             , #{key}
+             , #{year}
+             , #{month}
+             , SYSTIMESTAMP
+               )
     </insert>
 
 </mapper>
