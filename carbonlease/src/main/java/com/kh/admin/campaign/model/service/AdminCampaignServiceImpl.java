@@ -141,7 +141,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 			throw new RuntimeException("파일 저장 실패", e);
 		}
 		
-		String fileUrl = "http://localhost:80/uploads/campaign/images/" + changeName;
+		String fileUrl = "http://localhost:5173/uploads/campaign/images/" + changeName;
 
 		return CampaignAttachmentVO.builder()
 			.refBno(refBno)

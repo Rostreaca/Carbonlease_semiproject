@@ -19,6 +19,8 @@
 *.rar
 
 
+application-private.yml
+
 # ====================
 
 # IDEs and Editors

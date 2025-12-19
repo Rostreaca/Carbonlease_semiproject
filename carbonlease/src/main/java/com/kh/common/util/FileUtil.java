@@ -46,7 +46,7 @@ public class FileUtil {
             file.transferTo(target.toFile());
 
             // ⭐ DB에 저장할 경로 (URL)
-            return "http://localhost:80/uploads/" + folderName + "/" + savedName;
+            return "http://localhost:5173/uploads/" + folderName + "/" + savedName;
 
         } catch (IOException e) {
             throw new RuntimeException("파일 저장 실패", e);

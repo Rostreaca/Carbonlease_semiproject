@@ -30,7 +30,7 @@ public class FileServiceCopy {
 
 		try {
 			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-			return "http://localhost:80/uploads/" + newFilename;
+			return "http://localhost:5173/uploads/" + newFilename;
 		} catch (IOException e) {
 			throw new RuntimeException("파일 저장 오류", e);
 		}
