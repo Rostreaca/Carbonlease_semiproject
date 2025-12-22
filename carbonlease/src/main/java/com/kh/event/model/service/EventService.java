@@ -1,5 +1,9 @@
 package com.kh.event.model.service;
 
+import java.security.Principal;
+import com.kh.event.model.dto.EventMessageDTO;
+
+
 import com.kh.event.model.dto.EventCampaignDTO;
 
 /**
@@ -29,7 +33,10 @@ public interface EventService {
     EventCampaignDTO getEventWithParticipation(Long eventId, Long memberNo);
     
     /**
-     * 테스트용 WebSocket 메시지 발송
+     * WebSocket 참여 메시지 처리 및 최신 이벤트 정보 반환
+     * @param message 참여 메시지 DTO
+     * @param principal 인증 정보
+     * @return 최신 이벤트 정보 메시지 DTO
      */
-    void sendTestMessage();
+    EventMessageDTO participateAndReturnEventMessage(EventMessageDTO message, Principal principal);
 }

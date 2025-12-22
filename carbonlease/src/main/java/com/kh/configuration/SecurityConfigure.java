@@ -43,7 +43,7 @@ public class SecurityConfigure {
 							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/**").authenticated();
 							   requests.requestMatchers(HttpMethod.POST, "/campaigns/*/like", "campaigns/*/replies").authenticated(); // 좋아요 인증 필요
 							   requests.requestMatchers(HttpMethod.POST, "/api/events/*/participate").authenticated();
-							   requests.requestMatchers("/ws-event/**", "/ws-event", "/topic/**", "/app/**").permitAll();
+							   requests.requestMatchers("/ws-stomp/**", "/ws-stomp", "/sub/**", "/pub/**", "/topic/**", "/app/**").permitAll();
 							   requests.requestMatchers(HttpMethod.GET,"/members/**", "/boards/**","/activityBoards/**", "/uploads/**", "/notices/**", "/campaigns/**", "/api/events/main").permitAll();
 							   requests.requestMatchers(HttpMethod.GET, "/api/main/refreshData").hasAuthority("ROLE_ADMIN");
 							   requests.requestMatchers(HttpMethod.GET, "/api/air/**", "/api/main/**", "/api/**").permitAll();
@@ -71,16 +71,7 @@ public class SecurityConfigure {
 		configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "PATCH", "OPTIONS"));
 		configuration.setAllowedHeaders(Arrays.asList(
 			"Authorization",
-			"Content-Type",
-			"X-Requested-With",
-			"Accept",
-			"Origin",
-			"Access-Control-Request-Method",
-			"Access-Control-Request-Headers"
-		));
-		configuration.setExposedHeaders(Arrays.asList(
-			"Access-Control-Allow-Origin",
-			"Access-Control-Allow-Credentials"
+			"Content-Type"
 		));
 		configuration.setAllowCredentials(true);
 		configuration.setMaxAge(3600L);

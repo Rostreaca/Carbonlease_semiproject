@@ -1,14 +1,19 @@
 package com.kh.event.model.service;
 
-import java.util.HashMap;
-import java.util.Map;
+
+import java.security.Principal;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import com.kh.auth.model.vo.CustomUserDetails;
 
+import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.event.model.dao.EventMapper;
 import com.kh.event.model.dto.EventCampaignDTO;
+import com.kh.event.model.dto.EventMessageDTO;
 import com.kh.event.model.dto.EventParticipationCommand;
 import com.kh.event.model.dto.ParticipantDTO;
 
@@ -74,7 +79,7 @@ public class EventServiceImpl implements EventService {
         notifyEventUpdate(event);
         
         log.info(" 참여 완료 및 알림 발송 - eventId: {}, 현재 참여자: {}", 
-                 eventId, event.getCurrentParticipants());
+                eventId, event.getCurrentParticipants());
     }
     
     /**
@@ -83,14 +88,11 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventCampaignDTO getMainEvent() {
         log.debug(" 메인 이벤트 조회");
-        
         EventCampaignDTO event = eventMapper.selectMainEvent();
-        
         if (event == null) {
             log.error(" 메인 이벤트를 찾을 수 없습니다.");
             throw new RuntimeException("메인 이벤트를 찾을 수 없습니다.");
         }
-        
         return event;
     }
     
@@ -100,14 +102,11 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventCampaignDTO getEventWithParticipation(Long eventId, Long memberNo) {
         log.debug(" 이벤트 조회 - eventId: {}, memberNo: {}", eventId, memberNo);
-        
         EventCampaignDTO event = eventMapper.selectEventCount(eventId);
-        
         if (event == null) {
             log.error(" 존재하지 않는 이벤트 - eventId: {}", eventId);
             throw new IllegalArgumentException("존재하지 않는 이벤트입니다.");
         }
-        
         // 로그인한 경우 참여 여부 확인
         if (memberNo != null) {
             EventParticipationCommand command = EventParticipationCommand.builder()
@@ -126,38 +125,36 @@ public class EventServiceImpl implements EventService {
      * WebSocket으로 이벤트 업데이트 알림
      */
     private void notifyEventUpdate(EventCampaignDTO event) {
-        // ParticipantDTO로 변환하여 전송
         ParticipantDTO participantInfo = new ParticipantDTO(
             event.getEventId(),
             event.getCurrentParticipants(),
             event.getParticipationRate()
         );
-        
-        // Map으로 변환 (프론트엔드와 일관성 유지)
-        Map<String, Object> message = new HashMap<>();
-        message.put("eventId", participantInfo.getEventId());
-        message.put("currentParticipants", participantInfo.getCurrentParticipants());
-        message.put("participationRate", participantInfo.getParticipationRate());
-        
-
-        log.info("WebSocket 메시지 발행 - 경로: /topic/event/main, 내용: {}", message);
-        messagingTemplate.convertAndSend("/topic/event/main", message);
-        
-        log.info("WebSocket 메시지 발행 - 경로: /topic/event/main, 내용: {}", message);
+        messagingTemplate.convertAndSend("/topic/event/main", participantInfo);
+        log.info("WebSocket 메시지 발행 - 경로: /topic/event/main, 내용: {}", participantInfo);
     }
-    
-    /**
-     * 테스트용 메시지 발송
-     */
+
     @Override
-    public void sendTestMessage() {
-        Map<String, Object> testMessage = new HashMap<>();
-        testMessage.put("eventId", 1L);
-        testMessage.put("currentParticipants", 999);
-        testMessage.put("participationRate", 99.9);
-        
-        messagingTemplate.convertAndSend("/topic/event/main", testMessage);
-        
-        log.info(" 테스트 메시지 발행 - 내용: {}", testMessage);
+    public EventMessageDTO participateAndReturnEventMessage(EventMessageDTO message, Principal principal) {
+        if (principal == null) throw new AccessDeniedException("로그인이 필요합니다.");
+        Long eventId = message.getEventId();
+        Long memberNo;
+        if (principal instanceof Authentication) {
+            Object principalObj = ((Authentication) principal).getPrincipal();
+            if (principalObj instanceof CustomUserDetails) {
+                memberNo = ((CustomUserDetails) principalObj).getMemberNo();
+            } else {
+                throw new AccessDeniedException("인증 정보가 올바르지 않습니다.");
+            }
+        } else {
+            throw new AccessDeniedException("인증 정보가 올바르지 않습니다.");
+        }
+        participateAndNotify(eventId, memberNo);
+        EventCampaignDTO event = getMainEvent();
+        EventMessageDTO result = new EventMessageDTO();
+        result.setEventId(event.getEventId());
+        result.setCurrentParticipants(event.getCurrentParticipants());
+        result.setParticipationRate(event.getParticipationRate());
+        return result;
     }
 }
