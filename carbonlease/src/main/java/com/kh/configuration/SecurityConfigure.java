@@ -42,8 +42,9 @@ public class SecurityConfigure {
 							   requests.requestMatchers(HttpMethod.POST, "/boards/**", "/activityBoards", "/notices", "/campaigns").authenticated();
 							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/**").authenticated();
 							   requests.requestMatchers(HttpMethod.POST, "/campaigns/*/like", "campaigns/*/replies").authenticated(); // 좋아요 인증 필요
-							   requests.requestMatchers(HttpMethod.POST, "/events/*/participate").authenticated();
-							   requests.requestMatchers(HttpMethod.GET,"/members/**", "/boards/**","/activityBoards/**", "/uploads/**", "/notices/**", "/campaigns/**", "/events/main").permitAll();
+							   requests.requestMatchers(HttpMethod.POST, "/api/events/*/participate").authenticated();
+							   requests.requestMatchers("/ws-event/**", "/ws-event", "/topic/**", "/app/**").permitAll();
+							   requests.requestMatchers(HttpMethod.GET,"/members/**", "/boards/**","/activityBoards/**", "/uploads/**", "/notices/**", "/campaigns/**", "/api/events/main").permitAll();
 							   requests.requestMatchers(HttpMethod.GET, "/api/main/refreshData").hasAuthority("ROLE_ADMIN");
 							   requests.requestMatchers(HttpMethod.GET, "/api/air/**", "/api/main/**", "/api/**").permitAll();
 							   requests.requestMatchers(HttpMethod.PUT,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
@@ -68,8 +69,21 @@ public class SecurityConfigure {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
 		configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "PATCH", "OPTIONS"));
-		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+		configuration.setAllowedHeaders(Arrays.asList(
+			"Authorization",
+			"Content-Type",
+			"X-Requested-With",
+			"Accept",
+			"Origin",
+			"Access-Control-Request-Method",
+			"Access-Control-Request-Headers"
+		));
+		configuration.setExposedHeaders(Arrays.asList(
+			"Access-Control-Allow-Origin",
+			"Access-Control-Allow-Credentials"
+		));
 		configuration.setAllowCredentials(true);
+		configuration.setMaxAge(3600L);
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
