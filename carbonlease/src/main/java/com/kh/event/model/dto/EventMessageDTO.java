@@ -11,4 +11,5 @@ public class EventMessageDTO {
     private Long eventId;
     private int currentParticipants;
     private double participationRate;
+    private Long memberNo;
 }

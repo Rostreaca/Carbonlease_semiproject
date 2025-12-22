@@ -1,11 +1,9 @@
 package com.kh.event.controller;
 
-import java.security.Principal;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,28 +28,29 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
-
-    // REST 참여 (인증 필요)
-    @PostMapping("/{eventId}/participate")
-    public ResponseEntity<Void> participate(
-        @PathVariable("eventId") Long eventId,
-        @AuthenticationPrincipal CustomUserDetails user) {
-        eventService.participateAndNotify(eventId, user.getMemberNo());
-        return ResponseEntity.ok().build();
-    }
+    private final SimpMessagingTemplate messagingTemplate;
 
     // REST 조회 (누구나)
     @GetMapping("/main")
     public ResponseEntity<EventCampaignDTO> getMainEvent() {
-        return ResponseEntity.ok(eventService.getMainEvent());
+        log.info("메인 이벤트 조회 요청 (인증 불필요)");
+        EventCampaignDTO event = eventService.getMainEvent();
+        return ResponseEntity.ok(event);
     }
 
-    // WebSocket 참여 
+    // REST 참여 (인증 필요)
+    @PostMapping("/{eventId}/participate")
+    public ResponseEntity<?> participate(@PathVariable("eventId") Long eventId, @AuthenticationPrincipal CustomUserDetails user) {
+        EventCampaignDTO event = eventService.participateAndNotify(eventId, user.getMemberNo());
+        messagingTemplate.convertAndSend("/sub/event/main", event); // 실시간 broadcast
+        return ResponseEntity.ok(event);
+    }
+
+    // WebSocket 참여
     // 클라이언트는 /pub/event/participate로 전송, 구독은 /sub/event/main
     @MessageMapping("/pub/event/participate")
     @SendTo("/sub/event/main")
-    public EventMessageDTO wsParticipate(EventMessageDTO message, Principal principal) {
-        if (principal == null) throw new AccessDeniedException("로그인이 필요합니다.");
-        return eventService.participateAndReturnEventMessage(message, principal);
+    public EventMessageDTO wsParticipate(EventMessageDTO message) {
+        return eventService.participateAndReturnEventMessage(message);
     }
 }

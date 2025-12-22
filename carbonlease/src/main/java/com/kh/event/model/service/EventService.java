@@ -1,10 +1,7 @@
 package com.kh.event.model.service;
 
-import java.security.Principal;
-import com.kh.event.model.dto.EventMessageDTO;
-
-
 import com.kh.event.model.dto.EventCampaignDTO;
+import com.kh.event.model.dto.EventMessageDTO;
 
 /**
  * 이벤트 서비스 인터페이스
@@ -16,7 +13,7 @@ public interface EventService {
      * @param eventId 이벤트 ID
      * @param memberNo 회원 번호
      */
-    void participateAndNotify(Long eventId, Long memberNo);
+    EventCampaignDTO participateAndNotify(Long eventId, Long memberNo);
     
     /**
      * 메인 이벤트 조회
@@ -38,5 +35,5 @@ public interface EventService {
      * @param principal 인증 정보
      * @return 최신 이벤트 정보 메시지 DTO
      */
-    EventMessageDTO participateAndReturnEventMessage(EventMessageDTO message, Principal principal);
+    EventMessageDTO participateAndReturnEventMessage(EventMessageDTO message);
 }

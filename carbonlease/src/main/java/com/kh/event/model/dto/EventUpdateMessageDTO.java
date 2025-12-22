@@ -9,5 +9,4 @@ public class EventParticipationCommand {
 
     Long eventId;
     Long memberNo;
-    
 }

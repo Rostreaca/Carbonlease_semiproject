@@ -7,32 +7,32 @@
 
     <!-- 메인 이벤트 조회 (고정 1건) -->
     <select id="selectMainEvent"
-            resultType="com.kh.event.model.dto.EventCampaignDTO">
+            resultType="EventCampaignDTO">
         SELECT
-            EVENT_ID AS eventId,
-            COMPANY_NAME AS companyName,
-            EVENT_TITLE AS eventTitle,
-            MAX_PARTICIPANTS AS maxParticipants,
-            CURRENT_PARTICIPANTS AS currentParticipants,
-            ROUND((CURRENT_PARTICIPANTS / MAX_PARTICIPANTS) * 100, 2) AS participationRate,
+            E.EVENT_ID AS eventId,
+            E.COMPANY_NAME AS companyName,
+            E.EVENT_TITLE AS eventTitle,
+            E.MAX_PARTICIPANTS AS maxParticipants,
+            (SELECT COUNT(*) FROM CL_EVENT_PARTICIPANT P WHERE P.EVENT_ID = E.EVENT_ID) AS currentParticipants,
+            ROUND((SELECT COUNT(*) FROM CL_EVENT_PARTICIPANT P WHERE P.EVENT_ID = E.EVENT_ID) / E.MAX_PARTICIPANTS * 100, 2) AS participationRate,
             0 AS participated
-        FROM CL_EVENT
-        WHERE EVENT_ID = 1
+        FROM CL_EVENT E
+        WHERE E.EVENT_ID = 1
     </select>
 
     <!-- 특정 이벤트 카운트 갱신용 -->
     <select id="selectEventCount"
-            resultType="com.kh.event.model.dto.EventCampaignDTO">
+            resultType="EventCampaignDTO">
         SELECT
-            EVENT_ID AS eventId,
-            COMPANY_NAME AS companyName,
-            EVENT_TITLE AS eventTitle,
-            MAX_PARTICIPANTS AS maxParticipants,
-            CURRENT_PARTICIPANTS AS currentParticipants,
-            ROUND((CURRENT_PARTICIPANTS / MAX_PARTICIPANTS) * 100, 2) AS participationRate,
+            E.EVENT_ID AS eventId,
+            E.COMPANY_NAME AS companyName,
+            E.EVENT_TITLE AS eventTitle,
+            E.MAX_PARTICIPANTS AS maxParticipants,
+            (SELECT COUNT(*) FROM CL_EVENT_PARTICIPANT P WHERE P.EVENT_ID = E.EVENT_ID) AS currentParticipants,
+            ROUND((SELECT COUNT(*) FROM CL_EVENT_PARTICIPANT P WHERE P.EVENT_ID = E.EVENT_ID) / E.MAX_PARTICIPANTS * 100, 2) AS participationRate,
             0 AS participated
-        FROM CL_EVENT
-        WHERE EVENT_ID = #{eventId}
+        FROM CL_EVENT E
+        WHERE E.EVENT_ID = #{eventId}
     </select>
 
     <!-- 중복 참여 체크 -->
