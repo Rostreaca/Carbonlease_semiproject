@@ -12,7 +12,7 @@ public interface CampaignService {
 	 * @param PageNo
 	 * @return Map<String, Object> : pageInfo(페이징 정보), campaigns(캠페인 목록)
 	 */
-	Map<String, Object> findAll(int PageNo);
+	Map<String, Object> findAll(int PageNo, Long memberNo);
 	
 	
 	/**
@@ -20,7 +20,7 @@ public interface CampaignService {
 	 * @param campaignNo
 	 * @return CampaignDTO : 캠페인 상세 정보
 	 */
-	CampaignDTO findDetailByNo(Long campaignNo);
+	CampaignDTO findDetailByNo(Long campaignNo, Long memberNo);
 	
 	
 	/**
@@ -29,7 +29,7 @@ public interface CampaignService {
 	 * @param memberNo
 	 * @return void
 	 */
-	void toggleLike(Long campaignNo, Long memberNo);
+	boolean toggleLike(Long campaignNo, Long memberNo);
 
 
 	/** 댓글 목록 조회 (페이징) */
