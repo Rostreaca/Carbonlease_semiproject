@@ -15,6 +15,13 @@ public interface AdminCampaignService {
 	Map<String, Object> findAll(int PageNo, String status, String keyword);
 
 	/**
+	 * 캠페인 번호로 단일 캠페인 조회 (관리자)
+	 * @param campaignNo 캠페인 번호
+	 * @return 캠페인 상세 정보
+	 */
+	CampaignDTO findByCampaignNo(Long campaignNo);
+
+	/**
 	 * 캠페인 등록
 	 * @param campaign 캠페인 정보
 	 * @param thumbnail 썸네일 이미지 파일

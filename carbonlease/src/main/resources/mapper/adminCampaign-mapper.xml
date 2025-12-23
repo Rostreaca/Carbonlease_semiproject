@@ -109,6 +109,29 @@
 			   CL_CAMPAIGN
 	</select>
 	
+	<!-- 캠페인 번호로 단일 캠페인 조회 (관리자) -->
+	<select id="findByCampaignNo" resultMap="campaignResultMap">
+		SELECT
+			   P.CAMPAIGN_NO
+			 , P.CAMPAIGN_TITLE
+			 , P.CAMPAIGN_CONTENT
+			 , P.VIEW_COUNT
+			 , P.START_DATE
+			 , P.END_DATE
+			 , P.ENROLL_DATE
+			 , P.STATUS
+			 , P.MEMBER_NO
+			 , C.CATEGORY_NO
+			 , C.CATEGORY_NAME
+		  FROM 
+			   CL_CAMPAIGN P
+		  LEFT 
+		  JOIN 
+			   CL_CAMPAIGN_CATEGORY C ON P.CATEGORY_NO = C.CATEGORY_NO
+		 WHERE 
+			   P.CAMPAIGN_NO = #{campaignNo}
+	</select>
+	
 	<!-- 첨부파일 조회 -->
 	<select id="findAttachmentsByNo" resultMap="campaignAttachmentsMap">
 		   SELECT

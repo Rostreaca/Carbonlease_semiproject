@@ -170,6 +170,18 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	}
 
 	/**
+	 * 캠페인 번호로 단일 캠페인 조회 (관리자)
+	 */
+	@Override
+	public CampaignDTO findByCampaignNo(Long campaignNo) {
+		CampaignDTO campaign = adminCampaignMapper.findByCampaignNo(campaignNo);
+		if (campaign == null) {
+			throw new IllegalArgumentException("해당 캠페인을 찾을 수 없습니다.");
+		}
+		return campaign;
+	}
+
+	/**
 	 * 수정하기
 	 */
 	@Override

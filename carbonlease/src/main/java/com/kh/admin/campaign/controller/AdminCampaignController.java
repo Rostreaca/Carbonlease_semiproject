@@ -98,6 +98,18 @@ public class AdminCampaignController {
 		return ResponseData.ok(categories, "카테고리 목록 조회 성공");
 	}
     
+	/**
+	 * 캠페인 번호로 단일 캠페인 상세 조회 (관리자)
+	 * 
+	 * @param campaignNo 조회할 캠페인 번호
+	 * @return 캠페인 상세 정보
+	 */
+	@GetMapping("/{campaignNo}")
+	public ResponseEntity<ResponseData<CampaignDTO>> findByCampaignNo(
+			@PathVariable(name="campaignNo") Long campaignNo) {
+		CampaignDTO campaign = adminCampaignService.findByCampaignNo(campaignNo);
+		return ResponseData.ok(campaign, "캠페인 조회 성공");
+	}
 
 	/**
 	 * 캠페인 수정 요청을 처리하는 엔드포인트
