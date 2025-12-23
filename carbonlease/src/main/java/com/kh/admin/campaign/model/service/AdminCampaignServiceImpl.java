@@ -34,15 +34,23 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	 * 관리자_목록조회
 	 */
 	@Override
-	public Map<String, Object> findAll(int pageNo) {
+	public Map<String, Object> findAll(int pageNo, String status, String keyword) {
 
-		if (pageNo < 0) {
+		 if (pageNo < 0) {
 			throw new InvalidParameterException("유효하지 않은 접근입니다.");
 		}
 
-		int listCount = listCountAll();
+		Map<String, Object> params = new HashMap<>();
 
-		Map<String, Object> params = pagination.pageRequest(pageNo, 6, listCount);
+		// status: null 또는 ""(빈문자)면 null로 통일
+		params.put("status", (status == null || status.trim().isEmpty()) ? null : status);
+
+		// keyword: null 또는 ""(빈문자)면 null로 통일
+		params.put("keyword", (keyword == null || keyword.trim().isEmpty()) ? null : keyword);
+
+		int listCount = listCountAll(params);
+
+		params.putAll(pagination.pageRequest(pageNo, 6, listCount));
 		List<CampaignDTO> campaigns = adminCampaignMapper.findAll(params);
 
 		params.put("pageInfo", params.get("pi"));
@@ -56,8 +64,8 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	 * 
 	 * @return int 전체게시글 수
 	 */
-	private int listCountAll() {
-		return adminCampaignMapper.findAndCountAll();
+	private int listCountAll(Map<String, Object> params) {
+		return adminCampaignMapper.findAndCountAllWithFilter(params);
 	}
 
 	/**

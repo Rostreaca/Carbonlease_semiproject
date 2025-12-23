@@ -12,7 +12,7 @@ import com.kh.campaign.model.dto.CategoryDTO;
 public interface AdminCampaignService {
 	
 
-	Map<String, Object> findAll(int PageNo);
+	Map<String, Object> findAll(int PageNo, String status, String keyword);
 
 	/**
 	 * 캠페인 등록

@@ -21,6 +21,13 @@ public interface AdminCampaignMapper {
 	 */
 	List<CampaignDTO> findAll(Map<String, Object> params);
 
+	/*
+	 * 필터링된 전체 게시글 수 조회
+	 * @param params 필터링 조건이 담긴 Map
+	 */
+	int findAndCountAllWithFilter(Map<String, Object> params);
+
+	
 	/**
 	 * 전체 게시글 수 조회
 	 * @return

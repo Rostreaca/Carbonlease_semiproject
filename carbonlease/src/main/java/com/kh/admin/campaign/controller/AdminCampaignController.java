@@ -43,9 +43,11 @@ public class AdminCampaignController {
 	 * @return
 	 */
 	@GetMapping
-	public ResponseEntity<Map<String, Object>> findAll(@RequestParam(name = "pageNo", defaultValue= "1") int pageNo){
-		Map<String, Object> map = new HashMap();
-		map = adminCampaignService.findAll(pageNo);
+	public ResponseEntity<Map<String, Object>> findAll(
+			@RequestParam(name = "pageNo", defaultValue= "1") int pageNo,
+			@RequestParam(name="status", required = false) String status,
+			@RequestParam(name="keyword", required = false) String keyword){
+		Map<String, Object> map = adminCampaignService.findAll(pageNo, status, keyword);
 		return ResponseEntity.ok(map);
 	}
 
