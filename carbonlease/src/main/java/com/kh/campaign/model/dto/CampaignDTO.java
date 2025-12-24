@@ -6,15 +6,11 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonProperty;
-=======
->>>>>>> a14cb57 (.)
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-<<<<<<< HEAD
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,16 +18,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-=======
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
-
-@Data
->>>>>>> a14cb57 (.)
 @AllArgsConstructor
 @NoArgsConstructor 
 @Builder
@@ -66,16 +52,9 @@ public class CampaignDTO {
 
     // 상태 표시용 필드 추가
     private String displayStatus;
-<<<<<<< HEAD
     
     @JsonProperty("isLiked")
     private boolean isLiked;            // 특정 유저가 좋아요 했는지 여부
-=======
-    // Like 정보 (누가 눌렀는지, 총 좋아요수 등)
-    //private int likeCount;              // 총 좋아요 개수
-    //private boolean isLiked;            // 특정 유저가 좋아요 했는지 여부
-    //private List<LikeDTO> likeList;      // 필요하다면 목록도 가능
->>>>>>> a14cb57 (.)
     
     // 댓글 수
     private int replyCount;

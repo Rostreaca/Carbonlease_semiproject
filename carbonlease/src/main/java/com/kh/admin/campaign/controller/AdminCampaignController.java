@@ -1,25 +1,13 @@
 package com.kh.admin.campaign.controller;
 
-<<<<<<< HEAD
 import java.util.List;
 import java.util.Map;
 
-=======
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.http.HttpStatus;
->>>>>>> a14cb57 (.)
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-<<<<<<< HEAD
-=======
-import org.springframework.web.bind.annotation.PatchMapping;
->>>>>>> a14cb57 (.)
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -32,10 +20,7 @@ import com.kh.admin.campaign.model.service.AdminCampaignService;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
-<<<<<<< HEAD
 import com.kh.common.dto.ResponseData;
-=======
->>>>>>> a14cb57 (.)
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -56,20 +41,12 @@ public class AdminCampaignController {
 	 * @return
 	 */
 	@GetMapping
-<<<<<<< HEAD
 	public ResponseEntity<ResponseData<Map<String, Object>>> findAll(
-=======
-	public ResponseEntity<Map<String, Object>> findAll(
->>>>>>> a14cb57 (.)
 			@RequestParam(name = "pageNo", defaultValue= "1") int pageNo,
 			@RequestParam(name="status", required = false) String status,
 			@RequestParam(name="keyword", required = false) String keyword){
 		Map<String, Object> map = adminCampaignService.findAll(pageNo, status, keyword);
-<<<<<<< HEAD
 		return ResponseData.ok(map, "캠페인 목록 조회 성공");
-=======
-		return ResponseEntity.ok(map);
->>>>>>> a14cb57 (.)
 	}
 
 
@@ -87,11 +64,7 @@ public class AdminCampaignController {
 	 * 
 	 */
 	@PostMapping
-<<<<<<< HEAD
 	public ResponseEntity<ResponseData<Void>> save(
-=======
-	public ResponseEntity<Void> save(
->>>>>>> a14cb57 (.)
 			@Valid CampaignDTO campaign,
 			@RequestParam("thumbnail") MultipartFile thumbnail,
 			@RequestParam("detailImage") MultipartFile detailImage,
@@ -109,11 +82,7 @@ public class AdminCampaignController {
 		);
 
 		// 201(CREATED) 상태만 반환 (body 없음)
-<<<<<<< HEAD
 		return ResponseData.created(null);
-=======
-		return ResponseEntity.status(HttpStatus.CREATED).build();
->>>>>>> a14cb57 (.)
 	}
 	
 	
@@ -124,17 +93,10 @@ public class AdminCampaignController {
 	 * @return ResponseEntity<List<CategoryDTO>> 카테고리 목록(200 OK)
 	 */
     @GetMapping("/categories")
-<<<<<<< HEAD
 	public ResponseEntity<ResponseData<List<CategoryDTO>>> getCategories() {
 		List<CategoryDTO> categories = adminCampaignService.getCategories();
 		return ResponseData.ok(categories, "카테고리 목록 조회 성공");
 	}
-=======
-    public ResponseEntity<List<CategoryDTO>> getCategories() {
-        List<CategoryDTO> categories = adminCampaignService.getCategories();
-        return ResponseEntity.ok(categories);
-    }
->>>>>>> a14cb57 (.)
     
 
 	/**
@@ -151,11 +113,7 @@ public class AdminCampaignController {
 	 * 요청 필드(form-data) 중에서 `파일을 제외한 나머지 일반 텍스트 값들을 자동으로 DTO 필드에 바인딩해주는 역할을 하기 때문이다.
 	 */
 	@PutMapping("/{campaignNo}")
-<<<<<<< HEAD
 	public ResponseEntity<ResponseData<Void>> update(
-=======
-	public ResponseEntity<Void> update(
->>>>>>> a14cb57 (.)
 		@PathVariable(name="campaignNo") Long campaignNo,
 		CampaignDTO campaign,
 		@RequestParam("thumbnail") MultipartFile thumbnail,
@@ -167,11 +125,7 @@ public class AdminCampaignController {
 			detailImage,
 			campaignNo
 		);
-<<<<<<< HEAD
 		return ResponseData.ok(null, "캠페인 수정 성공");
-=======
-		return ResponseEntity.status(HttpStatus.CREATED).build();
->>>>>>> a14cb57 (.)
 	}
 	
 	/**
@@ -180,15 +134,9 @@ public class AdminCampaignController {
 	 * @return
 	 */
 	@PostMapping("/{campaignNo}")
-<<<<<<< HEAD
 	public ResponseEntity<ResponseData<Void>> hideByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo){
 		adminCampaignService.hideByCampaignNo(campaignNo);
 		return ResponseData.ok(null, "캠페인 숨김 성공");
-=======
-	public ResponseEntity<Void> hideByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo){
-		adminCampaignService.hideByCampaignNo(campaignNo);
-		return ResponseEntity.ok().build();
->>>>>>> a14cb57 (.)
 	}
 
 	/**
@@ -197,15 +145,9 @@ public class AdminCampaignController {
 	 * @return
 	 */
 	@PostMapping("/{campaignNo}/restore")
-<<<<<<< HEAD
 	public ResponseEntity<ResponseData<Void>> restoreByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo) {
 		adminCampaignService.restoreByCampaignNo(campaignNo);
 		return ResponseData.ok(null, "캠페인 복구 성공");
-=======
-	public ResponseEntity<Void> restoreByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo) {
-		adminCampaignService.restoreByCampaignNo(campaignNo);
-		return ResponseEntity.ok().build();
->>>>>>> a14cb57 (.)
 	}
 
 	/**
@@ -214,15 +156,9 @@ public class AdminCampaignController {
 	 * @return
 	 */
 	@DeleteMapping("/{campaignNo}")
-<<<<<<< HEAD
 	public ResponseEntity<ResponseData<Void>> deleteByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo){
 		adminCampaignService.deleteByCampaignNo(campaignNo);
 		return ResponseData.ok(null, "캠페인 삭제 성공");
-=======
-	public ResponseEntity<Void> deleteByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo){
-		adminCampaignService.deleteByCampaignNo(campaignNo);
-		return ResponseEntity.ok().build();
->>>>>>> a14cb57 (.)
 	}
 	
 

@@ -35,7 +35,6 @@ public class CampaignServiceImpl implements CampaignService {
 	 * @return Map<String, Object> 캠페인 목록 및 페이징 정보
 	 */
 	@Override
-<<<<<<< HEAD
 	public Map<String, Object> findAll(int pageNo, Long memberNo) {
 		if (pageNo < 0) {
 			throw new CustomInvalidParameterException("유효하지 않은 접근입니다.");
@@ -58,23 +57,6 @@ public class CampaignServiceImpl implements CampaignService {
 		params.put("pageInfo", params.get("pi"));
 		params.put("campaigns", campaigns);
 		return params;
-=======
-	public Map<String, Object> findAll(int pageNo) {
-
-		if (pageNo < 0) {
-			throw new CustomInvalidParameterException("유효하지 않은 접근입니다.");
-	    }
-		
-		int listCount = campaignMapper.findAndCountAll();
-	    
-	    Map<String, Object> params = pagination.pageRequest(pageNo, 8, listCount);
-	    List<CampaignDTO> campaigns = campaignMapper.findAll(params);
-	    
-	    params.put("pageInfo", params.get("pi"));
-	    params.put("campaigns", campaigns);
-
-	    return params;
->>>>>>> a14cb57 (.)
 	}
 	
 	
@@ -91,17 +73,12 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 	}
 	
-<<<<<<< HEAD
-=======
-	
->>>>>>> a14cb57 (.)
 	/**
 	 * 캠페인 상세 조회 (조회수 증가 포함)
 	 * @param campaignNo 캠페인 번호 정보
 	 * @return CampaignDTO 캠페인 정보
 	 */
 	@Override
-<<<<<<< HEAD
 	public CampaignDTO findDetailByNo(Long campaignNo, Long memberNo) {
 		increaseViewCount(campaignNo);
 		CampaignDTO campaign = getCampaignOrThrow(campaignNo);
@@ -116,11 +93,6 @@ public class CampaignServiceImpl implements CampaignService {
 			campaign.setLiked(false);
 		}
 		return campaign;
-=======
-	public CampaignDTO findDetailByNo(Long campaignNo) {
-		increaseViewCount(campaignNo);
-		return getCampaignOrThrow(campaignNo);
->>>>>>> a14cb57 (.)
 	}
 
 	/**
@@ -131,32 +103,16 @@ public class CampaignServiceImpl implements CampaignService {
 	 * 
 	 */
 	private CampaignDTO getCampaignOrThrow(Long campaignNo) {
-<<<<<<< HEAD
-=======
-		
->>>>>>> a14cb57 (.)
 		// 번호가 유효한가?
 		if(campaignNo < 1) {
 			throw new CustomInvalidParameterException("유효하지 않은 접근입니다.");
 		}
-<<<<<<< HEAD
 		// 조회
 		CampaignDTO campaign = campaignMapper.getCampaignOrThrow(campaignNo);
-=======
-		
-		// 조회
-		CampaignDTO campaign = campaignMapper.getCampaignOrThrow(campaignNo);
-		
-		
->>>>>>> a14cb57 (.)
 		// 존재하는 게시물인가?
 		if(campaign == null) {
 			throw new CustomInvalidParameterException("유효하지 않은 접근입니다.");
 		}
-<<<<<<< HEAD
-=======
-		
->>>>>>> a14cb57 (.)
 		return campaign;
 	}
 	
@@ -167,7 +123,6 @@ public class CampaignServiceImpl implements CampaignService {
 	 * @param memberNo 회원 번호
 	 */
 	@Override
-<<<<<<< HEAD
 	public boolean toggleLike(Long campaignNo, Long memberNo) {
 		LikeDTO likeDTO = LikeDTO.builder()
 				.campaignNo(campaignNo)
@@ -181,22 +136,6 @@ public class CampaignServiceImpl implements CampaignService {
 			campaignMapper.insertLike(likeDTO);
 			return true; // 좋아요 됨
 		}
-=======
-	public void toggleLike(Long campaignNo, Long memberNo) {
-
-	    LikeDTO likeDTO = LikeDTO.builder()
-	            .campaignNo(campaignNo)
-	            .memberNo(memberNo)
-	            .build();
-
-	    int exists = campaignMapper.existsLike(likeDTO);
-
-	    if (exists > 0) {
-	        campaignMapper.deleteLike(likeDTO);
-	    } else {
-	        campaignMapper.insertLike(likeDTO);
-	    }
->>>>>>> a14cb57 (.)
 	}
 
 
@@ -206,20 +145,10 @@ public class CampaignServiceImpl implements CampaignService {
 		int replyCount = campaignMapper.countReplies(campaignNo);
 		Map<String, Object> params = pagination.pageRequest(pageNo, 5, replyCount);
 		params.put("campaignNo", campaignNo);
-<<<<<<< HEAD
 		List<CampaignReplyDTO> replyList = campaignMapper.selectReplies(params);
 		// 로그 추가
 		log.info("댓글 조회 campaignNo={}, pageNo={}, replyCount={}", campaignNo, pageNo, replyCount);
 		log.info("댓글 목록: {}", replyList);
-=======
-
-		List<CampaignReplyDTO> replyList = campaignMapper.selectReplies(params);
-
-		// ★ 로그 추가
-		log.info("댓글 조회 campaignNo={}, pageNo={}, replyCount={}", campaignNo, pageNo, replyCount);
-		log.info("댓글 목록: {}", replyList);
-
->>>>>>> a14cb57 (.)
 		Map<String, Object> result = new HashMap<>();
 		result.put("replies", replyList);
 		result.put("pageInfo", params.get("pi"));
@@ -277,5 +206,3 @@ public class CampaignServiceImpl implements CampaignService {
 
 
 }
-
-
