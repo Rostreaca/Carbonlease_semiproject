@@ -13,15 +13,9 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class EventAdminDTO {
+public class CategoryAdminDTO {
 
-	private Long calendarNo;
-	private Long eventWriter;
 	private Long categoryNo;
-	private Date start;
-	private Date end;
-	private String title;
-	private String status;
-	
-	
+	private String categoryName;
 }
+

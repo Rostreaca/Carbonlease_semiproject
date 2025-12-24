@@ -19,4 +19,6 @@ public interface AdminCalendarService {
 
 	void deleteEvent(Long id);
 
+	Map<String, Object> findAllCategory();
+
 }

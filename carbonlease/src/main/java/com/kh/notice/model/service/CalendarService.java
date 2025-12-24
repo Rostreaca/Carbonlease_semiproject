@@ -6,4 +6,6 @@ public interface CalendarService {
 
 	Map<String, Object> findAllEvents();
 
+	Map<String, Object> findAllCategory();
+
 }
