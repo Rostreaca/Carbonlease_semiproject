@@ -1,6 +1,7 @@
 package com.kh.admin.campaign.model.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +23,12 @@ import com.kh.common.util.Pagination;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 @Slf4j
 @Service
@@ -30,6 +38,12 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	private final AdminCampaignMapper adminCampaignMapper;
 	private final Pagination pagination;
 
+	private final S3Client s3Client;
+	@Value("${cloud.aws.s3.bucket}")
+	private String bucketName;
+	@Value("${cloud.aws.region.static}")
+	private String region;
+	
 	/**
 	 * 관리자_목록조회
 	 */
@@ -121,7 +135,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		}
 
 		map.put("changeName", changeName);
-		map.put("savePath", baseDir);
+//		map.put("savePath", baseDir);
 
 		return map;
 	}
@@ -132,16 +146,34 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	private CampaignAttachmentVO saveAttachment(MultipartFile file, Long refBno, int fileLevel) {
 		Map<String, String> info = setAttachmentNamePath(file);
 		String changeName = info.get("changeName");
-		String savePath = info.get("savePath");
-		String fullPath = savePath + changeName;
+//		String savePath = info.get("savePath");
+//		String fullPath = savePath + changeName;
+
+//		try {
+//			file.transferTo(new File(fullPath));
+//		} catch (Exception e) {
+//			throw new RuntimeException("파일 저장 실패", e);
+//		}
+		
+        PutObjectRequest request = PutObjectRequest.builder()
+				   .bucket(bucketName)
+				   .key(changeName)
+				   .contentType(file.getContentType())
+				   .build();
 
 		try {
-			file.transferTo(new File(fullPath));
-		} catch (Exception e) {
-			throw new RuntimeException("파일 저장 실패", e);
+		s3Client.putObject(request, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+		} catch (S3Exception e) {
+		e.printStackTrace();
+		} catch (AwsServiceException e) {
+		e.printStackTrace();
+		} catch (SdkClientException e) {
+		e.printStackTrace();
+		} catch (IOException e) {
+		e.printStackTrace();
 		}
 		
-		String fileUrl = "http://localhost:80/uploads/campaign/images/" + changeName;
+		String fileUrl = "https://"+ bucketName+ ".s3." +region +".amazonaws.com/" + changeName;
 
 		return CampaignAttachmentVO.builder()
 			.refBno(refBno)

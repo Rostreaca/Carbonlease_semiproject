@@ -196,10 +196,11 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 			
 			at.setOriginName(file.getOriginalFilename());
 			at.setChangeName(fileUtil.changeName(file.getOriginalFilename()));
-			at.setFilePath(fileUtil.saveFile(file, "notice"));
+			at.setFilePath(fileUtil.saveFile(file/*, "notice"*/));
 			
 			ats.add(at);
 		}
+		
 		
 		return ats;
 	}

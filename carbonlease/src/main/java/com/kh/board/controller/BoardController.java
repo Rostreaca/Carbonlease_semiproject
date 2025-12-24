@@ -11,18 +11,16 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.board.model.dto.BoardDTO;
-import com.kh.board.model.dto.BoardReplyDTO;
 import com.kh.board.model.service.BoardService;
 import com.kh.board.model.vo.ReplyInsertVO;
+import com.kh.common.ResponseData;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +36,7 @@ public class BoardController {
 	
 	// 전체 조회
 	@GetMapping("")
-	public ResponseEntity<?> findAll(@RequestParam(name="pageNo", defaultValue = "1")int pageNo){
+	public ResponseEntity<ResponseData<Map<String,Object>>> findAll(@RequestParam(name="pageNo", defaultValue = "1")int pageNo){
 		
 		Map<String, Object> map = new HashMap();
 		
@@ -46,7 +44,7 @@ public class BoardController {
 		
 		map = boardService.findAll(pageNo);
 		
-		return ResponseEntity.ok(map);
+		return ResponseData.ok(map);
 	}
 	
 	// @PathVariable(name="boardNo") 쓰는건 @GetMapping("detail/{boardNo}") 매핑 안에 boardNo를 변수에 담으라는 뜻

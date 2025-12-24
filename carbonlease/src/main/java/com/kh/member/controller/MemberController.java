@@ -1,10 +1,7 @@
 package com.kh.member.controller;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.activity.model.dto.ActivityListDTO;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.board.model.dto.BoardDTO;
+import com.kh.common.ResponseData;
 import com.kh.member.model.dto.MemberDTO;
 import com.kh.member.model.service.MemberService;
 
@@ -36,52 +34,65 @@ public class MemberController {
 	private final MemberService memberService;
 	
 	@PostMapping
-	public ResponseEntity<String> signUp(@Valid @RequestBody MemberDTO member){
+	public ResponseEntity<ResponseData> signUp(@Valid @RequestBody MemberDTO member){
+		
 		
 		memberService.signUp(member);
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공.");
+		ResponseData rd = ResponseData.builder().message("회원가입 성공").build();
+		
+		return ResponseEntity.status(HttpStatus.CREATED).body(rd);
 	}
 	
 	@PutMapping
-	public ResponseEntity<String> updateMember(@Valid @RequestBody MemberDTO member){
+	public ResponseEntity<ResponseData> updateMember(@Valid @RequestBody MemberDTO member){
 		
 		memberService.updateMember(member);
 		
-		return ResponseEntity.status(HttpStatus.OK).body("회원 정보 변경 성공.");
+
+		ResponseData rd = ResponseData.builder().message("회원 정보 변경 성공").build();
+		
+		return ResponseEntity.status(HttpStatus.OK).body(rd);
 	}
 	
 	@DeleteMapping
-	public ResponseEntity<String> deleteMember(@RequestBody Map<String, String> request){
+	public ResponseEntity<ResponseData> deleteMember(@RequestBody Map<String, String> request){
 
 		log.info("확인 {}",request);
 		
 		memberService.deleteMember(request.get("memberPwd"));
 		
-		return ResponseEntity.status(HttpStatus.OK).body("회원 삭제 성공.");
+
+		ResponseData rd = ResponseData.builder().message("회원 삭제 성공.").build();
+		
+		return ResponseEntity.status(HttpStatus.OK).body(rd);
 	}
 	
 	@PutMapping("/kakao")
-	public ResponseEntity<String> updateSocialMember(@Valid @RequestBody MemberDTO member, @AuthenticationPrincipal CustomUserDetails user){
+	public ResponseEntity<ResponseData> updateSocialMember(@Valid @RequestBody MemberDTO member, @AuthenticationPrincipal CustomUserDetails user){
 		
 		member.setMemberNo(user.getMemberNo());
 		
 		memberService.updateSocialMember(member);
 		
-		return ResponseEntity.status(HttpStatus.OK).body("회원 정보 변경 성공.");
+		ResponseData rd = ResponseData.builder().message("회원 정보 변경 성공.").build();
+		
+		return ResponseEntity.status(HttpStatus.OK).body(rd);
 	}
 	
 	@DeleteMapping("/kakao")
-	public ResponseEntity<String> deleteSocialMember(@AuthenticationPrincipal CustomUserDetails user){
+	public ResponseEntity<ResponseData> deleteSocialMember(@AuthenticationPrincipal CustomUserDetails user){
 		
 		memberService.deleteSocialMember(user);
 		
-		return ResponseEntity.status(HttpStatus.OK).body("회원 삭제 성공.");
+		ResponseData rd = ResponseData.builder().message("회원 삭제 성공.").build();
+		
+		return ResponseEntity.status(HttpStatus.OK).body(rd);
 	}
 	
 	
 	@PostMapping("/checkId")
-	public ResponseEntity<String> checkId(@Valid @RequestBody MemberDTO member){
+	public ResponseEntity<ResponseData> checkId(@Valid @RequestBody MemberDTO member){
 	//RequestBody를 Map으로 받거나 MemberDTO로 받던지 2중 1택
 	//Map으로 받을 경우 memberValidator.checkId()에 정규표현식 검증이 한번 더 들어가야함
 	//memberDTO를 사용하는 다른 메소드가 memberValidator.checkId()를 호출할 경우 중복된 내용으로 인해 리소스 낭비가 발생할 것을 우려
@@ -89,24 +100,29 @@ public class MemberController {
 		
 		memberService.checkId(member.getMemberId());
 		
-		return ResponseEntity.status(HttpStatus.OK).body("중복된 아이디가 없습니다.");
+		ResponseData rd = ResponseData.builder().message("중복된 아이디가 없습니다.").build();
+		
+		return ResponseEntity.status(HttpStatus.OK).body(rd);
 		
 	}
 	@PostMapping("/checkNickName")
-	public ResponseEntity<String> checkNickName(@Valid @RequestBody MemberDTO member){
+	public ResponseEntity<ResponseData> checkNickName(@Valid @RequestBody MemberDTO member){
 		
 		memberService.checkNickName(member.getNickName());
 		
-		return ResponseEntity.status(HttpStatus.OK).body("중복된 닉네임이 없습니다.");
+		ResponseData rd = ResponseData.builder().message("중복된 닉네임이 없습니다.").build();
+		
+		return ResponseEntity.status(HttpStatus.OK).body(rd);
 		
 	}
 	@PostMapping("/checkEmail")
-	public ResponseEntity<String> checkEmail(@Valid @RequestBody MemberDTO member){
+	public ResponseEntity<ResponseData> checkEmail(@Valid @RequestBody MemberDTO member){
 		
 		memberService.checkEmail(member.getEmail());
 		
-		return ResponseEntity.status(HttpStatus.OK).body("중복된 이메일이 없습니다.");
+		ResponseData rd = ResponseData.builder().message("중복된 이메일이 없습니다.").build();
 		
+		return ResponseEntity.status(HttpStatus.OK).body(rd);
 	}
 	
 	/**
@@ -116,19 +132,23 @@ public class MemberController {
 	 * @return ResponseEntity<List<BoardDTO>>
 	 */
 	@GetMapping("/boards")
-	public ResponseEntity<List<BoardDTO>> selectBoardsByMemberNo(@AuthenticationPrincipal CustomUserDetails user){
+	public ResponseEntity<ResponseData> selectBoardsByMemberNo(@AuthenticationPrincipal CustomUserDetails user){
 		
 		List<BoardDTO> boards = memberService.selectBoardsByMemberNo(user.getMemberNo());
 		
-		return ResponseEntity.status(HttpStatus.OK).body(boards);
+		ResponseData rd = ResponseData.builder().message("최근 일반게시판 게시글 조회 성공").data(boards).build();
+		
+		return ResponseEntity.status(HttpStatus.OK).body(rd);
 	}
 	
 	@GetMapping("/activityBoards")
-	public ResponseEntity<List<ActivityListDTO>> selectActivityBoardsByMemberNo(@AuthenticationPrincipal CustomUserDetails user){
+	public ResponseEntity<ResponseData> selectActivityBoardsByMemberNo(@AuthenticationPrincipal CustomUserDetails user){
 		
 		List<ActivityListDTO> activityBoards = memberService.selectActivityBoardsByMemberNo(user.getMemberNo());
 		
-		return ResponseEntity.status(HttpStatus.OK).body(activityBoards);
+		ResponseData rd = ResponseData.builder().message("최근 인증게시판 게시글 조회 성공").build();
+		
+		return ResponseEntity.status(HttpStatus.OK).body(rd);
 		
 	}
 	
