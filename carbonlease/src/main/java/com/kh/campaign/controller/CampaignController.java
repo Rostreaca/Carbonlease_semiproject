@@ -65,7 +65,6 @@ public class CampaignController {
 	 * 캠페인 상세 정보 조회
 	 *
 	 * @param campaignNo 조회할 캠페인 번호 (1 이상)
-	 * @return 캠페인 상세 정보
 	 */
 	@GetMapping("/detail/{campaignNo}")
 	public ResponseEntity<ResponseData<CampaignDTO>> findDetailByNo(
@@ -83,7 +82,6 @@ public class CampaignController {
 	 *
 	 * @param campaignNo 좋아요 토글할 캠페인 번호
 	 * @param user 인증된 사용자 정보
-	 * @return
 	 */
 	@PostMapping("/{campaignNo}/like")
 	public ResponseEntity<ResponseData<Map<String, Object>>> toggleLike(

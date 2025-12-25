@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.auth.model.vo.CustomUserDetails;
+import com.kh.common.dto.ResponseData;
 import com.kh.event.model.dto.EventCampaignDTO;
 import com.kh.event.model.dto.EventMessageDTO;
 import com.kh.event.model.service.EventService;
@@ -32,18 +33,18 @@ public class EventController {
 
     // REST 조회 (누구나)
     @GetMapping("/main")
-    public ResponseEntity<EventCampaignDTO> getMainEvent() {
+    public ResponseEntity<ResponseData<EventCampaignDTO>> getMainEvent() {
         log.info("메인 이벤트 조회 요청 (인증 불필요)");
         EventCampaignDTO event = eventService.getMainEvent();
-        return ResponseEntity.ok(event);
+        return ResponseData.ok(event, "메인 이벤트 조회 성공");
     }
 
     // REST 참여 (인증 필요)
     @PostMapping("/{eventId}/participate")
-    public ResponseEntity<?> participate(@PathVariable("eventId") Long eventId, @AuthenticationPrincipal CustomUserDetails user) {
+    public ResponseEntity<ResponseData<EventCampaignDTO>> participate(@PathVariable("eventId") Long eventId, @AuthenticationPrincipal CustomUserDetails user) {
         EventCampaignDTO event = eventService.participateAndNotify(eventId, user.getMemberNo());
         messagingTemplate.convertAndSend("/sub/event/main", event); // 실시간 broadcast
-        return ResponseEntity.ok(event);
+        return ResponseData.ok(event, "이벤트 참여 성공");
     }
 
     // WebSocket 참여
