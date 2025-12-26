@@ -47,7 +47,7 @@ public class FileUtil {
     }
 
     // 파일 저장 + URL 반환
-    public String saveFile(MultipartFile file/*, String folderName*/) {
+    public String saveFile(MultipartFile file, String folderName) {
 
     	String origin = file.getOriginalFilename();
         String savedName = changeName(origin);

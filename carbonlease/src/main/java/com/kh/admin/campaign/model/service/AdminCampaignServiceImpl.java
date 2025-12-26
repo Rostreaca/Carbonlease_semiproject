@@ -27,7 +27,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 
 	private final AdminCampaignMapper adminCampaignMapper;
 	private final Pagination pagination;
-	private final S3FileService s3FileService;
+	private final FileUtil fileUtil;
 
 	/**
 	 * 관리자_목록조회
@@ -104,9 +104,10 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	}
 
 	private CampaignAttachmentVO createAttachmentWithS3(MultipartFile file, Long refBno, int fileLevel) {
-		String changeName = new FileUtil(null).changeName(file.getOriginalFilename());
-		String fileUrl = new FileUtil(null).saveFile(file);
-
+		
+		String changeName = fileUtil.changeName(file.getOriginalFilename());
+		String fileUrl = fileUtil.saveFile(file, "campaigns");
+		
 		return CampaignAttachmentVO.builder()
 			.refBno(refBno)
 			.originName(file.getOriginalFilename())
