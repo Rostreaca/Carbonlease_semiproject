@@ -30,6 +30,7 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventCampaignDTO participateAndNotify(Long eventId, Long memberNo) {
+    	
         log.info(" 참여 처리 시작 - eventId: {}, memberNo: {}", eventId, memberNo);
         
         // 1. 참여 명령 객체 생성
@@ -51,6 +52,7 @@ public class EventServiceImpl implements EventService {
             log.error(" 참여 정보 저장 실패");
             throw new RuntimeException("참여 정보 저장에 실패했습니다.");
         }
+        
         log.debug(" 참여 정보 저장 완료");
         
         // 4. 참여자 수 증가

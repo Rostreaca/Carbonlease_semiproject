@@ -42,6 +42,7 @@ public class CampaignServiceImpl implements CampaignService {
 		int listCount = campaignMapper.findAndCountAll();
 		Map<String, Object> params = pagination.pageRequest(pageNo, 8, listCount);
 		List<CampaignDTO> campaigns = campaignMapper.findAll(params);
+		
 		for (CampaignDTO campaign : campaigns) {
 			if (memberNo != null) {
 				LikeDTO likeDTO = LikeDTO.builder()
@@ -54,6 +55,7 @@ public class CampaignServiceImpl implements CampaignService {
 				campaign.setLiked(false);
 			}
 		}
+		
 		params.put("pageInfo", params.get("pi"));
 		params.put("campaigns", campaigns);
 		return params;
