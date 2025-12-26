@@ -38,7 +38,6 @@ public class AdminCampaignController {
 	/**
 	 * 관리자_캠페인 목록조회
 	 * @param pageNo
-	 * @return
 	 */
 	@GetMapping
 	public ResponseEntity<ResponseData<Map<String, Object>>> findAll(
@@ -60,8 +59,6 @@ public class AdminCampaignController {
 	 * @param thumbnail    썸네일 이미지 파일(MultipartFile)
 	 * @param detailImage  상세 이미지 파일(MultipartFile)
 	 * @param user         인증된 관리자 정보(회원번호)
-	 * @return ResponseEntity<CampaignDTO> 201(CREATED) + 등록된 캠페인 객체(첨부파일 포함)
-	 * 
 	 */
 	@PostMapping
 	public ResponseEntity<ResponseData<Void>> save(
@@ -107,7 +104,6 @@ public class AdminCampaignController {
 	 * @param thumbnail    썸네일 이미지 파일 (Multipart)
 	 * @param detailImage  상세 이미지 파일 (Multipart)
 	 * @param user         인증된 관리자 정보 (AuthenticationPrincipal)
-	 * @return             수정 결과 응답 (201 Created)
 	 * 
 	 * multipart/form-data 요청(파일 업로드 포함)에서는 @RequestBody로 JSON을 받을 수 없기 때문에, 
 	 * 요청 필드(form-data) 중에서 `파일을 제외한 나머지 일반 텍스트 값들을 자동으로 DTO 필드에 바인딩해주는 역할을 하기 때문이다.
@@ -131,7 +127,6 @@ public class AdminCampaignController {
 	/**
 	 * 숨김
 	 * @param campaignNo
-	 * @return
 	 */
 	@PostMapping("/{campaignNo}")
 	public ResponseEntity<ResponseData<Void>> hideByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo){
@@ -142,7 +137,6 @@ public class AdminCampaignController {
 	/**
 	 * 복구
 	 * @param campaignNo
-	 * @return
 	 */
 	@PostMapping("/{campaignNo}/restore")
 	public ResponseEntity<ResponseData<Void>> restoreByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo) {
@@ -153,7 +147,6 @@ public class AdminCampaignController {
 	/**
 	 * 삭제
 	 * @param campaignNo
-	 * @return
 	 */
 	@DeleteMapping("/{campaignNo}")
 	public ResponseEntity<ResponseData<Void>> deleteByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo){

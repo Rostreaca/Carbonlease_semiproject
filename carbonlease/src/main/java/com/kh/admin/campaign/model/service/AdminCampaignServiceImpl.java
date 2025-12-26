@@ -1,9 +1,6 @@
 package com.kh.admin.campaign.model.service;
 
-import java.io.File;
 import java.security.InvalidParameterException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +14,7 @@ import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
 import com.kh.campaign.model.vo.CampaignAttachmentVO;
 import com.kh.campaign.model.vo.CampaignVO;
+import com.kh.common.util.FileUtil;
 import com.kh.common.util.Pagination;
 
 import lombok.RequiredArgsConstructor;
@@ -29,14 +27,14 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 
 	private final AdminCampaignMapper adminCampaignMapper;
 	private final Pagination pagination;
+	private final S3FileService s3FileService;
 
 	/**
 	 * 관리자_목록조회
 	 */
 	@Override
 	public Map<String, Object> findAll(int pageNo, String status, String keyword) {
-
-		 if (pageNo < 0) {
+		if (pageNo < 0) {
 			throw new InvalidParameterException("유효하지 않은 접근입니다.");
 		}
 
@@ -76,7 +74,6 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	@Override
 	@Transactional
 	public void save(CampaignDTO campaignDTO, MultipartFile thumbnail, MultipartFile detailImage, Long memberNo) {
-		
 		// 1) campaignDTO로 변환 (DB insert용)
 		CampaignVO campaignVO = CampaignVO.builder()
 			.campaignTitle(campaignDTO.getCampaignTitle())
@@ -97,59 +94,18 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 
 		// 3) 첨부파일 처리 (각각 한 번씩만 insert)
 		if (thumbnail != null && !thumbnail.isEmpty()) {
-			CampaignAttachmentVO thumbVo = saveAttachment(thumbnail, campaignNo, 0);
+			CampaignAttachmentVO thumbVo = createAttachmentWithS3(thumbnail, campaignNo, 0);
 			adminCampaignMapper.insertAttachment(thumbVo);
 		}
 		if (detailImage != null && !detailImage.isEmpty()) {
-			CampaignAttachmentVO detailVo = saveAttachment(detailImage, campaignNo, 1);
+			CampaignAttachmentVO detailVo = createAttachmentWithS3(detailImage, campaignNo, 1);
 			adminCampaignMapper.insertAttachment(detailVo);
 		}
 	}
 
-	/**
-	 * 파일명 생성 & 절대경로 생성
-	 */
-	private Map<String, String> setAttachmentNamePath(MultipartFile file) {
-
-		Map<String, String> map = new HashMap<>();
-
-		StringBuilder sb = new StringBuilder("CL_");
-		sb.append(new SimpleDateFormat("yyyyMMdd").format(new Date()));
-		sb.append("_");
-		sb.append((int) (Math.random() * 9000) + 1000);
-
-		String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
-		String changeName = sb.append(ext).toString();
-
-		String baseDir = System.getProperty("user.dir") + "/uploads/campaign/images/";
-
-		File dir = new File(baseDir);
-		if (!dir.exists()) {
-			dir.mkdirs();
-		}
-
-		map.put("changeName", changeName);
-		map.put("savePath", baseDir);
-
-		return map;
-	}
-
-	/**
-	 * 파일 저장 + AttachmentVO 생성
-	 */
-	private CampaignAttachmentVO saveAttachment(MultipartFile file, Long refBno, int fileLevel) {
-		Map<String, String> info = setAttachmentNamePath(file);
-		String changeName = info.get("changeName");
-		String savePath = info.get("savePath");
-		String fullPath = savePath + changeName;
-
-		try {
-			file.transferTo(new File(fullPath));
-		} catch (Exception e) {
-			throw new RuntimeException("파일 저장 실패", e);
-		}
-		
-		String fileUrl = "http://localhost:5173/uploads/campaign/images/" + changeName;
+	private CampaignAttachmentVO createAttachmentWithS3(MultipartFile file, Long refBno, int fileLevel) {
+		String changeName = new FileUtil(null).changeName(file.getOriginalFilename());
+		String fileUrl = new FileUtil(null).saveFile(file);
 
 		return CampaignAttachmentVO.builder()
 			.refBno(refBno)
@@ -195,12 +151,12 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		// 2. 첨부파일 처리 (수정 시 기존 파일 먼저 삭제/비활성화)
 		if (thumbnail != null && !thumbnail.isEmpty()) {
 			deleteAttachment(campaignNo, 0); // 기존 썸네일 삭제
-			CampaignAttachmentVO thumbVo = saveAttachment(thumbnail, campaignNo, 0);
+			CampaignAttachmentVO thumbVo = createAttachmentWithS3(thumbnail, campaignNo, 0);
 			adminCampaignMapper.insertAttachment(thumbVo);
 		}
 		if (detailImage != null && !detailImage.isEmpty()) {
 			deleteAttachment(campaignNo, 1); // 기존 상세이미지 삭제
-			CampaignAttachmentVO detailVo = saveAttachment(detailImage, campaignNo, 1);
+			CampaignAttachmentVO detailVo = createAttachmentWithS3(detailImage, campaignNo, 1);
 			adminCampaignMapper.insertAttachment(detailVo);
 		}
 

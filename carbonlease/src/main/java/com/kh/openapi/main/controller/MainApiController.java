@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.auth.model.vo.CustomUserDetails;
+import com.kh.common.dto.ResponseData;
 import com.kh.openapi.common.scheduler.KepcoScheduler;
 import com.kh.openapi.main.model.dto.RegionEnergyUsageDTO;
 import com.kh.openapi.main.model.service.MainApiService;
@@ -30,11 +31,11 @@ public class MainApiController {
      * 지도에서 사용할 형태로 변환한 리스트 반환
      */
     @GetMapping("/regionUsage")
-    public ResponseEntity<List<RegionEnergyUsageDTO>> getRegionStats() {
+    public ResponseEntity<ResponseData<List<RegionEnergyUsageDTO>>> getRegionStats() {
         log.info("지역별 전력 사용량 조회 API 호출"); 
         List<RegionEnergyUsageDTO> data = mainApiService.getElectricityUsageForMap();
         log.info("지역별 전력 사용량 조회 완료: {} 건", data.size());
-        return ResponseEntity.ok(data);
+        return ResponseData.ok(data, "지역별 전력 사용량 조회 성공");
     }
 
     // 2025-12-10 개선 기능 
@@ -43,10 +44,10 @@ public class MainApiController {
      * GET http://localhost:5173/api/main/refreshData
      */
     @GetMapping("/refreshData")
-    public ResponseEntity<String> refreshKepcoData(@AuthenticationPrincipal CustomUserDetails user) {
+    public ResponseEntity<ResponseData<String>> refreshKepcoData(@AuthenticationPrincipal CustomUserDetails user) {
         log.info("스케줄러 수동 실행 요청 (by {})", user.getUsername());
         kepcoScheduler.updateKepcoData();
-        return ResponseEntity.ok("KEPCO 데이터 갱신 완료");
+        return ResponseData.ok("KEPCO 데이터 갱신 완료", "스케줄러 수동 실행 성공");
     }
     
 }

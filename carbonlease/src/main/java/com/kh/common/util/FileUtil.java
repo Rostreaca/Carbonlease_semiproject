@@ -1,23 +1,37 @@
 package com.kh.common.util;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.RequiredArgsConstructor;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
+
 @Service
+@RequiredArgsConstructor
 public class FileUtil {
 
-    private final Path uploadRoot;
+//    private final Path uploadRoot;
+	private final S3Client s3Client;
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketName;
+    @Value("${cloud.aws.region.static}")
+    private String region;
+    
+//
+//    public FileUtil() {
+//        this.uploadRoot = Paths.get("uploads").toAbsolutePath().normalize();
+//    }
 
-    public FileUtil() {
-        this.uploadRoot = Paths.get("uploads").toAbsolutePath().normalize();
-    }
 
     // 파일명 바꾸기
     public String changeName(String origin) {
@@ -33,23 +47,36 @@ public class FileUtil {
     }
 
     // 파일 저장 + URL 반환
-    public String saveFile(MultipartFile file, String folderName) {
+    public String saveFile(MultipartFile file/*, String folderName*/) {
 
-        String origin = file.getOriginalFilename();
+    	String origin = file.getOriginalFilename();
         String savedName = changeName(origin);
-
+        
+        PutObjectRequest request = PutObjectRequest.builder()
+        										   .bucket(bucketName)
+        										   .key(savedName)
+        										   .contentType(file.getContentType())
+        										   .build();
+        
         try {
-            Path folder = uploadRoot.resolve(folderName).normalize();
-            Files.createDirectories(folder);
+			s3Client.putObject(request, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+		} catch (S3Exception e) {
+			e.printStackTrace();
+		} catch (AwsServiceException e) {
+			e.printStackTrace();
+		} catch (SdkClientException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        
+        
+        
+        String filePath = "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + savedName;
+        
+        return filePath;
 
-            Path target = folder.resolve(savedName);
-            file.transferTo(target.toFile());
-
-            // ⭐ DB에 저장할 경로 (URL)
-            return "http://localhost:5173/uploads/" + folderName + "/" + savedName;
-
-        } catch (IOException e) {
-            throw new RuntimeException("파일 저장 실패", e);
-        }
     }
+    
+    
 }
