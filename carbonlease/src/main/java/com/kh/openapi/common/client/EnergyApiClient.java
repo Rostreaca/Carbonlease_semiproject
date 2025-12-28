@@ -30,8 +30,6 @@ public class EnergyApiClient {
 
 
     private static final int MAX_SEARCH_MONTHS = 3;  // 최대 탐색 개월 수
-    private static final int MIN_MONTH = 1;          // 1월
-    private static final int MAX_MONTH = 12;         // 12월
 
     // 공통 KEPCO OpenAPI URL 생성 메서드
     private String buildKepcoApiUrl(String year, String month) {
