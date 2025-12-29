@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @Validated
-@RequestMapping("/admin/calendar")
+@RequestMapping("/api/admin/calendar")
 @RequiredArgsConstructor
 public class AdminCalendarController {
 

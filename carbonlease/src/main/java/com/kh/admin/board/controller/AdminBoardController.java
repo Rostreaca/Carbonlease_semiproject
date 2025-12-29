@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 /** 관리자용 일반 게시판 컨트롤러 */
 @Slf4j
 @RestController
-@RequestMapping("/admin/boards")
+@RequestMapping("/api/admin/boards")
 @RequiredArgsConstructor
 public class AdminBoardController {
 

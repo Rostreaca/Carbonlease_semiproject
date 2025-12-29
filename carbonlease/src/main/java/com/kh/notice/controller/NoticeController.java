@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @Validated
-@RequestMapping("/notices")
+@RequestMapping("/api/notices")
 @RequiredArgsConstructor
 public class NoticeController {
 

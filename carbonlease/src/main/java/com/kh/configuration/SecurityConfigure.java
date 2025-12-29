@@ -41,24 +41,24 @@ public class SecurityConfigure {
 						   .csrf(AbstractHttpConfigurer::disable)
 						   .cors(Customizer.withDefaults())
 						   .authorizeHttpRequests(requests -> {
-							   requests.requestMatchers(HttpMethod.POST, "auth/kakaoLogin", "/members/**","/auth/login", "/auth/refresh", "/auth/adminLogin").permitAll();
-							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/*/view", "/boards/*/view").permitAll();
-							   requests.requestMatchers(HttpMethod.POST, "/boards/**", "/activityBoards", "/notices", "/campaigns").authenticated();
-							   requests.requestMatchers(HttpMethod.POST, "/activityBoards/**").authenticated();
-							   requests.requestMatchers(HttpMethod.POST, "/campaigns/*/like", "campaigns/*/replies").authenticated(); // 좋아요 인증 필요
+							   requests.requestMatchers(HttpMethod.POST, "/api/auth/kakaoLogin", "/api/members/**","/api/auth/login", "/api/auth/refresh", "/api/auth/adminLogin").permitAll();
+							   requests.requestMatchers(HttpMethod.POST, "/api/activityBoards/*/view", "/api/boards/*/view").permitAll();
+							   requests.requestMatchers(HttpMethod.POST, "/api/boards/**", "/api/activityBoards", "/api/notices", "/api/campaigns").authenticated();
+							   requests.requestMatchers(HttpMethod.POST, "/api/activityBoards/**").authenticated();
+							   requests.requestMatchers(HttpMethod.POST, "/api/campaigns/*/like", "/api/campaigns/*/replies").authenticated(); // 좋아요 인증 필요
 							   requests.requestMatchers(HttpMethod.POST, "/api/events/*/participate").authenticated();
 							   requests.requestMatchers("/ws-stomp/**", "/ws-stomp", "/sub/**", "/pub/**", "/topic/**", "/app/**").permitAll();
-							   requests.requestMatchers(HttpMethod.GET,"/members/**", "/boards/**","/activityBoards/**", "/uploads/**", "/notices/**", "/campaigns/**", "/api/events/main").permitAll();
+							   requests.requestMatchers(HttpMethod.GET,"/api/members/**", "/api/boards/**","/api/activityBoards/**", "/api/uploads/**", "/api/notices/**", "/api/campaigns/**", "/api/events/main").permitAll();
 							   requests.requestMatchers(HttpMethod.GET, "/api/main/refreshData").hasAuthority("ROLE_ADMIN");
 							   requests.requestMatchers(HttpMethod.GET, "/api/air/**", "/api/main/**", "/api/**").permitAll();
-							   requests.requestMatchers(HttpMethod.PUT,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
-							   requests.requestMatchers(HttpMethod.DELETE,"/members/**","/boards/**","/activityBoards/**", "/notices/**", "/campaigns/**").authenticated();
-							   requests.requestMatchers(HttpMethod.PATCH, "/activityBoards/**").authenticated();
-							   requests.requestMatchers(HttpMethod.PUT, "/admin/**").hasAuthority("ROLE_ADMIN");
-							   requests.requestMatchers(HttpMethod.GET, "/admin/**").hasAuthority("ROLE_ADMIN");
-							   requests.requestMatchers(HttpMethod.POST, "/admin/**").hasAuthority("ROLE_ADMIN");
-							   requests.requestMatchers(HttpMethod.PATCH, "/admin/**").hasAuthority("ROLE_ADMIN");
-							   requests.requestMatchers(HttpMethod.DELETE, "/admin/**").hasAuthority("ROLE_ADMIN");
+							   requests.requestMatchers(HttpMethod.PUT,"/api/members/**","/api/boards/**","/api/activityBoards/**", "/api/notices/**", "/api/campaigns/**").authenticated();
+							   requests.requestMatchers(HttpMethod.DELETE,"/api/members/**","/api/boards/**","/api/activityBoards/**", "/api/notices/**", "/api/campaigns/**").authenticated();
+							   requests.requestMatchers(HttpMethod.PATCH, "/api/activityBoards/**").authenticated();
+							   requests.requestMatchers(HttpMethod.PUT, "/api/admin/**").hasAuthority("ROLE_ADMIN");
+							   requests.requestMatchers(HttpMethod.GET, "/api/admin/**").hasAuthority("ROLE_ADMIN");
+							   requests.requestMatchers(HttpMethod.POST, "/api/admin/**").hasAuthority("ROLE_ADMIN");
+							   requests.requestMatchers(HttpMethod.PATCH, "/api/admin/**").hasAuthority("ROLE_ADMIN");
+							   requests.requestMatchers(HttpMethod.DELETE, "/api/admin/**").hasAuthority("ROLE_ADMIN");
 						   })
 							.sessionManagement(manager ->
 							manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

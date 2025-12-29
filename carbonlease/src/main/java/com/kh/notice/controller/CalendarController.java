@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @Validated
-@RequestMapping("/notices/calendar")
+@RequestMapping("/api/notices/calendar")
 @RequiredArgsConstructor
 public class CalendarController {
 

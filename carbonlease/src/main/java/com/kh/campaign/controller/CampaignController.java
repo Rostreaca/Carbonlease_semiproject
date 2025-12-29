@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @Validated
-@RequestMapping("/campaigns")
+@RequestMapping("/api/campaigns")
 @RequiredArgsConstructor
 public class CampaignController {
 	
