@@ -1,7 +1,5 @@
 package com.kh.admin.notice.model.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +12,6 @@ import com.kh.admin.notice.model.dto.EventAdminDTO;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.notice.model.service.CalendarValidator;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

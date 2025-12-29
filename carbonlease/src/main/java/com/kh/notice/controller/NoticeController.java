@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.common.util.ResponseData;
 import com.kh.notice.model.service.NoticeService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,27 +27,21 @@ public class NoticeController {
 	
 	
 	@GetMapping
-	public ResponseEntity<Map<String, Object>> findAll(@RequestParam(name="pageNo", defaultValue = "1")int pageNo){
+	public ResponseEntity<ResponseData<Map<String, Object>>> findAll(@RequestParam(name="pageNo", defaultValue = "1")int pageNo){
 		
-		Map<String, Object> map = noticeService.findAll(pageNo);
-		
-		return ResponseEntity.ok(map);
+		return ResponseData.ok("공지사항 전체조회 성공",noticeService.findAll(pageNo));
 	}
 	
 	@GetMapping("detail/{noticeNo}")
-	public ResponseEntity<Map<String, Object>> findByNo(@PathVariable(name="noticeNo")Long noticeNo){
+	public ResponseEntity<ResponseData<Map<String, Object>>> findByNo(@PathVariable(name="noticeNo")Long noticeNo){
 		
-		Map<String, Object> map = noticeService.findByNo(noticeNo);
-		
-		return ResponseEntity.ok(map);
+		return ResponseData.ok("공지사항 상세조회 성공", noticeService.findByNo(noticeNo));
 	}
 	
 	@GetMapping("fix")
-	public ResponseEntity<Map<String, Object>> findByFix(){
+	public ResponseEntity<ResponseData<Map<String, Object>>> findByFix(){
 		
-		Map<String, Object> map = noticeService.findByFix();
-		
-		return ResponseEntity.ok(map);
+		return ResponseData.ok("고정중인 공지사항 조회 성공", noticeService.findByFix());
 	}
 
 }

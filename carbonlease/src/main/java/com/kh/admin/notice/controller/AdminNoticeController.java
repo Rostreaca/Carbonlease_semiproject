@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.admin.notice.model.dto.NoticeAdminDTO;
 import com.kh.admin.notice.model.service.AdminNoticeService;
 import com.kh.auth.model.vo.CustomUserDetails;
+import com.kh.common.util.ResponseData;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,35 +35,31 @@ public class AdminNoticeController {
 	private final AdminNoticeService adminNoticeService;
 	
 	@GetMapping
-	public ResponseEntity<Map<String, Object>> findAll(@RequestParam(name="pageNo", defaultValue = "1")int pageNo){
+	public ResponseEntity<ResponseData<Map<String, Object>>> findAll(@RequestParam(name="pageNo", defaultValue = "1")int pageNo){
 		
-		Map<String, Object> map = adminNoticeService.findAll(pageNo);
-		
-		return ResponseEntity.ok(map);
+		return ResponseData.ok(adminNoticeService.findAll(pageNo));
 	}
 	
 	@PostMapping
-	public ResponseEntity<String> insert(
+	public ResponseEntity<ResponseData<Void>> insert(
 	        @Valid NoticeAdminDTO notice,
 	        @RequestParam(name = "files", required = false) List<MultipartFile> files,
 	        @AuthenticationPrincipal CustomUserDetails user
 			){
-
-	    adminNoticeService.insert(notice, files, user);
-
-	    return ResponseEntity.ok("등록 성공!");
+		
+		adminNoticeService.insert(notice, files, user);
+		
+	    return ResponseData.created();
 	}
 	
 	@GetMapping("detail/{noticeNo}")
-	public ResponseEntity<Map<String, Object>> findByNo(@PathVariable(name="noticeNo")Long noticeNo){
+	public ResponseEntity<ResponseData<Map<String, Object>>> findByNo(@PathVariable(name="noticeNo")Long noticeNo){
 		
-		Map<String, Object> map = adminNoticeService.findByNo(noticeNo);
-		
-		return ResponseEntity.ok(map);
+		return ResponseData.ok(adminNoticeService.findByNo(noticeNo));
 	}
 	
 	@PutMapping("update/{noticeNo}")
-	public ResponseEntity<String> update(
+	public ResponseEntity<ResponseData<Void>> update(
 			@Valid NoticeAdminDTO notice,
 	        @RequestParam(name = "files", required = false) List<MultipartFile> files,
 	        @AuthenticationPrincipal CustomUserDetails user
@@ -70,15 +67,15 @@ public class AdminNoticeController {
 		
 		adminNoticeService.update(notice, files, user);
 		
-		return ResponseEntity.ok("수정 성공!");
+		return ResponseData.updated();
 	}
 	
 	@PutMapping("delete/{noticeNo}")
-	public ResponseEntity<String> delete(@PathVariable(name="noticeNo")Long noticeNo){
+	public ResponseEntity<ResponseData<Void>> delete(@PathVariable(name="noticeNo")Long noticeNo){
 		
 		adminNoticeService.delete(noticeNo);
 		
-		return ResponseEntity.ok("삭제 성공!");
+		return ResponseData.updated();
 	}
 	
 }

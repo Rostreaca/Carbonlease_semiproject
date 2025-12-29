@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.common.util.ResponseData;
 import com.kh.notice.model.service.CalendarService;
 
 import lombok.RequiredArgsConstructor;
@@ -23,19 +24,15 @@ public class CalendarController {
 	private final CalendarService calendarService;
 	
 	@GetMapping
-	public ResponseEntity<Map<String, Object>> findAllEvents(){
+	public ResponseEntity<ResponseData<Map<String, Object>>> findAllEvents(){
 		
-		Map<String, Object> map = calendarService.findAllEvents();
-		
-		return ResponseEntity.ok(map);
+		return ResponseData.ok(calendarService.findAllEvents());
 	}
 	
 	@GetMapping("categories")
-	public ResponseEntity<Map<String, Object>> findAllCategory(){
+	public ResponseEntity<ResponseData<Map<String, Object>>> findAllCategory(){
 		
-		Map<String, Object> map = calendarService.findAllCategory();
-		
-		return ResponseEntity.ok(map);
+		return ResponseData.ok(calendarService.findAllCategory());
 	}
 
 }

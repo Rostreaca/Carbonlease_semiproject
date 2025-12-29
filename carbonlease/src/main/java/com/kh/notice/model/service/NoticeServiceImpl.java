@@ -4,11 +4,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.kh.common.util.PageInfo;
 import com.kh.common.util.Pagination;
 import com.kh.notice.model.dao.NoticeMapper;
 import com.kh.notice.model.dto.AttachmentDTO;
 import com.kh.notice.model.dto.NoticeDTO;
+import com.kh.notice.model.dto.response.NoticeDetailResponse;
+import com.kh.notice.model.dto.response.NoticesListResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,24 +36,21 @@ public class NoticeServiceImpl implements NoticeService{
 		
 		// 유효성 검사
 		noticeValidator.validatePageNo(pageNo);
-		
-		// 1. 게시물의 총 개수를 조회합니다.
+		// 전체 개수 조회
 		int pageSize = 5;
 		int listCount = countAll();
 		
-		// 2. Map에 pageRequest() 메서드를 호출해 반환받은 값을 저장합니다.
+		// pagination 생성 및 전체조회
 		Map<String, Object> params = pagination.pageRequest(pageNo, pageSize, listCount);
-		
-		// 3. 게시글의 목록들을 Map을 인자값으로 받아 조회합니다.
 		List<NoticeDTO> notices = noticeMapper.findAll(params);
 		
-		// 4. 새로운 Map 생성하여 조회해온 게시글 목록과 pageInfo를 저장합니다.
-		Map<String, Object> map = Map.of(
-		    "pageInfo", params.get("pi"),
-		    "notices", notices
-		);
+		// 예외처리
+		noticeValidator.validateResource(notices);
 		
-		// 5. 생성한 Map 반환
+		Map<String, Object> map = Map.of(
+				"notices", notices,
+				"pageInfo", params.get("pi")
+				);
 		return map;
 	}
 
@@ -67,15 +68,16 @@ public class NoticeServiceImpl implements NoticeService{
 	 * @return Map<String, Object> "공지글", "첨부파일"
 	 */
 	@Override
+	@Transactional
 	public Map<String, Object> findByNo(Long noticeNo) {
+		
+		// 조회수 증가
+		noticeMapper.addViewCount(noticeNo);
 		
 		Map<String, Object> map = Map.of(
 		    "notice", getNoticeOrThrow(noticeNo),
 		    "attachment", getAttachment(noticeNo)
 		);
-		
-		// 조회 완료로 인한 조회수 증가
-		noticeMapper.addViewCount(noticeNo);
 		
 		return map;
 	}
@@ -114,11 +116,12 @@ public class NoticeServiceImpl implements NoticeService{
 	 */
 	@Override
 	public Map<String, Object> findByFix() {
-
+		
 		List<NoticeDTO> notices = noticeMapper.findByFix();
+
+		//유효성검사:리소스유효
 		
 		Map<String, Object> map = Map.of("notices", notices);
-
 		return map;
 	}
 

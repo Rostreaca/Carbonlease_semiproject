@@ -23,5 +23,4 @@ public class EventAdminDTO {
 	private String title;
 	private String status;
 	
-	
 }

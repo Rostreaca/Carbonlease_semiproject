@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.admin.notice.model.dto.EventAdminDTO;
 import com.kh.admin.notice.model.service.AdminCalendarService;
 import com.kh.auth.model.vo.CustomUserDetails;
+import com.kh.common.util.ResponseData;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,43 +33,39 @@ public class AdminCalendarController {
 	private final AdminCalendarService calendarService;
 	
 	@GetMapping
-	public ResponseEntity<Map<String, Object>> findAllEvents(){
+	public ResponseEntity<ResponseData<Map<String, Object>>> findAllEvents(){
 		
-		Map<String, Object> map = calendarService.findAllEvents();
-		
-		return ResponseEntity.ok(map);
+		return ResponseData.ok(calendarService.findAllEvents());
 	}
 	
 	@GetMapping("/category")
-	public ResponseEntity<Map<String, Object>> findAllCategory(){
+	public ResponseEntity<ResponseData<Map<String, Object>>> findAllCategory(){
 		
-		Map<String, Object> map = calendarService.findAllCategory();
-				
-		return ResponseEntity.ok(map);
+		return ResponseData.ok(calendarService.findAllCategory());
 	}
 	
 	@PostMapping
-	public ResponseEntity<String> addEvent(@Valid @RequestBody EventAdminDTO event,
+	public ResponseEntity<ResponseData<Void>> addEvent(@Valid @RequestBody EventAdminDTO event,
 									  @AuthenticationPrincipal CustomUserDetails user){
 		
 		calendarService.addEvent(event, user);
 		
-		return ResponseEntity.ok("등록 성공!");
+		return ResponseData.created();
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<String> updateEvent(@Valid @RequestBody EventAdminDTO event){
+	public ResponseEntity<ResponseData<Void>> updateEvent(@Valid @RequestBody EventAdminDTO event){
 		
 		calendarService.updateEvent(event);
 		
-		return ResponseEntity.ok("수정 성공!");
+		return ResponseData.updated();
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteEvent(@PathVariable(name="id")Long id){
-
+	public ResponseEntity<ResponseData<Void>> deleteEvent(@PathVariable(name="id")Long id){
+		
 		calendarService.deleteEvent(id);
 		
-		return ResponseEntity.ok("삭제 성공!");
+		return ResponseData.updated();
 	}
 }

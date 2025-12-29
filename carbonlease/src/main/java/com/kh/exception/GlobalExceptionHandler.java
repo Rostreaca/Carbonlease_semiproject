@@ -9,62 +9,67 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.kh.common.util.ResponseData;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-	private ResponseEntity<Map<String, String>> createResponseEntity(RuntimeException e, HttpStatus status){
-		Map<String, String> error = new HashMap();
-		error.put("error-message", e.getMessage());
-		return ResponseEntity.status(status).body(error);
+	private ResponseEntity<ResponseData<Object>> createResponseEntity(Exception e, HttpStatus status){
+		return ResponseData.error(e.getMessage(), status);
 	}
 	
 	@ExceptionHandler(CustomAuthenticationException.class)
-	public ResponseEntity<Map<String, String>> handleAuth(CustomAuthenticationException e){
+	public ResponseEntity<ResponseData<Object>> handleAuth(CustomAuthenticationException e){
 		return createResponseEntity(e, HttpStatus.UNAUTHORIZED);
 	}
 	
 	@ExceptionHandler(UserNotFoundException.class)
-	public ResponseEntity<Map<String, String>> handleUser(UserNotFoundException e){
+	public ResponseEntity<ResponseData<Object>> handleUser(UserNotFoundException e){
 		return createResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(IdDuplicateException.class)
-	public ResponseEntity<Map<String, String>> handleDuplicateId(IdDuplicateException e){
+	public ResponseEntity<ResponseData<Object>> handleDuplicateId(IdDuplicateException e){
 		return createResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(NickNameDuplicateException.class)
-	public ResponseEntity<Map<String, String>> handleDuplicateNickName(NickNameDuplicateException e){
+	public ResponseEntity<ResponseData<Object>> handleDuplicateNickName(NickNameDuplicateException e){
 		return createResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(EmailDuplicateException.class)
-	public ResponseEntity<Map<String, String>> handleDuplicateEmail(EmailDuplicateException e){
+	public ResponseEntity<ResponseData<Object>> handleDuplicateEmail(EmailDuplicateException e){
 		return createResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(InvalidValueException.class)
-	public ResponseEntity<Map<String, String>> handleInvalidValue(InvalidValueException e){
+	public ResponseEntity<ResponseData<Object>> handleInvalidValue(InvalidValueException e){
 		return createResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<Map<String, String>> handleMethodArgument(MethodArgumentNotValidException e){
-		Map<String, String> error = new HashMap();
-		error.put("error-message", e.getBindingResult().getFieldError().getDefaultMessage());
-		return ResponseEntity.status(e.getStatusCode()).body(error);
+	public ResponseEntity<ResponseData<Map<String, String>>> handleMethodArgument(MethodArgumentNotValidException e) {
+
+	    Map<String, String> errors = new HashMap<>();
+	    e.getBindingResult().getFieldErrors().forEach(err ->
+	        errors.put(err.getField(), err.getDefaultMessage())
+	    );
+
+	    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+	            .body(new ResponseData<>(false, "요청 값이 올바르지 않습니다.", errors));
 	}
 	
 	@ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
-	public ResponseEntity<Map<String, String>> handleAccessDenied(org.springframework.security.access.AccessDeniedException e){
+	public ResponseEntity<ResponseData<Object>> handleAccessDenied(org.springframework.security.access.AccessDeniedException e){
 	    return createResponseEntity(e, HttpStatus.FORBIDDEN);
 	}
 	
 	@ExceptionHandler(AdminBoardsException.class)
-	public ResponseEntity<Map<String, String>> handleAdminError(AdminBoardsException e) {
+	public ResponseEntity<ResponseData<Object>> handleAdminError(AdminBoardsException e) {
 	    return createResponseEntity(e, HttpStatus.BAD_REQUEST);
 	}
 

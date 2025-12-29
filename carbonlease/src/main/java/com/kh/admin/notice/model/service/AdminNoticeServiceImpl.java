@@ -14,6 +14,7 @@ import com.kh.admin.notice.model.dto.NoticeAdminDTO;
 import com.kh.admin.notice.model.vo.AdminNoticeVO;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.common.util.FileUtil;
+import com.kh.common.util.PageOffset;
 import com.kh.common.util.Pagination;
 import com.kh.notice.model.dto.AttachmentDTO;
 import com.kh.notice.model.service.NoticeValidator;
