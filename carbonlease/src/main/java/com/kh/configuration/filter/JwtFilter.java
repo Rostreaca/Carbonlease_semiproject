@@ -101,10 +101,10 @@ public class JwtFilter extends OncePerRequestFilter{
 
 	    if (method.equalsIgnoreCase("OPTIONS")) return true;
 	    if (uri.startsWith("/api/main/")) return true;
-	    if (uri.startsWith("/auth/")) return true;
-	    if (uri.startsWith("/uploads/")) return true;
-	    if (uri.startsWith("/admin")) return false;
-	    if (uri.startsWith("/activityBoards") && method.equals("GET")) return true;
+	    if (uri.startsWith("/api/auth/")) return true;
+	    if (uri.startsWith("/api/uploads/")) return true;
+	    if (uri.startsWith("/api/admin")) return false;
+	    if (uri.startsWith("/api/activityBoards") && method.equals("GET")) return true;
 
 	    return false;
 	}

@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /** 관리자용 인증 게시판 컨트롤러 */
 @RestController
-@RequestMapping("/admin/activityBoards")
+@RequestMapping("/api/admin/activityBoards")
 @RequiredArgsConstructor
 @Slf4j
 public class AdminActivityController {

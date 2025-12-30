@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @Validated
-@RequestMapping("/admin/campaigns")
+@RequestMapping("/api/admin/campaigns")
 @RequiredArgsConstructor
 public class AdminCampaignController {
 	

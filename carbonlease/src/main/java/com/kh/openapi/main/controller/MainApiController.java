@@ -41,7 +41,7 @@ public class MainApiController {
     // 2025-12-10 개선 기능 
     /**
      * 관리자용: 스케줄러 수동 실행
-     * GET http://localhost:5173/api/main/refreshData
+     * GET http://localhost:8080/api/main/refreshData
      */
     @GetMapping("/refreshData")
     public ResponseEntity<ResponseData<String>> refreshKepcoData(@AuthenticationPrincipal CustomUserDetails user) {

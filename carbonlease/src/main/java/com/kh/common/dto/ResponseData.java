@@ -24,17 +24,17 @@ public class ResponseData<T> {
     }
 	
 	
-	//성공 응답
+	// 조회, 수정, 삭제 등에서 별도의 메시지 없이 data만 반환할 때 사용.
 	public static <T> ResponseEntity<ResponseData<T>> ok(Object data) {
 		return ResponseEntity.ok(new ResponseData<T>(null, data, "요청 성공", LocalDateTime.now()));
 	}
 	
-	//200
+	//200 : 조회, 수정, 삭제 200 ok
 	public static <T> ResponseEntity<ResponseData<T>> ok(Object data, String message){
 		return ResponseEntity.ok(new ResponseData<T>(message, data, "요청 성공", LocalDateTime.now()));
 	}
 	
-	//201
+	//201 : 등록시 201 created
 	public static <T> ResponseEntity<ResponseData<T>> created(Object data) {
 		return ResponseEntity.status(HttpStatus.CREATED)
 							.body(new ResponseData<T>("생성되었습니다.", data, "요청 성공", LocalDateTime.now()));
@@ -42,6 +42,6 @@ public class ResponseData<T> {
 	
 	//실패 응답 _ 글로벌 핸들러에서 돌리 것
 	public static <T> ResponseEntity<ResponseData<T>> badRequest(String message, HttpStatus status){
-		return ResponseEntity.status(status).body(new ResponseData<T>(message, null, "요청 실패", LocalDateTime.now()	));
+		return ResponseEntity.status(status).body(new ResponseData<T>(message, null, "요청 실패", LocalDateTime.now()));
 	}
 }

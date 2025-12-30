@@ -30,7 +30,7 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventCampaignDTO participateAndNotify(Long eventId, Long memberNo) {
-    	
+
         log.info(" 참여 처리 시작 - eventId: {}, memberNo: {}", eventId, memberNo);
         
         // 1. 참여 명령 객체 생성

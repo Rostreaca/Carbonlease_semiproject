@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/activityBoards")
+@RequestMapping("/api/activityBoards")
 @RequiredArgsConstructor
 public class ActivityController {
 
