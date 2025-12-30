@@ -22,5 +22,7 @@ public interface AdminNoticeService {
 
 	void delete(Long noticeNo);
 
+	void restore(Long noticeNo);
+
 	
 }

@@ -98,6 +98,16 @@
 				NOTICE_NO = #{noticeNo}
 	</update>
 	
+	<update id="restore"
+			parameterType="long">
+		UPDATE
+				CL_NOTICE
+		SET
+				STATUS = 'Y'
+		WHERE
+				NOTICE_NO = #{noticeNo}
+	</update>
+	
 	<update id="updateNotice"
 			parameterType="AdminNoticeVO">
 		UPDATE

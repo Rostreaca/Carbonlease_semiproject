@@ -30,6 +30,8 @@ public interface AdminNoticeMapper {
 
 	void delete(Long noticeNo);
 
+	void restore(Long noticeNo);
+
 
 
 

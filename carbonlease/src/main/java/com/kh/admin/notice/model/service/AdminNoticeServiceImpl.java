@@ -275,8 +275,23 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
 	 */
 	@Override
 	public void delete(Long noticeNo) {
+		
+		noticeValidator.validateNoticeNo(noticeNo);
 
 		adminNoticeMapper.delete(noticeNo);
+	}
+
+	/**
+	 * 공지글 삭제 복구: 삭제 상태 업데이트
+	 * @param Long noticeNo: (참조)공지글 번호
+	 * @return void
+	 */
+	@Override
+	public void restore(Long noticeNo) {
+
+		noticeValidator.validateNoticeNo(noticeNo);
+
+		adminNoticeMapper.restore(noticeNo);
 	}
 
 	

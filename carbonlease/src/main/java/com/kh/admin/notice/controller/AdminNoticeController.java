@@ -78,4 +78,12 @@ public class AdminNoticeController {
 		return ResponseData.updated();
 	}
 	
+	@PutMapping("restore/{noticeNo}")
+	public ResponseEntity<ResponseData<Void>> restore(@PathVariable(name="noticeNo")Long noticeNo){
+		
+		adminNoticeService.restore(noticeNo);
+		
+		return ResponseData.updated();
+	}
+	
 }
