@@ -14,7 +14,6 @@ import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CampaignReplyDTO;
 import com.kh.campaign.model.dto.LikeDTO;
 import com.kh.common.util.Pagination;
-import com.kh.exception.CustomInvalidParameterException;
 import com.kh.exception.ResourceNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,9 @@ public class CampaignServiceImpl implements CampaignService {
 	
 	private final CampaignMapper campaignMapper;
 	private final Pagination pagination;
+	private final CampaignValidator campaignValidator;
 
+	
 	/**
 	 * 캠페인 목록 조회 (페이징 포함)
 	 * @param pageNo 전체게시글 조회 및 페이징 정보
@@ -36,13 +37,18 @@ public class CampaignServiceImpl implements CampaignService {
 	 */
 	@Override
 	public Map<String, Object> findAll(int pageNo, Long memberNo) {
-		if (pageNo < 0) {
-			throw new CustomInvalidParameterException("유효하지 않은 접근입니다.");
-		}
+		
+		// 페이지 번호 유효성 검사
+		// 여러 캠페인을 한 번에 가져오는 것이므로, 특정 campaignNo가 필요 없다.
+		// 상세/수정/삭제 시 특정 캠페인 하나를 대상으로 할때만 campaignNo이 필요하다.
+		//campaignValidator.validateCampaignNo(memberNo);
+
+		// 0) 전체 게시글 수 조회 및 페이지네이션 계산
 		int listCount = campaignMapper.findAndCountAll();
 		Map<String, Object> params = pagination.pageRequest(pageNo, 8, listCount);
 		List<CampaignDTO> campaigns = campaignMapper.findAll(params);
 		
+		// 1) 좋아요 여부 설정
 		for (CampaignDTO campaign : campaigns) {
 			if (memberNo != null) {
 				LikeDTO likeDTO = LikeDTO.builder()
@@ -56,6 +62,7 @@ public class CampaignServiceImpl implements CampaignService {
 			}
 		}
 		
+		// 2) 결과 맵에 데이터 추가
 		params.put("pageInfo", params.get("pi"));
 		params.put("campaigns", campaigns);
 		return params;
@@ -71,7 +78,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private void increaseViewCount(Long campaignNo) {
 		int result = campaignMapper.increaseViewCount(campaignNo);
 		if (result != 1) {
-			throw new CustomInvalidParameterException("조회수 증가 중 오류 발생");
+			throw new InvalidParameterException("조회수 증가 중 오류 발생");
 		}
 	}
 	
@@ -105,16 +112,18 @@ public class CampaignServiceImpl implements CampaignService {
 	 * 
 	 */
 	private CampaignDTO getCampaignOrThrow(Long campaignNo) {
-		// 번호가 유효한가?
-		if(campaignNo < 1) {
-			throw new CustomInvalidParameterException("유효하지 않은 접근입니다.");
-		}
+		
+		// 번호 유효성 검사
+		campaignValidator.validateCampaignNo(campaignNo);
+
 		// 조회
 		CampaignDTO campaign = campaignMapper.getCampaignOrThrow(campaignNo);
-		// 존재하는 게시물인가?
-		if(campaign == null) {
-			throw new CustomInvalidParameterException("유효하지 않은 접근입니다.");
+
+		 // 존재하는 게시물인가?
+		if (campaign == null) {
+			throw new RuntimeException("유효하지 않은 접근입니다.");
 		}
+
 		return campaign;
 	}
 	

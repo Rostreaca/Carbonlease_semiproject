@@ -2,7 +2,6 @@ package com.kh.campaign.controller;
 
 import java.util.Map;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -87,9 +86,6 @@ public class CampaignController {
 	public ResponseEntity<ResponseData<Map<String, Object>>> toggleLike(
 			@PathVariable("campaignNo") Long campaignNo,
 			@AuthenticationPrincipal CustomUserDetails user) {
-		if (user == null) {
-			return ResponseData.badRequest("로그인 필요", HttpStatus.UNAUTHORIZED);
-		}
 		boolean isLiked = campaignService.toggleLike(campaignNo, user.getMemberNo());
 		return ResponseData.ok(Map.of("isLiked", isLiked), "좋아요 토글 성공");
 	}
@@ -109,12 +105,9 @@ public class CampaignController {
 			@PathVariable("campaignNo") Long campaignNo,
 			@RequestBody Map<String, String> body,
 			@AuthenticationPrincipal CustomUserDetails user) {
-		log.info("댓글 등록 요청 - user: {}", user);
-		if (user == null) {
-			return ResponseData.badRequest("로그인이 필요합니다.", HttpStatus.UNAUTHORIZED);
-		}
+		//log.info("댓글 등록 요청 - user: {}", user);
 		String content = body.get("replyContent");
-		Long memberNo = user.getMemberNo();
+		Long memberNo = (user != null) ? user.getMemberNo() : null;
 		int result = campaignService.insertReply(content, campaignNo, memberNo);
 		return ResponseData.ok(result, "댓글 등록 성공");
 	}
@@ -124,9 +117,6 @@ public class CampaignController {
 	public ResponseEntity<ResponseData<Void>> deleteReply(
 			@PathVariable("replyNo") Long replyNo,
 			@AuthenticationPrincipal CustomUserDetails user) {
-		if (user == null) {
-			return ResponseData.badRequest("로그인 필요", HttpStatus.UNAUTHORIZED);
-		}
 		campaignService.deleteReply(replyNo, user.getMemberNo());
 		return ResponseData.ok(null, "댓글 삭제 성공");
 	}
@@ -137,9 +127,6 @@ public class CampaignController {
 			@PathVariable("replyNo") Long replyNo,
 			@RequestBody Map<String, String> payload,
 			@AuthenticationPrincipal CustomUserDetails user) {
-		if (user == null) {
-			return ResponseData.badRequest("로그인 필요", HttpStatus.UNAUTHORIZED);
-		}
 		String replyContent = payload.get("replyContent");
 		int result = campaignService.updateReply(replyNo, replyContent, user.getMemberNo());
 		return ResponseData.ok(result, "댓글 수정 성공");

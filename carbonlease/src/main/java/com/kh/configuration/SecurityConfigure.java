@@ -48,7 +48,7 @@ public class SecurityConfigure {
 							   requests.requestMatchers(HttpMethod.POST, "/api/campaigns/*/like", "/api/campaigns/*/replies").authenticated(); // 좋아요 인증 필요
 							   requests.requestMatchers(HttpMethod.POST, "/api/events/*/participate").authenticated();
 							   requests.requestMatchers("/ws-stomp/**", "/ws-stomp", "/sub/**", "/pub/**", "/topic/**", "/app/**").permitAll();
-							   requests.requestMatchers(HttpMethod.GET,"/api/members/**", "/api/boards/**","/api/activityBoards/**", "/api/uploads/**", "/api/notices/**", "/api/campaigns/**", "/api/events/main").permitAll();
+							   requests.requestMatchers(HttpMethod.GET,"/api/members/**", "/api/boards/**","/api/activityBoards/**", "/api/uploads/**", "/api/notices/**", "/api/campaigns/**", "/api/events/main", "/api/main/regionUsage").permitAll();
 							   requests.requestMatchers(HttpMethod.GET, "/api/main/refreshData").hasAuthority("ROLE_ADMIN");
 							   requests.requestMatchers(HttpMethod.GET, "/api/air/**", "/api/main/**", "/api/**").permitAll();
 							   requests.requestMatchers(HttpMethod.PUT,"/api/members/**","/api/boards/**","/api/activityBoards/**", "/api/notices/**", "/api/campaigns/**").authenticated();
