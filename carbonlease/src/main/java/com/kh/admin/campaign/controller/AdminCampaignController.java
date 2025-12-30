@@ -103,17 +103,21 @@ public class AdminCampaignController {
 	 * @param campaign     수정할 캠페인 정보 (폼 데이터)
 	 * @param thumbnail    썸네일 이미지 파일 (Multipart)
 	 * @param detailImage  상세 이미지 파일 (Multipart)
-	 * @param user         인증된 관리자 정보 (AuthenticationPrincipal)
 	 * 
-	 * multipart/form-data 요청(파일 업로드 포함)에서는 @RequestBody로 JSON을 받을 수 없기 때문에, 
-	 * 요청 필드(form-data) 중에서 `파일을 제외한 나머지 일반 텍스트 값들을 자동으로 DTO 필드에 바인딩해주는 역할을 하기 때문이다.
+	 * @RequestBody는 HTTP 요청의 body 전체 JSON으로 받아 객체로 변환
+	 * > 하지만, multipart/form-data는 파일과 일반 폼 데이터가 혼합되어 있어 @RequestBody 사용 불가
+	 * > 이 방식은 JSON이 아닌, 각각 필드(텍스트/파일) 분리 전송 필요
+	 * 
+	 * 
+	 * > 파일은 등록 시, 필수 이지만 수정 시에는 선택 사항이 될 수 있음
+	 * > 따라서, @RequestParam(required=false)로 설정하여 파일이 없어도 처리
 	 */
 	@PutMapping("/{campaignNo}")
 	public ResponseEntity<ResponseData<Void>> update(
 		@PathVariable(name="campaignNo") Long campaignNo,
-		CampaignDTO campaign,
-		@RequestParam("thumbnail") MultipartFile thumbnail,
-		@RequestParam("detailImage") MultipartFile detailImage
+		@Valid CampaignDTO campaign,
+		@RequestParam(value="thumbnail", required=false) MultipartFile thumbnail,
+		@RequestParam(value="detailImage", required=false) MultipartFile detailImage
 	) {
 		adminCampaignService.update(
 			campaign,
@@ -123,12 +127,15 @@ public class AdminCampaignController {
 		);
 		return ResponseData.ok(null, "캠페인 수정 성공");
 	}
+
+	// REST 원칙상 상태 변경은 PATCH나 PUT 사용해야된다.
+	// POST는 새 리소스 생성 시에만 사용된다.
 	
 	/**
 	 * 숨김
 	 * @param campaignNo
 	 */
-	@PostMapping("/{campaignNo}")
+	@PutMapping("/{campaignNo}/hide")
 	public ResponseEntity<ResponseData<Void>> hideByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo){
 		adminCampaignService.hideByCampaignNo(campaignNo);
 		return ResponseData.ok(null, "캠페인 숨김 성공");
@@ -138,7 +145,7 @@ public class AdminCampaignController {
 	 * 복구
 	 * @param campaignNo
 	 */
-	@PostMapping("/{campaignNo}/restore")
+	@PutMapping("/{campaignNo}/restore")
 	public ResponseEntity<ResponseData<Void>> restoreByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo) {
 		adminCampaignService.restoreByCampaignNo(campaignNo);
 		return ResponseData.ok(null, "캠페인 복구 성공");

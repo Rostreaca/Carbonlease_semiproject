@@ -1,6 +1,8 @@
 package com.kh.campaign.model.service;
 
 import java.security.InvalidParameterException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +19,9 @@ public class CampaignValidator {
      * Validator는 주로 "입력값의 유효성(파라미터, DTO 등)"을 사전에 검증하는 역할
      *  DB 작업 결과(예: update, insert 결과값 등)에 대한 검증은 서비스 로직에서 바로 처리하는 것이 일반적
      */
+
+
+    private static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("jpg", "jpeg", "png", "gif");
 
     /**
      * 페이지 번호 유효성 검사
@@ -62,12 +67,22 @@ public class CampaignValidator {
      * 파일 유효성 검사
      */
     public static void validateFile(MultipartFile file) {
+
+        String filename = file.getOriginalFilename();
+        
         if (file != null && !file.isEmpty()) {
-            String filename = file.getOriginalFilename();
             if (filename == null || filename.trim().isEmpty()) {
                 throw new InvalidParameterException("파일명이 없습니다.");
             }
         }
+        
+        String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+
+        if (!ALLOWED_EXTENSIONS.contains(extension)) {
+            throw new IllegalArgumentException("허용되지 않는 파일 형식입니다");
+        }
+
+
     }
 
 
