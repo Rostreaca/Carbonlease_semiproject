@@ -16,6 +16,6 @@ public class CampaignAttachmentVO {
     private String filePath;    // 파일 저장 경로
     private int fileLevel;      // 0 = 썸네일, 1 = 상세 이미지
     private Date uploadDate;	// 업로드날짜
-    private String status;      // 사용 여부 (Y/N)
+    //private String status;      // 사용 여부 (Y/N)
 	
 }
