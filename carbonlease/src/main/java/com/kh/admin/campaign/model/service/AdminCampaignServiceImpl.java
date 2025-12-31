@@ -130,7 +130,6 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 			.changeName(changeName)
 			.filePath(fileUrl)
 			.fileLevel(fileLevel)
-			.status("Y")
 			.build();
 	}
 	
@@ -172,14 +171,14 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		// 2) 첨부파일 처리 (수정 시 기존 파일 먼저 삭제/비활성화)
 		if (thumbnail != null && !thumbnail.isEmpty()) {
 			campaignValidator.validateFile(thumbnail);
-			// deleteAttachment(campaignNo, 0); // 기존 썸네일 : 물리파일에서 삭제 -> S3로 이전 되었으므로 S3에서 삭제
+			deleteAttachment(campaignNo, 0); // 기존 썸네일 : 물리파일에서 삭제 -> S3로 삭제로 변경
 			CampaignAttachmentVO thumbVo = createAttachmentWithS3(thumbnail, campaignNo, 0);
 			adminCampaignMapper.insertAttachment(thumbVo);
 		}
 
 		if (detailImage != null && !detailImage.isEmpty()) {
 			campaignValidator.validateFile(detailImage);
-			// deleteAttachment(campaignNo, 1); // 기존 상세이미지 : 물리파일에서 삭제 -> S3로 이전 되었으므로 S3에서 삭제
+			deleteAttachment(campaignNo, 1); // 기존 상세이미지 : 물리파일에서 삭제 -> S3로 삭제로 변경
 			CampaignAttachmentVO detailVo = createAttachmentWithS3(detailImage, campaignNo, 1);
 			adminCampaignMapper.insertAttachment(detailVo);
 		}
@@ -189,26 +188,44 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		if (result == 0) {
 			throw new IllegalStateException("수정할 캠페인이 없거나 이미 삭제된 상태입니다.");
 		}
+
+		CampaignVO updated = adminCampaignMapper.findByCampaignNo(campaignNo);
+		log.info("수정 후 캠페인 정보: {}", updated);
 	}
 
 	/**
 	 * 첨부파일 삭제
 	 * 물리파일 -> S3로 이전 되었으므로 S3에서 삭제
 	 */
-	// private void deleteAttachment(Long campaignNo, int fileLevel) {
+	private void deleteAttachment(Long campaignNo, int fileLevel) {
 
-	// 	// 0) S3에서 파일 삭제
-	// 	Map<String, Object> param = Map.of(
-    //     "campaignNo", campaignNo,
-    //     "fileLevel", fileLevel
-    // 	);
+		// 0) S3에서 파일 삭제
+		Map<String, Object> param = Map.of(
+        "campaignNo", campaignNo,
+        "fileLevel", fileLevel
+    	);
 		
-	// 	// Map<String, Object> param = new HashMap<>();
-	// 	// param.put("campaignNo", campaignNo);
-	// 	// param.put("fileLevel", fileLevel);
+		// Map<String, Object> param = new HashMap<>();
+		// param.put("campaignNo", campaignNo);
+		// param.put("fileLevel", fileLevel);
 		
-	// 	adminCampaignMapper.deleteAttachmentByLevel(param);
-	// }
+		CampaignAttachmentVO existingFile = adminCampaignMapper.findAttachmentByLevel(param);
+		
+		// 2) S3에서 실제 파일 삭제
+	    if (existingFile != null && existingFile.getFilePath() != null) {
+	        try {
+	            fileUtil.deleteFile(existingFile.getFilePath()); // S3 파일 삭제
+	            log.info("S3 파일 삭제 완료: {}", existingFile.getFilePath());
+	        } catch (Exception e) {
+	            log.warn("S3 파일 삭제 실패 (파일이 없을 수 있음): {}", existingFile.getFilePath(), e);
+	            // S3 삭제 실패해도 DB는 삭제 진행 (파일이 이미 없을 수 있음)
+	        }
+	    }
+	    
+	    // 3) DB에서 레코드 삭제
+	    adminCampaignMapper.deleteAttachmentByLevel(param);
+		
+	}
 	
 	
 	/**

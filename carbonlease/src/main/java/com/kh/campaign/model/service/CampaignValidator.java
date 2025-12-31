@@ -21,7 +21,7 @@ public class CampaignValidator {
      */
 
 
-    private static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("jpg", "jpeg", "png", "gif");
+    private static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("jpg", "jpeg", "png", "gif", "jfif");
 
     /**
      * 페이지 번호 유효성 검사

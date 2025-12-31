@@ -72,7 +72,7 @@ public interface AdminCampaignMapper {
 	 * @param fileLevel 파일 레벨(0:썸네일, 1:상세)
 	 * @return 삭제 행 수
 	 */
-	int deleteAttachmentByLevel(Long campaignNo, int fileLevel);
+	//int deleteAttachmentByLevel(Long campaignNo, int fileLevel);
 
 	/**
 	 * 캠페인 첨부파일(썸네일/상세) 완전 삭제 (Map 파라미터)
@@ -80,7 +80,13 @@ public interface AdminCampaignMapper {
 	 * @return 삭제된 행 수
 	 */
 	int deleteAttachmentByLevel(Map<String, Object> param);
-
+	
+	
+	/**
+	 * 특정 레벨의 첨부파일 조회
+	 */
+	CampaignAttachmentVO findAttachmentByLevel(Map<String, Object> param);
+	
 	/**
 	 * 복구
 	 * @param campaignNo
@@ -100,4 +106,6 @@ public interface AdminCampaignMapper {
 	 */
 	void deleteByCampaignNo(Long campaignNo);
 	void deleteAllAttachmentsByCampaignNo(Long campaignNo);
+
+    CampaignVO findByCampaignNo(Long campaignNo);
 }
