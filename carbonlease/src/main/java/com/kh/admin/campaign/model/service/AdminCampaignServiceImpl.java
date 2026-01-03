@@ -81,7 +81,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	/**
 	 * 게시글 등록하기
 	 * 
-	 * 인서트 할 경우 VO로 가는 게 더 좋을 것 같음,  @Transactional 추가 하기 ( 2) 3) 세개 묶어서 )
+	 * 인서트 할 경우 VO로 가는 게 더 좋을 것 같아서 DTO -> VO 변환 후 처리
 	 */
     @Override
     @Transactional
