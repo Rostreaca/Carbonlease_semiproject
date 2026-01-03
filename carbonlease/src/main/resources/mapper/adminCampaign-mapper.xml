@@ -85,18 +85,21 @@
 	OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 
+	<!--
+	   - 1=1 <if> 조건들이 하나도 해당 안 되더라도 쿼리가 WHERE에서 끝나지 않고 정상 실행되도록 하기 위함
+	-->
 	<!-- 필터링된 전체 게시글 수 조회 -->
 	<select id="findAndCountAllWithFilter" parameterType="map" resultType="int">
 		SELECT 
 		       COUNT(*)
 		 FROM 
 		       CL_CAMPAIGN P
-		WHERE 
+		WHERE
 		       1=1
-		<if test="status != null and status != ''">
+		<if test="status != null and status != ''">  <!--상태값(status)만 보낼 때-->
 		AND P.STATUS = #{status}
 		</if>
-		<if test="keyword != null and keyword != ''">
+		<if test="keyword != null and keyword != ''">	<!--키워드(keyword)만 보낼 때-->
 		AND P.CAMPAIGN_TITLE LIKE '%' || #{keyword} || '%'
 		</if>
 	</select>

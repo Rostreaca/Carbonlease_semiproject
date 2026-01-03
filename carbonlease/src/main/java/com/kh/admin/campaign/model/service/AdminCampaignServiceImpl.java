@@ -57,7 +57,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		// null 또는 ""(빈문자)면 null로 통일
 		params.put("status", (status == null || status.trim().isEmpty()) ? null : status);
 		params.put("keyword", (keyword == null || keyword.trim().isEmpty()) ? null : keyword);
-
+		
 		int listCount = listCountAll(params);
 
 		params.putAll(pagination.pageRequest(pageNo, 6, listCount));
@@ -70,9 +70,8 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	}
 
 	/**
-	 * 전체게시글 조회
-	 * 
-	 * @return int 전체게시글 수
+	 * 게시글 총 개수 조회 (검색용 필터 적용)
+	 * @param params
 	 */
 	private int listCountAll(Map<String, Object> params) {
 		return adminCampaignMapper.findAndCountAllWithFilter(params);
