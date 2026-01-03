@@ -107,10 +107,11 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
         if (adminCampaignMapper.save(campaignVO) == 0) {
             throw new CampaignException("캠페인 등록에 실패했습니다.");
         }
-        
+
+		// insert 후에 campaignVO에 campaignNo가 세팅되어 있음
         Long campaignNo = campaignVO.getCampaignNo();
 
-        // 3) 첨부파일 처리 (도우미 메서드 호출로 2줄 컷!)
+        // 3) 첨부파일 처리
         processAttachment(thumbnail, campaignNo, 0);
         processAttachment(detailImage, campaignNo, 1);
     }
@@ -211,7 +212,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	}
 
 	/**
-     * [파일] : 파일이 있을 때만 S3 업로드 + VO 생성 + DB 저장을 한 번에
+     * [파일] : 파일이 있을 때만 S3 업로드 + VO 생성 + DB 저장을 한 번에 처리
      */
     private void processAttachment(MultipartFile file, Long campaignNo, int fileLevel) {
 
@@ -242,7 +243,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	}
 
 	/**
-	 *  [파일] : S3에서 물리 파일 삭제 도우미 메서드
+	 *  [파일] : S3에서 물리 파일 삭제
 	 */
 	private void deletePhysicalFiles(List<?> attachments) {
 		if (attachments == null || attachments.isEmpty()) return;
@@ -266,7 +267,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	
 	
 	/**
-	 * 복구: STATUS를 'Y'로 변경하고, 변경된 행 수를 반환함
+	 * 복구: STATUS를 'Y'로 변경하고, 변경된 행 수를 반환
 	 */
 	@Override
 	public void restoreByCampaignNo(Long campaignNo) {
