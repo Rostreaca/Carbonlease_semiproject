@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.admin.campaign.model.dao.AdminCampaignMapper;
+import com.kh.campaign.model.dto.CampaignAttachmentDTO;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
 import com.kh.campaign.model.service.CampaignValidator;
@@ -16,9 +17,16 @@ import com.kh.campaign.model.vo.CampaignAttachmentVO;
 import com.kh.campaign.model.vo.CampaignVO;
 import com.kh.common.util.FileUtil;
 import com.kh.common.util.Pagination;
+import com.kh.exception.campaign.CampaignException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+/*
+* 보통 서비스에서 컨트롤러로 숫자를 넘겨줘도, 컨트롤러에서 그 숫자를 쓰는 일이 거의 없음
+* 성공하면: 그냥 200 OK 상태코드와 함께 "성공 메시지"만 보내면 됨. (숫자 1이 굳이 필요 없음)
+* 실패하면: 어차피 서비스에서 throw Exception을 던져버리니까, 컨트롤러까지 숫자가 도달하지도 않고 바로 에러 핸들러로 날아가 버림.
+*/
 
 @Slf4j
 @Service
@@ -31,7 +39,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	private final CampaignValidator campaignValidator;
 
 	/**
-	 * 관리자_목록조회
+	 * 게시글 목록조회
 	 */
 	@Override
 	public Map<String, Object> findAll(int pageNo, String status, String keyword) {
@@ -62,7 +70,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	}
 
 	/**
-	 * [책임분리] 전체게시글 조회
+	 * 전체게시글 조회
 	 * 
 	 * @return int 전체게시글 수
 	 */
@@ -70,52 +78,153 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		return adminCampaignMapper.findAndCountAllWithFilter(params);
 	}
 
+
 	/**
 	 * 게시글 등록하기
 	 * 
 	 * 인서트 할 경우 VO로 가는 게 더 좋을 것 같음,  @Transactional 추가 하기 ( 2) 3) 세개 묶어서 )
 	 */
+    @Override
+    @Transactional
+    public void save(CampaignDTO campaignDTO, MultipartFile thumbnail, MultipartFile detailImage, Long memberNo) {
+        
+        // 0) 모든 유효성 검사 선행 (DB 넣기 전에 미리 방어!)
+        campaignValidator.validateCampaignDTO(campaignDTO);
+        campaignValidator.validateFile(thumbnail);
+        campaignValidator.validateFile(detailImage);
+        
+        // 1) VO 변환
+        CampaignVO campaignVO = CampaignVO.builder()
+            .campaignTitle(campaignDTO.getCampaignTitle())
+            .campaignContent(campaignDTO.getCampaignContent())
+            .startDate(campaignDTO.getStartDate())
+            .endDate(campaignDTO.getEndDate())
+            .categoryNo(campaignDTO.getCategoryNo())
+            .memberNo(memberNo)
+            .status("Y")
+            .build();
+
+        // 2) 캠페인 저장
+        if (adminCampaignMapper.save(campaignVO) == 0) {
+            throw new CampaignException("캠페인 등록에 실패했습니다.");
+        }
+        
+        Long campaignNo = campaignVO.getCampaignNo();
+
+        // 3) 첨부파일 처리 (도우미 메서드 호출로 2줄 컷!)
+        processAttachment(thumbnail, campaignNo, 0);
+        processAttachment(detailImage, campaignNo, 1);
+    }
+
+	/**
+     * 게시글 수정하기
+     */
+    @Override
+    @Transactional
+    public void update(CampaignDTO campaignDTO, MultipartFile thumbnail, MultipartFile detailImage, Long campaignNo) {
+
+        // 0) 유효성 검사
+        campaignValidator.validateCampaignNo(campaignNo);
+        campaignValidator.validateCampaignDTO(campaignDTO);
+
+        // 1) 첨부파일 처리 (기존 파일 삭제 후 processAttachment 호출)
+        if (thumbnail != null && !thumbnail.isEmpty()) {
+            campaignValidator.validateFile(thumbnail);
+            deleteAttachment(campaignNo, 0); 
+            processAttachment(thumbnail, campaignNo, 0);
+        }
+
+        if (detailImage != null && !detailImage.isEmpty()) {
+            campaignValidator.validateFile(detailImage);
+            deleteAttachment(campaignNo, 1);
+            processAttachment(detailImage, campaignNo, 1);
+        }
+
+        // 2) 캠페인 정보 수정
+        CampaignVO campaignVO = CampaignVO.builder()
+            .campaignNo(campaignNo)
+            .campaignTitle(campaignDTO.getCampaignTitle())
+            .campaignContent(campaignDTO.getCampaignContent())
+            .startDate(campaignDTO.getStartDate())
+            .endDate(campaignDTO.getEndDate())
+            .categoryNo(campaignDTO.getCategoryNo())
+            .status(campaignDTO.getStatus())
+            .build();
+
+        if (adminCampaignMapper.update(campaignVO) == 0) {
+            throw new CampaignException("수정할 캠페인이 없거나 이미 삭제된 상태입니다.");
+        }
+	}
+
+	/**
+	 * 카테고리 조회하기
+	 */
+	@Override
+	public List<CategoryDTO> getCategories() {
+		return adminCampaignMapper.getCategories();
+	}
+
+	/**
+	 * 게시글 삭제하기
+	 */
 	@Override
 	@Transactional
-	public void save(CampaignDTO campaignDTO, MultipartFile thumbnail, MultipartFile detailImage, Long memberNo) {
-		
-		// 0) DTO 유효성 검사
-		campaignValidator.validateCampaignDTO(campaignDTO);
-		
-		// 1) campaignDTO로 변환 (DB insert용)
-		CampaignVO campaignVO = CampaignVO.builder()
-			.campaignTitle(campaignDTO.getCampaignTitle())
-			.campaignContent(campaignDTO.getCampaignContent())
-			.startDate(campaignDTO.getStartDate())
-			.endDate(campaignDTO.getEndDate())
-			.categoryNo(campaignDTO.getCategoryNo())
-			.memberNo(memberNo) // 반드시 세팅!
-			.status("Y")
-			.build();
-
-		// 2) 캠페인 저장 후 자동 생성된 PK를 추출 (캠페인 첨부파일 저장용)
-		int result = adminCampaignMapper.save(campaignVO);
-		if (result == 0) {
-			throw new RuntimeException("캠페인 등록 실패");
-		}
-		
-		Long campaignNo = campaignVO.getCampaignNo();
-
-		// 3) 첨부파일 처리 (각각 한 번씩만 insert)
-		if (thumbnail != null && !thumbnail.isEmpty()) {
-			campaignValidator.validateFile(thumbnail);
-			CampaignAttachmentVO thumbVo = createAttachmentWithS3(thumbnail, campaignNo, 0);
-			adminCampaignMapper.insertAttachment(thumbVo);
-		}
-		if (detailImage != null && !detailImage.isEmpty()) {
-			campaignValidator.validateFile(detailImage);
-			CampaignAttachmentVO detailVo = createAttachmentWithS3(detailImage, campaignNo, 1);
-			adminCampaignMapper.insertAttachment(detailVo);
+	public void deleteByCampaignNo(Long campaignNo) {
+		// 0) 캠페인 번호 유효성 검사
+		campaignValidator.validateCampaignNo(campaignNo);
+		// 1) 첨부파일 먼저 삭제 (특정 레벨만 지우는 게 아니라 해당 게시글의 모든(0번, 1번) 첨부파일을 다 지우기)
+		List<CampaignAttachmentDTO> attachments = adminCampaignMapper.findAttachmentsByNo(campaignNo);
+		// 2)S3에서 물리 파일 삭제
+    	deletePhysicalFiles(attachments);
+		// 3) DB에서 첨부파일 레코드 전체 삭제
+    	adminCampaignMapper.deleteAllAttachmentsByCampaignNo(campaignNo);
+		// 4) 캠페인 본문 삭제
+		if (adminCampaignMapper.deleteByCampaignNo(campaignNo) == 0) {
+			throw new CampaignException("삭제할 캠페인이 없거나 이미 삭제되었습니다.");
 		}
 	}
 
 	/**
-	 * S3에 파일 저장 후 CampaignAttachmentVO 생성
+	 * [파일] : 첨부파일 삭제
+	 * 물리파일 -> S3로 이전 되었으므로 S3에서 삭제
+	 */
+	private void deleteAttachment(Long campaignNo, int fileLevel) {
+
+		// 0) S3에서 파일 삭제
+		Map<String, Object> param = Map.of(
+        "campaignNo", campaignNo,
+        "fileLevel", fileLevel
+    	);
+		
+		// Map<String, Object> param = new HashMap<>();
+		// param.put("campaignNo", campaignNo);
+		// param.put("fileLevel", fileLevel);
+		
+		// 1) 기존 파일 조회
+		List<CampaignAttachmentVO> existingFiles = adminCampaignMapper.findAttachmentByLevel(param);
+		
+		// 2)S3에서 물리 파일 삭제
+	    deletePhysicalFiles(existingFiles);
+	    
+	    // 3) DB에서 레코드 삭제
+	    adminCampaignMapper.deleteAttachmentByLevel(param);
+		
+	}
+
+	/**
+     * [파일] : 파일이 있을 때만 S3 업로드 + VO 생성 + DB 저장을 한 번에
+     */
+    private void processAttachment(MultipartFile file, Long campaignNo, int fileLevel) {
+
+        if (file != null && !file.isEmpty()) {
+            CampaignAttachmentVO attachVo = createAttachmentWithS3(file, campaignNo, fileLevel);
+            adminCampaignMapper.insertAttachment(attachVo);
+        }
+		
+    }
+
+	/**
+	 * [파일] : S3에 파일 저장 후 CampaignAttachmentVO 생성
 	 */
 	private CampaignAttachmentVO createAttachmentWithS3(MultipartFile file, Long refBno, int fileLevel) {
 		
@@ -132,142 +241,58 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 			.fileLevel(fileLevel)
 			.build();
 	}
-	
-	/**
-	 * 카테고리 조회
-	 */
-	@Override
-	public List<CategoryDTO> getCategories() {
-		return adminCampaignMapper.getCategories();
-	}
 
 	/**
-	 * 수정하기
+	 *  [파일] : S3에서 물리 파일 삭제 도우미 메서드
 	 */
-	@Override
-	@Transactional
-	public void update(
-			CampaignDTO campaignDTO,
-			MultipartFile thumbnail,
-			MultipartFile detailImage,
-			Long campaignNo) {
+	private void deletePhysicalFiles(List<?> attachments) {
+		if (attachments == null || attachments.isEmpty()) return;
 
-		// 0) 캠페인 번호 및 DTO 유효성 검사
-		campaignValidator.validateCampaignNo(campaignNo);
-		campaignValidator.validateCampaignDTO(campaignDTO);
+		for (Object obj : attachments) {
+			String filePath = null;
+			if (obj instanceof CampaignAttachmentVO) filePath = ((CampaignAttachmentVO) obj).getFilePath();
+			else if (obj instanceof CampaignAttachmentDTO) filePath = ((CampaignAttachmentDTO) obj).getFilePath();
 
-		// 1) VO로 변환
-		CampaignVO campaignVO = CampaignVO.builder()
-			.campaignNo(campaignNo)
-			.campaignTitle(campaignDTO.getCampaignTitle())
-			.campaignContent(campaignDTO.getCampaignContent())
-			.startDate(campaignDTO.getStartDate())
-			.endDate(campaignDTO.getEndDate())
-			.memberNo(campaignDTO.getMemberNo())
-			.categoryNo(campaignDTO.getCategoryNo())
-			.status(campaignDTO.getStatus())
-			.build();
-
-		// 2) 첨부파일 처리 (수정 시 기존 파일 먼저 삭제/비활성화)
-		if (thumbnail != null && !thumbnail.isEmpty()) {
-			campaignValidator.validateFile(thumbnail);
-			deleteAttachment(campaignNo, 0); // 기존 썸네일 : 물리파일에서 삭제 -> S3로 삭제로 변경
-			CampaignAttachmentVO thumbVo = createAttachmentWithS3(thumbnail, campaignNo, 0);
-			adminCampaignMapper.insertAttachment(thumbVo);
+			if (filePath != null) {
+				try {
+					fileUtil.deleteFile(filePath);
+					log.info("S3 파일 물리 삭제 완료: {}", filePath);
+				} catch (Exception e) {
+					log.warn("S3 파일 물리 삭제 실패 (프로세스 계속 진행): {}", filePath, e);
+				}
+			}
 		}
-
-		if (detailImage != null && !detailImage.isEmpty()) {
-			campaignValidator.validateFile(detailImage);
-			deleteAttachment(campaignNo, 1); // 기존 상세이미지 : 물리파일에서 삭제 -> S3로 삭제로 변경
-			CampaignAttachmentVO detailVo = createAttachmentWithS3(detailImage, campaignNo, 1);
-			adminCampaignMapper.insertAttachment(detailVo);
-		}
-
-		// 3) 캠페인 정보 수정
-		int result = adminCampaignMapper.update(campaignVO);
-		if (result == 0) {
-			throw new IllegalStateException("수정할 캠페인이 없거나 이미 삭제된 상태입니다.");
-		}
-
-		CampaignVO updated = adminCampaignMapper.findByCampaignNo(campaignNo);
-		log.info("수정 후 캠페인 정보: {}", updated);
 	}
 
-	/**
-	 * 첨부파일 삭제
-	 * 물리파일 -> S3로 이전 되었으므로 S3에서 삭제
-	 */
-	private void deleteAttachment(Long campaignNo, int fileLevel) {
-
-		// 0) S3에서 파일 삭제
-		Map<String, Object> param = Map.of(
-        "campaignNo", campaignNo,
-        "fileLevel", fileLevel
-    	);
-		
-		// Map<String, Object> param = new HashMap<>();
-		// param.put("campaignNo", campaignNo);
-		// param.put("fileLevel", fileLevel);
-		
-		CampaignAttachmentVO existingFile = adminCampaignMapper.findAttachmentByLevel(param);
-		
-		// 2) S3에서 실제 파일 삭제
-	    if (existingFile != null && existingFile.getFilePath() != null) {
-	        try {
-	            fileUtil.deleteFile(existingFile.getFilePath()); // S3 파일 삭제
-	            log.info("S3 파일 삭제 완료: {}", existingFile.getFilePath());
-	        } catch (Exception e) {
-	            log.warn("S3 파일 삭제 실패 (파일이 없을 수 있음): {}", existingFile.getFilePath(), e);
-	            // S3 삭제 실패해도 DB는 삭제 진행 (파일이 이미 없을 수 있음)
-	        }
-	    }
-	    
-	    // 3) DB에서 레코드 삭제
-	    adminCampaignMapper.deleteAttachmentByLevel(param);
-		
-	}
 	
 	
 	/**
-	 * 복구
+	 * 복구: STATUS를 'Y'로 변경하고, 변경된 행 수를 반환함
 	 */
 	@Override
-	public int restoreByCampaignNo(Long campaignNo) {
+	public void restoreByCampaignNo(Long campaignNo) {
 
 		// 0) 캠페인 번호 유효성 검사
 		campaignValidator.validateCampaignNo(campaignNo);
 
-		// 1) 복구 처리
-		int result = adminCampaignMapper.restoreStatus(campaignNo);
-		if (result != 1) {
-			throw new IllegalStateException("복구할 캠페인이 없거나 이미 활성 상태입니다.");
+		// 1) 복구 실행 및 결과 확인
+		if (adminCampaignMapper.restoreStatus(campaignNo) == 0) {
+			throw new CampaignException("복구할 캠페인이 없거나 이미 활성 상태입니다.");
 		}
-		return result;
 	}
 	/**
-	 * 숨김
+	 * 숨김: STATUS를 'N'으로 변경하고, 실패 시에만 보고함
 	 */
 	@Override
 	public void hideByCampaignNo(Long campaignNo) {
-		// 0) 캠페인 번호 유효성 검사
-		campaignValidator.validateCampaignNo(campaignNo);
-		// 1) 숨김 처리
-		adminCampaignMapper.hideByCampaignNo(campaignNo);
-	}
 
-	/**
-	 * 삭제
-	 */
-	@Override
-	@Transactional
-	public void deleteByCampaignNo(Long campaignNo) {
 		// 0) 캠페인 번호 유효성 검사
 		campaignValidator.validateCampaignNo(campaignNo);
-		// 1) 첨부파일 먼저 삭제
-		adminCampaignMapper.deleteAllAttachmentsByCampaignNo(campaignNo);
-		// 2) 캠페인 본문 삭제
-		adminCampaignMapper.deleteByCampaignNo(campaignNo);
+		
+		// 1) 숨김 처리 결과 확인 (업데이트된 행이 없으면 예외 던지기)
+        if (adminCampaignMapper.hideByCampaignNo(campaignNo) == 0) {
+            throw new CampaignException("숨김 처리할 캠페인을 찾을 수 없습니다.");
+        }
 	}
-	
 
 }

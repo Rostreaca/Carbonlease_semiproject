@@ -50,7 +50,7 @@ public interface AdminCampaignService {
 	 * @param campaignNo
 	 * @return 
 	 */
-	int restoreByCampaignNo(Long campaignNo);
+	void restoreByCampaignNo(Long campaignNo);
 
 	/**
 	 * 숨김

@@ -1,11 +1,9 @@
 package com.kh.campaign.model.service;
 
-import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +12,9 @@ import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CampaignReplyDTO;
 import com.kh.campaign.model.dto.LikeDTO;
 import com.kh.common.util.Pagination;
-import com.kh.exception.ResourceNotFoundException;
+import com.kh.exception.campaign.CampaignException;
+import com.kh.exception.reply.ReplyAccessDeniedException;
+import com.kh.exception.reply.ReplyException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -72,13 +72,12 @@ public class CampaignServiceImpl implements CampaignService {
 	/**
 	 * 캠페인 조회수 증가
 	 * @param campaignNo 캠페인 번호
-	 * @throws InvalidParameterException 증가 실패 시
 	 * @return void
 	 */
 	private void increaseViewCount(Long campaignNo) {
 		int result = campaignMapper.increaseViewCount(campaignNo);
 		if (result != 1) {
-			throw new InvalidParameterException("조회수 증가 중 오류 발생");
+			throw new CampaignException("조회수 증가 중 오류 발생");
 		}
 	}
 	
@@ -108,8 +107,6 @@ public class CampaignServiceImpl implements CampaignService {
 	 * 캠페인 정보 조회 및 예외 처리
 	 * @param campaignNo 캠페인 번호 정보
 	 * @return 캠페인 정보
-	 * @throws InvalidParameterException 캠페인 없을 때
-	 * 
 	 */
 	private CampaignDTO getCampaignOrThrow(Long campaignNo) {
 		
@@ -121,7 +118,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 		 // 존재하는 게시물인가?
 		if (campaign == null) {
-			throw new RuntimeException("유효하지 않은 접근입니다.");
+			throw new CampaignException("유효하지 않은 접근입니다.");
 		}
 
 		return campaign;
@@ -153,13 +150,23 @@ public class CampaignServiceImpl implements CampaignService {
 	/** 댓글 목록 조회 (페이징) */
     @Override
 	public Map<String, Object> selectReplies(Long campaignNo, int pageNo) {
-		int replyCount = campaignMapper.countReplies(campaignNo);
+
+		// 1. 캠페인이 존재하는지 먼저 확인
+		getCampaignOrThrow(campaignNo);
+
+		// 2. 전체 댓글 수 조회
+    	int replyCount = campaignMapper.countReplies(campaignNo);
+
+		// 3. 페이징 계산 및 조회
 		Map<String, Object> params = pagination.pageRequest(pageNo, 5, replyCount);
 		params.put("campaignNo", campaignNo);
 		List<CampaignReplyDTO> replyList = campaignMapper.selectReplies(params);
+
 		// 로그 추가
 		log.info("댓글 조회 campaignNo={}, pageNo={}, replyCount={}", campaignNo, pageNo, replyCount);
 		log.info("댓글 목록: {}", replyList);
+		
+		// 4. 결과 반환
 		Map<String, Object> result = new HashMap<>();
 		result.put("replies", replyList);
 		result.put("pageInfo", params.get("pi"));
@@ -170,50 +177,84 @@ public class CampaignServiceImpl implements CampaignService {
     /** 댓글 등록 */
     @Override
     @Transactional
-    public int insertReply(String content, Long campaignNo, Long memberNo) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("replyContent", content);
-        map.put("campaignNo", campaignNo);
-        map.put("memberNo", memberNo);
+	public int insertReply(String content, Long campaignNo, Long memberNo) {
+    
+		// 1. 글자 수 등 내용 검증
+    	campaignValidator.validateReplyContent(content);
+		// 2. 캠페인 존재 여부 확인
+		getCampaignOrThrow(campaignNo);
+		// 3. 데이터 준비 및 실행
+		Map<String, Object> map = new HashMap<>();
+		map.put("replyContent", content);
+		map.put("campaignNo", campaignNo);
+		map.put("memberNo", memberNo);
+		int result = campaignMapper.insertReply(map);
+		// 4. 저장 결과 확인
+		if (result != 1) {
+			throw new CampaignException("댓글 등록 중 오류가 발생했습니다.");
+		}
+		return result;
+	}
 
-        return campaignMapper.insertReply(map);
-    }
 
-    /** 댓글 삭제 (작성자 검증) */
+	// 내부적으로 꺼낸 값은 writerNo, 파라미터로 받은 값은 memberNo
+
+
+	/*
+	 * 댓글 삭제
+	 * @param replyNo 댓글 번호
+	 * @param memberNo 회원 번호
+	*/
     @Override
     @Transactional
     public int deleteReply(Long replyNo, Long memberNo) {
-
-        Long writer = campaignMapper.findReplyWriter(replyNo);
-
-        if (writer == null) {
-            throw new ResourceNotFoundException("댓글이 존재하지 않습니다.");
-        }
-
-        if (!writer.equals(memberNo)) {
-            throw new AccessDeniedException("삭제 권한이 없습니다.");
-        }
-
+		// 1. 댓글 존재 여부 및 작성자 권한 검증
+        validateReplyOwner(replyNo, memberNo);
+		// 2. 모든 검증 통과 후 삭제 진행
         return campaignMapper.deleteReply(replyNo);
     }
 
-    /** 댓글 수정 (작성자 검증) */
-    @Override
-    @Transactional
-    public int updateReply(Long replyNo, String content, Long writerNo) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("replyNo", replyNo);
-        map.put("replyContent", content);
-        map.put("memberNo", writerNo);
+	/**
+	 * 댓글 수정
+	 * @param replyNo 댓글 번호
+	 * @param content 수정할 댓글 내용
+	 * @param memberNo 회원 번호
+	 */
+	@Override
+	@Transactional
+	public int updateReply(Long replyNo, String content, Long memberNo) {
 
-        int result = campaignMapper.updateReply(map);
+		// 1. 글자 수 등 내용 검증
+    	campaignValidator.validateReplyContent(content);
+		// 2. 댓글 존재 여부 및 작성자 권한 검증
+		validateReplyOwner(replyNo, memberNo);
+		// 3. 모든 검증 통과 후 수정 진행
+		Map<String, Object> map = new HashMap<>();
+		map.put("replyNo", replyNo);
+		map.put("replyContent", content);
+		map.put("memberNo", memberNo);
+		return campaignMapper.updateReply(map);
 
-        if (result == 0) {
-            throw new AccessDeniedException("수정 권한이 없거나 댓글이 존재하지 않습니다.");
-        }
+	}
 
-        return result;
-    }
 
+	/**
+	 * 댓글 존재 여부 및 작성자 권한 검증 공통 메서드 _ 삭세 / 수정용
+	 * @param replyNo 댓글 번호
+	 * @param memberNo 회원 번호
+	 */
+	private void validateReplyOwner(Long replyNo, Long memberNo) {
+
+		// 1. 작성자 정보 가져오기 (댓글 존재 여부 확인 겸용)
+		Long writerNo = campaignMapper.findReplyWriter(replyNo);
+		// 2. 댓글 존재 여부 확인
+		if (writerNo == null) {
+			throw new ReplyException("해당 댓글이 존재하지 않습니다.");
+		}
+		// 3. 댓글 작성자 일치 여부 확인
+		if (!writerNo.equals(memberNo)) {
+			throw new ReplyAccessDeniedException("해당 작업에 대한 권한이 없습니다.");
+		}
+	}
 
 }

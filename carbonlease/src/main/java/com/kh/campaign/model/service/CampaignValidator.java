@@ -1,6 +1,5 @@
 package com.kh.campaign.model.service;
 
-import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,6 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.campaign.model.dto.CampaignDTO;
+import com.kh.exception.campaign.CampaignException;
+import com.kh.exception.reply.ReplyException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,7 +29,7 @@ public class CampaignValidator {
      */
     public void validatePageNo(int pageNo) {
         if (pageNo < 0) {
-			throw new InvalidParameterException("유효하지 않은 접근입니다.");
+			throw new CampaignException("유효하지 않은 접근입니다.");
 		}
     }
     
@@ -38,7 +39,7 @@ public class CampaignValidator {
      */
     public void validateCampaignNo(Long campaignNo) {
         if (campaignNo == null || campaignNo < 1) {
-            throw new InvalidParameterException("유효하지 않은 캠페인 번호입니다.");
+            throw new CampaignException("유효하지 않은 캠페인 번호입니다.");
         }
     }
 
@@ -47,19 +48,7 @@ public class CampaignValidator {
      */
     public static void validateCampaignDTO(CampaignDTO dto) {
         if (dto == null) {
-            throw new InvalidParameterException("캠페인 정보가 없습니다.");
-        }
-        if (dto.getCampaignTitle() == null || dto.getCampaignTitle().trim().isEmpty()) {
-            throw new InvalidParameterException("캠페인 제목은 필수입니다.");
-        }
-        if (dto.getCampaignContent() == null || dto.getCampaignContent().trim().isEmpty()) {
-            throw new InvalidParameterException("캠페인 내용은 필수입니다.");
-        }
-        if (dto.getStartDate() == null || dto.getEndDate() == null) {
-            throw new InvalidParameterException("시작일/종료일은 필수입니다.");
-        }
-        if (dto.getCategoryNo() == null) {
-            throw new InvalidParameterException("카테고리 번호는 필수입니다.");
+            throw new CampaignException("캠페인 정보가 없습니다.");
         }
     }
 
@@ -67,22 +56,43 @@ public class CampaignValidator {
      * 파일 유효성 검사
      */
     public static void validateFile(MultipartFile file) {
+        // 1. 파일이 비어있는지 체크
+        if (file == null || file.isEmpty()) {
+            return; // 파일이 필수 옵션이 아니라면 그냥 리턴, 필수라면 예외 발생
+        }
 
         String filename = file.getOriginalFilename();
         
-        if (file != null && !file.isEmpty()) {
-            if (filename == null || filename.trim().isEmpty()) {
-                throw new InvalidParameterException("파일명이 없습니다.");
-            }
+        // 2. 파일명 존재 여부
+        if (filename == null || filename.trim().isEmpty()) {
+            throw new CampaignException("파일명이 올바르지 않습니다.");
         }
         
-        String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+        // 3. 확장자 추출 및 검사
+        int dotIndex = filename.lastIndexOf(".");
+        if (dotIndex == -1) {
+            throw new CampaignException("확장자가 없는 파일입니다.");
+        }
+        
+        String extension = filename.substring(dotIndex + 1).toLowerCase();
 
         if (!ALLOWED_EXTENSIONS.contains(extension)) {
-            throw new IllegalArgumentException("허용되지 않는 파일 형식입니다");
+            throw new CampaignException("허용되지 않는 파일 형식입니다. (허용: " + ALLOWED_EXTENSIONS + ")");
+        }
+    }
+
+    /**
+     * 댓글 작성 내용 유효성 검사
+     */
+    public void validateReplyContent(String content) {
+
+        if (content == null || content.trim().isEmpty()) {
+            throw new ReplyException("댓글 내용을 입력해주세요.");
         }
 
-
+        if (content.length() > 1000) {
+            throw new ReplyException("댓글은 1000자 이내로 입력해주세요.");
+        }
     }
 
 

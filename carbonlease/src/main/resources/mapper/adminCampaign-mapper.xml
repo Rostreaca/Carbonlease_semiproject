@@ -272,20 +272,29 @@
     
     
     <select id="findAttachmentByLevel" resultType="CampaignAttachmentVO">
-	    SELECT 
-	           FILE_NO
-	         , REF_BNO
-	         , ORIGIN_NAME
-	         , CHANGE_NAME
-	         , FILE_PATH
-	         , FILE_LEVEL
-	         , UPLOAD_DATE
-	     FROM 
-	           CL_CAMPAIGN_ATTACHMENT
-	    WHERE 
-	           REF_BNO = #{campaignNo}
-	      AND 
-	          FILE_LEVEL = #{fileLevel}
-	</select>
+		SELECT
+		     * FROM
+			   (
+				SELECT
+				       FILE_NO
+					 , REF_BNO
+					 , ORIGIN_NAME
+					 , CHANGE_NAME
+					 , FILE_PATH
+					 , FILE_LEVEL
+					 , UPLOAD_DATE
+				  FROM 
+					   CL_CAMPAIGN_ATTACHMENT
+				 WHERE 
+					   REF_BNO = #{campaignNo}
+				   AND 
+					   FILE_LEVEL = #{fileLevel}
+				 ORDER 
+				    BY 
+			           FILE_NO DESC
+				)
+		  WHERE 
+		        ROWNUM = 1
+	 </select>
 
 </mapper>

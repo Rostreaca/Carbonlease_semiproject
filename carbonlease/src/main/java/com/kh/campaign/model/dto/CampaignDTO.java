@@ -8,6 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,9 +26,9 @@ import lombok.Setter;
 public class CampaignDTO {
 	
     private Long campaignNo;
-    @NotNull(message = "제목을 입력해주세요.")
+    @NotBlank(message = "제목을 입력해주세요.")
     private String campaignTitle;
-    @NotNull(message = "내용을 입력해주세요.")
+    @NotBlank(message = "내용을 입력해주세요.")
     private String campaignContent;
     @NotNull(message = "시작일을 선택해주세요.")
     private Date startDate;
@@ -39,7 +41,8 @@ public class CampaignDTO {
     private Long memberNo;
 
     private CategoryDTO category;
-    @NotNull(message = "카테고리를 선택해주세요.")
+    @NotNull(message = "카테고리는 필수입니다.")
+    @Min(value = 1, message = "올바른 카테고리 번호를 선택해주세요.")
     private Long categoryNo;
     private List<CampaignAttachmentDTO> attachments;
     private String filePath;

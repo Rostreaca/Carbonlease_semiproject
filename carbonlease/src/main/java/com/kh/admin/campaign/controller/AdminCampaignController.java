@@ -8,6 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -36,7 +37,7 @@ public class AdminCampaignController {
 	private final AdminCampaignService adminCampaignService;
 
 	/**
-	 * 관리자_캠페인 목록조회
+	 * 캠페인 목록조회
 	 * @param pageNo
 	 */
 	@GetMapping
@@ -50,7 +51,7 @@ public class AdminCampaignController {
 
 
 	/**
-	 * 캠페인 등록 (관리자)
+	 * 캠페인 등록
 	 * 
 	 * 전달받은 캠페인 정보와 첨부파일(썸네일, 상세이미지)을 등록하고,
 	 * 등록된 캠페인(CampaignDTO) 객체를 201(CREATED) 상태와 함께 반환
@@ -84,7 +85,7 @@ public class AdminCampaignController {
 	
 	
 	/**
-	 * 카테고리 목록 조회 (관리자)
+	 * 카테고리 목록 조회
 	 * 등록 가능한 캠페인 카테고리 전체 목록을 반환
 	 * 
 	 * @return ResponseEntity<List<CategoryDTO>> 카테고리 목록(200 OK)
@@ -97,7 +98,7 @@ public class AdminCampaignController {
     
 
 	/**
-	 * 캠페인 수정 요청을 처리하는 엔드포인트
+	 * 캠페인 수정
 	 * 
 	 * @param campaignNo   수정할 캠페인 번호 (PathVariable)
 	 * @param campaign     수정할 캠페인 정보 (폼 데이터)
@@ -135,7 +136,7 @@ public class AdminCampaignController {
 	 * 숨김
 	 * @param campaignNo
 	 */
-	@PutMapping("/{campaignNo}/hide")
+	@PatchMapping("/{campaignNo}/hide")
 	public ResponseEntity<ResponseData<Void>> hideByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo){
 		adminCampaignService.hideByCampaignNo(campaignNo);
 		return ResponseData.ok(null, "캠페인 숨김 성공");
@@ -145,7 +146,7 @@ public class AdminCampaignController {
 	 * 복구
 	 * @param campaignNo
 	 */
-	@PutMapping("/{campaignNo}/restore")
+	@PatchMapping("/{campaignNo}/restore")
 	public ResponseEntity<ResponseData<Void>> restoreByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo) {
 		adminCampaignService.restoreByCampaignNo(campaignNo);
 		return ResponseData.ok(null, "캠페인 복구 성공");

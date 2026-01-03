@@ -11,6 +11,10 @@ import com.kh.campaign.model.dto.CategoryDTO;
 import com.kh.campaign.model.vo.CampaignAttachmentVO;
 import com.kh.campaign.model.vo.CampaignVO;
 
+/*
+DB에서 UPDATE나 DELETE 쿼리를 실행하면, 마이바티스(MyBatis)는 기본적으로
+"영향을 받은 행의 개수"를 숫자로 돌려줄 수 있다. 이걸 받으려면 리턴 타입을 int로 선언해줘야 한다.
+*/
 @Mapper
 public interface AdminCampaignMapper {
 	
@@ -81,11 +85,10 @@ public interface AdminCampaignMapper {
 	 */
 	int deleteAttachmentByLevel(Map<String, Object> param);
 	
-	
 	/**
 	 * 특정 레벨의 첨부파일 조회
 	 */
-	CampaignAttachmentVO findAttachmentByLevel(Map<String, Object> param);
+	List<CampaignAttachmentVO> findAttachmentByLevel(Map<String, Object> param);
 	
 	/**
 	 * 복구
@@ -98,14 +101,14 @@ public interface AdminCampaignMapper {
 	 * 숨김
 	 * @param campaignNo
 	 */
-	void hideByCampaignNo(Long campaignNo);
+	int hideByCampaignNo(Long campaignNo);
 
 	/**
 	 * 삭제(+ 전체 첨부파일 삭제)
 	 * @param campaignNo
 	 */
-	void deleteByCampaignNo(Long campaignNo);
-	void deleteAllAttachmentsByCampaignNo(Long campaignNo);
+	int deleteByCampaignNo(Long campaignNo);
+	int deleteAllAttachmentsByCampaignNo(Long campaignNo);
 
     CampaignVO findByCampaignNo(Long campaignNo);
 }
