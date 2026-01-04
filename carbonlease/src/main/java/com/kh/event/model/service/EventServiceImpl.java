@@ -41,6 +41,7 @@ public class EventServiceImpl implements EventService {
         
         // 2. 중복 참여 체크
         int participationCount = eventMapper.countParticipation(command);
+        
         if (participationCount > 0) {
             log.warn(" 중복 참여 시도 - eventId: {}, memberNo: {}", eventId, memberNo);
             throw new IllegalStateException("이미 참여한 이벤트입니다.");
