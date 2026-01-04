@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.w3c.dom.events.EventException;
 
 import com.kh.common.dto.ResponseData;
 import com.kh.exception.campaign.CampaignException;
@@ -39,7 +40,8 @@ public class GlobalExceptionHandler {
 	    AdminBoardsException.class,
 	    InvalidParameterException.class,
 		CampaignException.class,
-		ReplyException.class
+		ReplyException.class,
+		EventException.class
 	})
 	public ResponseEntity<ResponseData<Void>> handleBadRequest(RuntimeException e) {
 	    return ResponseData.badRequest(e.getMessage(), HttpStatus.BAD_REQUEST);

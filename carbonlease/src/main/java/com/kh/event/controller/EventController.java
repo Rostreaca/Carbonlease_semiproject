@@ -1,8 +1,6 @@
 package com.kh.event.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.common.dto.ResponseData;
 import com.kh.event.model.dto.EventCampaignDTO;
-import com.kh.event.model.dto.EventMessageDTO;
 import com.kh.event.model.service.EventService;
 
 import lombok.RequiredArgsConstructor;
@@ -49,9 +46,9 @@ public class EventController {
 
     // WebSocket 참여
     // 클라이언트는 /pub/event/participate로 전송, 구독은 /sub/event/main
-    @MessageMapping("/pub/event/participate")
-    @SendTo("/sub/event/main")
-    public EventMessageDTO wsParticipate(EventMessageDTO message) {
-        return eventService.participateAndReturnEventMessage(message);
-    }
+    // @MessageMapping("/pub/event/participate")
+    // @SendTo("/sub/event/main")
+    // public EventMessageDTO wsParticipate(EventMessageDTO message) {
+    //     return eventService.participateAndReturnEventMessage(message);
+    // }
 }

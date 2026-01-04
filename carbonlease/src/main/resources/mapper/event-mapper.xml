@@ -56,7 +56,7 @@
     </select>
 
     <!-- 중복 참여 체크 -->
-    <select id="countParticipation" resultType="int">
+    <select id="existsParticipation" resultType="int">
         SELECT 
                COUNT(*)
           FROM 

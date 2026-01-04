@@ -20,7 +20,6 @@ import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.service.CampaignService;
 import com.kh.common.dto.ResponseData;
 
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -67,8 +66,7 @@ public class CampaignController {
 	 */
 	@GetMapping("/detail/{campaignNo}")
 	public ResponseEntity<ResponseData<CampaignDTO>> findDetailByNo(
-			@PathVariable(name="campaignNo")
-			@Min(value=1, message="너무 작습니다.") Long campaignNo,
+			@PathVariable(name="campaignNo") Long campaignNo,
 			@AuthenticationPrincipal CustomUserDetails user) {
 			Long memberNo = (user != null) ? user.getMemberNo() : null;
 			CampaignDTO campaign = campaignService.findDetailByNo(campaignNo, memberNo);

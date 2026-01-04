@@ -76,6 +76,7 @@ public class KepcoScheduler {
             evictCache();
         } catch (Exception e) {
             log.error("스케줄러 오류", e);
+            // throw 시, Spring이 예외를 받아서 스케줄러가 중단될 수 있음 (로그만 남기고 종료)
         }
     }
 

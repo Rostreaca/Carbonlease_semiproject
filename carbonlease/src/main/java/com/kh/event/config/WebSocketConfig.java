@@ -1,14 +1,25 @@
-package com.kh.configuration;
+package com.kh.event.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import com.kh.event.interceptor.EventChannelInterceptor;
+
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @EnableWebSocketMessageBroker // WebSocket 메시지 브로커 활성화
+@RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    private final EventChannelInterceptor eventChannelInterceptor;
+    @Value("${instance.url}")
+	private String instance;
 
     /**
      * 메시지 브로커 설정
@@ -33,7 +44,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws-stomp")
-                .setAllowedOriginPatterns("*")  // CORS 설정 (운영에선 구체적 도메인 지정)
+                .setAllowedOriginPatterns(instance)  // CORS 설정 (운영에선 구체적 도메인 지정)
                 .withSockJS();  // SockJS 사용
+    }
+
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        // 실무 핵심: 메시지 통로에 인터셉터(로그/보안) 등록
+        registration.interceptors(eventChannelInterceptor);
     }
 }

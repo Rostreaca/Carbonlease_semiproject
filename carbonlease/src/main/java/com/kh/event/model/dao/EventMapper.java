@@ -10,7 +10,7 @@ public interface EventMapper {
 
     EventCampaignDTO selectMainEvent();
 
-    int countParticipation(EventParticipationCommand command);
+    int existsParticipation(EventParticipationCommand command);
 
     int insertParticipant(EventParticipationCommand command);
 
