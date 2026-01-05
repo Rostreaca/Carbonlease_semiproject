@@ -52,7 +52,7 @@ public class EventServiceImplTest implements EventServiceTest {
 		mockEvent.setCurrentParticipants(500);
 		mockEvent.setParticipationRate(50.0);
 
-		when(eventMapper.countParticipation(command)).thenReturn(0);		// 중복 참여 통과
+		when(eventMapper.existsParticipation(command)).thenReturn(0);		// 중복 참여 통과
 		when(eventMapper.insertParticipant(command)).thenReturn(1);			// 참여 정보 저장 통과
 		when(eventMapper.increaseParticipant(eventId)).thenReturn(1);		// 참여자 수 증가 통과
 		when(eventMapper.selectEventCount(eventId)).thenReturn(mockEvent);	// 업데이트된 이벤트 정보 조회 성공
@@ -86,7 +86,7 @@ public class EventServiceImplTest implements EventServiceTest {
 				.build();
 
 		// when (실행)
-		when(eventMapper.countParticipation(command)).thenReturn(1); 	// 중복 참여 발생
+		when(eventMapper.existsParticipation(command)).thenReturn(1); 	// 중복 참여 발생
 
 		// then (검증)
 		assertThatThrownBy(() -> eventService.participateAndNotify(eventId, memberNo))
@@ -107,7 +107,7 @@ public class EventServiceImplTest implements EventServiceTest {
 				.build();
 
 		// when (실행)
-		when(eventMapper.countParticipation(command)).thenReturn(0); 	// 중복 참여 통과
+		when(eventMapper.existsParticipation(command)).thenReturn(0); 	// 중복 참여 통과
 		when(eventMapper.insertParticipant(command)).thenReturn(0); 	// 참여 정보 저장 실패
 
 		// then (검증)
@@ -128,7 +128,7 @@ public class EventServiceImplTest implements EventServiceTest {
 				.build();
 
 		// when (실행)
-		when(eventMapper.countParticipation(command)).thenReturn(0); 	// 중복 참여 통과
+		when(eventMapper.existsParticipation(command)).thenReturn(0); 	// 중복 참여 통과
 		when(eventMapper.insertParticipant(command)).thenReturn(1); 	// 참여 정보 저장 통과
 		when(eventMapper.increaseParticipant(eventId)).thenReturn(0); 	// 참여자 수 증가 실패
 
@@ -150,7 +150,7 @@ public class EventServiceImplTest implements EventServiceTest {
 				.build();
 
 		// when (실행)
-		when(eventMapper.countParticipation(command)).thenReturn(0); 	// 중복 참여 통과
+		when(eventMapper.existsParticipation(command)).thenReturn(0); 	// 중복 참여 통과
 		when(eventMapper.insertParticipant(command)).thenReturn(1); 	// 참여 정보 저장 통과
 		when(eventMapper.increaseParticipant(eventId)).thenReturn(1); 	// 참여자 수 증가 통과
 		when(eventMapper.selectEventCount(eventId)).thenReturn(null); 	// 업데이트된 정보조회 실패
@@ -210,7 +210,7 @@ public class EventServiceImplTest implements EventServiceTest {
 		EventParticipationCommand command = EventParticipationCommand.builder().eventId(eventId).memberNo(memberNo)
 				.build();
 
-		when(eventMapper.countParticipation(command)).thenReturn(1);	// 참여 이력 존재
+		when(eventMapper.existsParticipation(command)).thenReturn(1);	// 참여 이력 존재
 
 		// when (실행)
 		EventCampaignDTO result = eventService.getEventWithParticipation(eventId, memberNo);
@@ -255,7 +255,7 @@ public class EventServiceImplTest implements EventServiceTest {
 		mockEvent.setCurrentParticipants(500);
 		mockEvent.setParticipationRate(50.0);
 
-		when(eventMapper.countParticipation(command)).thenReturn(0);		// 중복 참여 통과
+		when(eventMapper.existsParticipation(command)).thenReturn(0);		// 중복 참여 통과
 		when(eventMapper.insertParticipant(command)).thenReturn(1);			// 참여 정보 저장 통과
 		when(eventMapper.increaseParticipant(eventId)).thenReturn(1);		// 참여자 수 증가 통과
 		when(eventMapper.selectEventCount(eventId)).thenReturn(mockEvent);	// 업데이트된 이벤트 정보 조회 성공

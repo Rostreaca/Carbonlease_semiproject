@@ -29,7 +29,7 @@ public class AdminMainController {
     @GetMapping("/boardsAllCount")
     public ResponseEntity<ResponseData<List<Map<String, Object>>>> getUsersAllBoardsCount() {
         List<Map<String, Object>> result = adminMainService.getUsersAllBoardsCount();
-        return ResponseData.ok(result, "전체 게시글 통계 조회 성공");
+        return ResponseData.ok(result, "전체 게시글 : 도넛 차트 통계 데이터 조회 성공");
     }
 
     // 지역별 커뮤니티 활동량(합산/일반/인증) 통합 조회
@@ -43,7 +43,7 @@ public class AdminMainController {
     @GetMapping("/boardsTop5")
     public ResponseEntity<ResponseData<List<Map<String, Object>>>> getAllCountTop5() {
         List<Map<String, Object>> result = adminMainService.getAllCountTop5();
-        return ResponseData.ok(result, "인기글 Top5 조회 성공");
+        return ResponseData.ok(result, "인기글 Top5 목록 조회 성공");
     }
     
 }

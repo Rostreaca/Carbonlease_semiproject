@@ -85,7 +85,8 @@ public class CampaignController {
 			@PathVariable("campaignNo") Long campaignNo,
 			@AuthenticationPrincipal CustomUserDetails user) {
 		boolean isLiked = campaignService.toggleLike(campaignNo, user.getMemberNo());
-		return ResponseData.ok(Map.of("isLiked", isLiked), "좋아요 토글 성공");
+		String message = isLiked ? "이 캠페인에 공감해주셨어요!" : "참여를 취소했어요. 언제든 다시 함께해주세요!";
+		return ResponseData.ok(Map.of("isLiked", isLiked), message);
 	}
 
 	/** 댓글 목록 조회 */

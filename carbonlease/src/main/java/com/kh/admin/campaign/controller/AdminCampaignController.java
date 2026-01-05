@@ -80,7 +80,7 @@ public class AdminCampaignController {
 		);
 
 		// 201(CREATED) 상태만 반환 (body 없음)
-		return ResponseData.created(null);
+		return ResponseData.ok(null, "게시글 등록이 완료되었습니다.");
 	}
 	
 	
@@ -126,7 +126,7 @@ public class AdminCampaignController {
 			detailImage,
 			campaignNo
 		);
-		return ResponseData.ok(null, "캠페인 수정 성공");
+		return ResponseData.ok(null, "게시글 수정이 완료되었습니다.");
 	}
 
 	// REST 원칙상 상태 변경은 PATCH나 PUT 사용해야된다.
@@ -139,7 +139,7 @@ public class AdminCampaignController {
 	@PatchMapping("/{campaignNo}/hide")
 	public ResponseEntity<ResponseData<Void>> hideByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo){
 		adminCampaignService.hideByCampaignNo(campaignNo);
-		return ResponseData.ok(null, "캠페인 숨김 성공");
+		return ResponseData.ok(null, "게시글이 숨김처리 되었습니다.");
 	}
 
 	/**
@@ -149,7 +149,7 @@ public class AdminCampaignController {
 	@PatchMapping("/{campaignNo}/restore")
 	public ResponseEntity<ResponseData<Void>> restoreByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo) {
 		adminCampaignService.restoreByCampaignNo(campaignNo);
-		return ResponseData.ok(null, "캠페인 복구 성공");
+		return ResponseData.ok(null, "게시글 복구에 성공했습니다.");
 	}
 
 	/**
@@ -159,7 +159,7 @@ public class AdminCampaignController {
 	@DeleteMapping("/{campaignNo}")
 	public ResponseEntity<ResponseData<Void>> deleteByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo){
 		adminCampaignService.deleteByCampaignNo(campaignNo);
-		return ResponseData.ok(null, "캠페인 삭제 성공");
+		return ResponseData.ok(null, "게시글이 삭제되었습니다.");
 	}
 	
 
