@@ -85,7 +85,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	 */
     @Override
     @Transactional
-    public void save(CampaignDTO campaignDTO, MultipartFile thumbnail, MultipartFile detailImage, Long memberNo) {
+    public CampaignVO save(CampaignDTO campaignDTO, MultipartFile thumbnail, MultipartFile detailImage, Long memberNo) {
         
         // 0) 모든 유효성 검사 선행 (DB 넣기 전에 미리 방어!)
         campaignValidator.validateCampaignDTO(campaignDTO);
@@ -111,9 +111,12 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		// insert 후에 campaignVO에 campaignNo가 세팅되어 있음
         Long campaignNo = campaignVO.getCampaignNo();
 
-        // 3) 첨부파일 처리
-        processAttachment(thumbnail, campaignNo, 0);
-        processAttachment(detailImage, campaignNo, 1);
+		// 3) 첨부파일 처리
+		processAttachment(thumbnail, campaignNo, 0);
+		processAttachment(detailImage, campaignNo, 1);
+
+		// 4) 저장된 VO 반환
+		return campaignVO;
     }
 
 	/**
@@ -121,7 +124,7 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
      */
     @Override
     @Transactional
-    public void update(CampaignDTO campaignDTO, MultipartFile thumbnail, MultipartFile detailImage, Long campaignNo) {
+    public CampaignVO update(CampaignDTO campaignDTO, MultipartFile thumbnail, MultipartFile detailImage, Long campaignNo) {
 
         // 0) 유효성 검사
         campaignValidator.validateCampaignNo(campaignNo);
@@ -154,6 +157,8 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
         if (adminCampaignMapper.update(campaignVO) == 0) {
             throw new CampaignException("수정할 캠페인이 없거나 이미 삭제된 상태입니다.");
         }
+
+		return campaignVO;
 	}
 
 	/**
@@ -169,19 +174,24 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	 */
 	@Override
 	@Transactional
-	public void deleteByCampaignNo(Long campaignNo) {
+	public CampaignVO deleteByCampaignNo(Long campaignNo) {
 		// 0) 캠페인 번호 유효성 검사
 		campaignValidator.validateCampaignNo(campaignNo);
-		// 1) 첨부파일 먼저 삭제 (특정 레벨만 지우는 게 아니라 해당 게시글의 모든(0번, 1번) 첨부파일을 다 지우기)
+		// 1) 삭제 전 캠페인 정보 조회
+		CampaignVO campaignVO = adminCampaignMapper.findByCampaignNo(campaignNo);
+		if (campaignVO == null) {
+			throw new CampaignException("삭제할 캠페인이 없거나 이미 삭제되었습니다.");
+		}
+		// 2) 첨부파일 먼저 삭제
 		List<CampaignAttachmentDTO> attachments = adminCampaignMapper.findAttachmentsByNo(campaignNo);
-		// 2)S3에서 물리 파일 삭제
-    	deletePhysicalFiles(attachments);
+		deletePhysicalFiles(attachments);
 		// 3) DB에서 첨부파일 레코드 전체 삭제
-    	adminCampaignMapper.deleteAllAttachmentsByCampaignNo(campaignNo);
+		adminCampaignMapper.deleteAllAttachmentsByCampaignNo(campaignNo);
 		// 4) 캠페인 본문 삭제
 		if (adminCampaignMapper.deleteByCampaignNo(campaignNo) == 0) {
 			throw new CampaignException("삭제할 캠페인이 없거나 이미 삭제되었습니다.");
 		}
+		return campaignVO;
 	}
 
 	/**
@@ -270,29 +280,29 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	 * 복구: STATUS를 'Y'로 변경하고, 변경된 행 수를 반환
 	 */
 	@Override
-	public void restoreByCampaignNo(Long campaignNo) {
-
+	public CampaignVO restoreByCampaignNo(Long campaignNo) {
 		// 0) 캠페인 번호 유효성 검사
 		campaignValidator.validateCampaignNo(campaignNo);
-
 		// 1) 복구 실행 및 결과 확인
 		if (adminCampaignMapper.restoreStatus(campaignNo) == 0) {
 			throw new CampaignException("복구할 캠페인이 없거나 이미 활성 상태입니다.");
 		}
+		// 2) 복구된 캠페인 정보 반환
+		return adminCampaignMapper.findByCampaignNo(campaignNo);
 	}
 	/**
 	 * 숨김: STATUS를 'N'으로 변경하고, 실패 시에만 보고함
 	 */
 	@Override
-	public void hideByCampaignNo(Long campaignNo) {
-
+	public CampaignVO hideByCampaignNo(Long campaignNo) {
 		// 0) 캠페인 번호 유효성 검사
 		campaignValidator.validateCampaignNo(campaignNo);
-		
 		// 1) 숨김 처리 결과 확인 (업데이트된 행이 없으면 예외 던지기)
-        if (adminCampaignMapper.hideByCampaignNo(campaignNo) == 0) {
-            throw new CampaignException("숨김 처리할 캠페인을 찾을 수 없습니다.");
-        }
+		if (adminCampaignMapper.hideByCampaignNo(campaignNo) == 0) {
+			throw new CampaignException("숨김 처리할 캠페인을 찾을 수 없습니다.");
+		}
+		// 2) 숨김 처리된 캠페인 정보 반환
+		return adminCampaignMapper.findByCampaignNo(campaignNo);
 	}
 
 }

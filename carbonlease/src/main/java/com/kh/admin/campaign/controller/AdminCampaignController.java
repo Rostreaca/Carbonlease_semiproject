@@ -21,7 +21,8 @@ import com.kh.admin.campaign.model.service.AdminCampaignService;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
-import com.kh.common.dto.ResponseData;
+import com.kh.campaign.model.vo.CampaignVO;
+import com.kh.common.responseData.ResponseData;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +63,7 @@ public class AdminCampaignController {
 	 * @param user         인증된 관리자 정보(회원번호)
 	 */
 	@PostMapping
-	public ResponseEntity<ResponseData<Void>> save(
+	public ResponseEntity<ResponseData<CampaignVO>> save(
 			@Valid CampaignDTO campaign,
 			@RequestParam("thumbnail") MultipartFile thumbnail,
 			@RequestParam("detailImage") MultipartFile detailImage,
@@ -72,7 +73,7 @@ public class AdminCampaignController {
 		campaign.setMemberNo(user.getMemberNo());
 
 		// 캠페인 및 첨부파일 등록
-		adminCampaignService.save(
+		CampaignVO saved =adminCampaignService.save(
 			campaign,
 			thumbnail,
 			detailImage,
@@ -80,7 +81,7 @@ public class AdminCampaignController {
 		);
 
 		// 201(CREATED) 상태만 반환 (body 없음)
-		return ResponseData.ok(null, "게시글 등록이 완료되었습니다.");
+		return ResponseData.ok(saved, "게시글 등록이 완료되었습니다.");
 	}
 	
 	
@@ -114,19 +115,19 @@ public class AdminCampaignController {
 	 * > 따라서, @RequestParam(required=false)로 설정하여 파일이 없어도 처리
 	 */
 	@PutMapping("/{campaignNo}")
-	public ResponseEntity<ResponseData<Void>> update(
+	public ResponseEntity<ResponseData<CampaignVO>> update(
 		@PathVariable(name="campaignNo") Long campaignNo,
 		@Valid CampaignDTO campaign,
 		@RequestParam(value="thumbnail", required=false) MultipartFile thumbnail,
 		@RequestParam(value="detailImage", required=false) MultipartFile detailImage
 	) {
-		adminCampaignService.update(
+		CampaignVO updated = adminCampaignService.update(
 			campaign,
 			thumbnail,
 			detailImage,
 			campaignNo
 		);
-		return ResponseData.ok(null, "게시글 수정이 완료되었습니다.");
+		return ResponseData.ok(updated, "게시글 수정이 완료되었습니다.");
 	}
 
 	// REST 원칙상 상태 변경은 PATCH나 PUT 사용해야된다.
@@ -137,9 +138,9 @@ public class AdminCampaignController {
 	 * @param campaignNo
 	 */
 	@PatchMapping("/{campaignNo}/hide")
-	public ResponseEntity<ResponseData<Void>> hideByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo){
-		adminCampaignService.hideByCampaignNo(campaignNo);
-		return ResponseData.ok(null, "게시글이 숨김처리 되었습니다.");
+	public ResponseEntity<ResponseData<CampaignVO>> hideByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo){
+		 CampaignVO hidden = adminCampaignService.hideByCampaignNo(campaignNo);
+		return ResponseData.ok(hidden, "게시글이 숨김처리 되었습니다.");
 	}
 
 	/**
@@ -147,9 +148,9 @@ public class AdminCampaignController {
 	 * @param campaignNo
 	 */
 	@PatchMapping("/{campaignNo}/restore")
-	public ResponseEntity<ResponseData<Void>> restoreByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo) {
-		adminCampaignService.restoreByCampaignNo(campaignNo);
-		return ResponseData.ok(null, "게시글 복구에 성공했습니다.");
+	public ResponseEntity<ResponseData<CampaignVO>> restoreByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo) {
+		 CampaignVO restored = adminCampaignService.restoreByCampaignNo(campaignNo);
+		return ResponseData.ok(restored, "게시글 복구에 성공했습니다.");
 	}
 
 	/**
@@ -157,9 +158,9 @@ public class AdminCampaignController {
 	 * @param campaignNo
 	 */
 	@DeleteMapping("/{campaignNo}")
-	public ResponseEntity<ResponseData<Void>> deleteByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo){
-		adminCampaignService.deleteByCampaignNo(campaignNo);
-		return ResponseData.ok(null, "게시글이 삭제되었습니다.");
+	public ResponseEntity<ResponseData<CampaignVO>> deleteByCampaignNo(@PathVariable(name="campaignNo") Long campaignNo){
+		CampaignVO deleted = adminCampaignService.deleteByCampaignNo(campaignNo);
+		return ResponseData.ok(deleted, "게시글이 삭제되었습니다.");
 	}
 	
 

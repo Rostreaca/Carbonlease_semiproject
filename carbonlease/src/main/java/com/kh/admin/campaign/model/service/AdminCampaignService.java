@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.dto.CategoryDTO;
+import com.kh.campaign.model.vo.CampaignVO;
 
 public interface AdminCampaignService {
 	
@@ -20,7 +21,7 @@ public interface AdminCampaignService {
 	 * @param thumbnail 썸네일 이미지 파일
 	 * @param detailImage 상세 이미지 파일
 	 */
-	void save(
+	CampaignVO save(
 		CampaignDTO campaign,
 		MultipartFile thumbnail,
 		MultipartFile detailImage,
@@ -39,7 +40,7 @@ public interface AdminCampaignService {
 	 * @param detailImage
 	 * @param campaignNo
 	 */
-	void update(
+	CampaignVO update(
 		CampaignDTO campaign,
 		MultipartFile thumbnail,
 		MultipartFile detailImage,
@@ -50,19 +51,19 @@ public interface AdminCampaignService {
 	 * @param campaignNo
 	 * @return 
 	 */
-	void restoreByCampaignNo(Long campaignNo);
+	CampaignVO restoreByCampaignNo(Long campaignNo);
 
 	/**
 	 * 숨김
 	 * @param campaignNo
 	 */
-	void hideByCampaignNo(Long campaignNo);
+	CampaignVO hideByCampaignNo(Long campaignNo);
 
 
 	/**
 	 * 삭제
 	 * @param campaignNo
 	 */
-	void deleteByCampaignNo(Long campaignNo);
+	CampaignVO deleteByCampaignNo(Long campaignNo);
 	
 }

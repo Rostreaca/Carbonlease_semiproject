@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.auth.model.vo.CustomUserDetails;
-import com.kh.common.dto.ResponseData;
+import com.kh.common.responseData.ResponseData;
 import com.kh.event.model.dto.EventCampaignDTO;
 import com.kh.event.model.service.EventService;
 

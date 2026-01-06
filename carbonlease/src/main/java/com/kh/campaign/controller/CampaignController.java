@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.campaign.model.dto.CampaignDTO;
 import com.kh.campaign.model.service.CampaignService;
-import com.kh.common.dto.ResponseData;
+import com.kh.common.responseData.ResponseData;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -85,8 +85,7 @@ public class CampaignController {
 			@PathVariable("campaignNo") Long campaignNo,
 			@AuthenticationPrincipal CustomUserDetails user) {
 		boolean isLiked = campaignService.toggleLike(campaignNo, user.getMemberNo());
-		String message = isLiked ? "이 캠페인에 공감해주셨어요!" : "참여를 취소했어요. 언제든 다시 함께해주세요!";
-		return ResponseData.ok(Map.of("isLiked", isLiked), message);
+		return ResponseData.ok(Map.of("isLiked", isLiked), "캠페인 좋아요 성공");
 	}
 
 	/** 댓글 목록 조회 */
@@ -111,13 +110,13 @@ public class CampaignController {
 		return ResponseData.ok(result, "댓글 등록 성공");
 	}
 
-    /** 댓글 삭제 */
-    @DeleteMapping("/replies/{replyNo}")
-	public ResponseEntity<ResponseData<Void>> deleteReply(
+	/** 댓글 삭제 */
+	@DeleteMapping("/replies/{replyNo}")
+	public ResponseEntity<ResponseData<Long>> deleteReply(
 			@PathVariable("replyNo") Long replyNo,
 			@AuthenticationPrincipal CustomUserDetails user) {
 		campaignService.deleteReply(replyNo, user.getMemberNo());
-		return ResponseData.ok(null, "댓글 삭제 성공");
+		return ResponseData.ok(replyNo, "댓글 삭제 성공");
 	}
 
     /** 댓글 수정 */
@@ -128,7 +127,7 @@ public class CampaignController {
 			@AuthenticationPrincipal CustomUserDetails user) {
 		String replyContent = payload.get("replyContent");
 		int result = campaignService.updateReply(replyNo, replyContent, user.getMemberNo());
-		return ResponseData.ok(result, "댓글 수정 성공");
+		return ResponseData.ok(result, "캠페인 댓글 수정 성공");
 	}
 	
 

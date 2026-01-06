@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.activity.model.dto.ActivityListDTO;
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.board.model.dto.BoardDTO;
+import com.kh.common.responseData.ResponseData;
 import com.kh.member.model.dto.MemberDTO;
 import com.kh.member.model.service.MemberService;
 
@@ -78,7 +79,7 @@ public class MemberController {
 	
 	
 	@PostMapping("/checkId")
-	public ResponseEntity<String> checkId(@Valid @RequestBody MemberDTO member){
+	public ResponseEntity<ResponseData<String>> checkId(@Valid @RequestBody MemberDTO member){
 	//RequestBody를 Map으로 받거나 MemberDTO로 받던지 2중 1택
 	//Map으로 받을 경우 memberValidator.checkId()에 정규표현식 검증이 한번 더 들어가야함
 	//memberDTO를 사용하는 다른 메소드가 memberValidator.checkId()를 호출할 경우 중복된 내용으로 인해 리소스 낭비가 발생할 것을 우려
@@ -86,7 +87,7 @@ public class MemberController {
 		
 		memberService.checkId(member.getMemberId());
 		
-		return ResponseEntity.status(HttpStatus.OK).body("중복된 아이디가 없습니다.");
+		return ResponseData.ok(member.getMemberId(), "중복된 아이디가 없습니다.");
 		
 	}
 	@PostMapping("/checkNickName")

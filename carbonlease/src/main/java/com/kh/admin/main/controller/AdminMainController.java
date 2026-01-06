@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.admin.main.model.dto.RegionActivityStatsDTO;
 import com.kh.admin.main.model.service.AdminMainService;
-import com.kh.common.dto.ResponseData;
+import com.kh.common.responseData.ResponseData;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
