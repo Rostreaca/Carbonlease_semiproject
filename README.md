@@ -5,10 +5,14 @@
 
 > ## 메인 화면
 
-<img width="1216" height="771" alt="메인1" src="https://github.com/user-attachments/assets/6fa7f362-c375-49de-8b9f-dd542da0bd24" />
+![제목 없는 디자인](https://github.com/user-attachments/assets/e1ba503e-a2a1-42c5-95ec-4a5454317ff2)
 
+
+> ## 팀원 소개
+* 팀장 : 박수현
+* 팀원 : 박세혁, 백준걸, 최준영, 현금자
+  
 > ## 프로젝트 소개
-
 &nbsp; 이 프로젝트는 Spring Boot 4 + MyBatis + Oracle + JWT 인증 구조의 백엔드 서버로,<br />
 다음과 같은 기능을 제공합니다.
 * CRUD 기반의 게시판 서버
@@ -20,7 +24,6 @@
 * RESTful API 구조 준수
 
 > ## 개발 기간
-
 * 2025.11.10 ~ 2025.12.10 (약 4주)
 * 개발 인원 총 5명
 
