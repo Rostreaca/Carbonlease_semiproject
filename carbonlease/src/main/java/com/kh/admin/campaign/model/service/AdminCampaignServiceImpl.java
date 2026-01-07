@@ -177,11 +177,21 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 	public CampaignVO deleteByCampaignNo(Long campaignNo) {
 		// 0) 캠페인 번호 유효성 검사
 		campaignValidator.validateCampaignNo(campaignNo);
-		// 1) 삭제 전 캠페인 정보 조회
-		CampaignVO campaignVO = adminCampaignMapper.findByCampaignNo(campaignNo);
-		if (campaignVO == null) {
+		// 1) 삭제 전 캠페인 정보 조회 (DTO로 받아서 VO로 변환)
+		CampaignDTO dto = adminCampaignMapper.findByCampaignNo(campaignNo);
+		if (dto == null) {
 			throw new CampaignException("삭제할 캠페인이 없거나 이미 삭제되었습니다.");
 		}
+		CampaignVO campaignVO = CampaignVO.builder()
+			.campaignNo(dto.getCampaignNo())
+			.campaignTitle(dto.getCampaignTitle())
+			.campaignContent(dto.getCampaignContent())
+			.startDate(dto.getStartDate())
+			.endDate(dto.getEndDate())
+			.categoryNo(dto.getCategoryNo())
+			.memberNo(dto.getMemberNo())
+			.status(dto.getStatus())
+			.build();
 		// 2) 첨부파일 먼저 삭제
 		List<CampaignAttachmentDTO> attachments = adminCampaignMapper.findAttachmentsByNo(campaignNo);
 		deletePhysicalFiles(attachments);
@@ -287,8 +297,19 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		if (adminCampaignMapper.restoreStatus(campaignNo) == 0) {
 			throw new CampaignException("복구할 캠페인이 없거나 이미 활성 상태입니다.");
 		}
-		// 2) 복구된 캠페인 정보 반환
-		return adminCampaignMapper.findByCampaignNo(campaignNo);
+		// 2) 복구된 캠페인 정보 반환 (DTO로 받아서 VO로 변환)
+		CampaignDTO dto = adminCampaignMapper.findByCampaignNo(campaignNo);
+		if (dto == null) return null;
+		return CampaignVO.builder()
+			.campaignNo(dto.getCampaignNo())
+			.campaignTitle(dto.getCampaignTitle())
+			.campaignContent(dto.getCampaignContent())
+			.startDate(dto.getStartDate())
+			.endDate(dto.getEndDate())
+			.categoryNo(dto.getCategoryNo())
+			.memberNo(dto.getMemberNo())
+			.status(dto.getStatus())
+			.build();
 	}
 	/**
 	 * 숨김: STATUS를 'N'으로 변경하고, 실패 시에만 보고함
@@ -301,8 +322,19 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
 		if (adminCampaignMapper.hideByCampaignNo(campaignNo) == 0) {
 			throw new CampaignException("숨김 처리할 캠페인을 찾을 수 없습니다.");
 		}
-		// 2) 숨김 처리된 캠페인 정보 반환
-		return adminCampaignMapper.findByCampaignNo(campaignNo);
+		// 2) 숨김 처리된 캠페인 정보 반환 (DTO로 받아서 VO로 변환)
+		CampaignDTO dto = adminCampaignMapper.findByCampaignNo(campaignNo);
+		if (dto == null) return null;
+		return CampaignVO.builder()
+			.campaignNo(dto.getCampaignNo())
+			.campaignTitle(dto.getCampaignTitle())
+			.campaignContent(dto.getCampaignContent())
+			.startDate(dto.getStartDate())
+			.endDate(dto.getEndDate())
+			.categoryNo(dto.getCategoryNo())
+			.memberNo(dto.getMemberNo())
+			.status(dto.getStatus())
+			.build();
 	}
 
 }

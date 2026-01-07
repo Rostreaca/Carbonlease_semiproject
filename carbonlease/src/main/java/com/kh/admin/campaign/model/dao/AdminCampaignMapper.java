@@ -110,5 +110,5 @@ public interface AdminCampaignMapper {
 	int deleteByCampaignNo(Long campaignNo);
 	int deleteAllAttachmentsByCampaignNo(Long campaignNo);
 
-    CampaignVO findByCampaignNo(Long campaignNo);
+    CampaignDTO findByCampaignNo(Long campaignNo);
 }

@@ -104,6 +104,10 @@
 		</if>
 	</select>
 
+	<select id="findByCampaignNo" resultType="CampaignDTO" parameterType="long">
+		SELECT * FROM CL_CAMPAIGN WHERE CAMPAIGN_NO = #{campaignNo}
+	</select>
+
 	<!-- 조건 없이 전체 개수 조회 -->
 	<select id="findAndCountAll" resultType="_int">
 		SELECT
