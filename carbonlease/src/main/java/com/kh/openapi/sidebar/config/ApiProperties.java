@@ -1,4 +1,4 @@
-package com.kh.openapi.common.config;
+package com.kh.openapi.sidebar.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

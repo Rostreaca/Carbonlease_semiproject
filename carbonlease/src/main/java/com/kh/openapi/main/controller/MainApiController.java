@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.auth.model.vo.CustomUserDetails;
 import com.kh.common.responseData.ResponseData;
-import com.kh.openapi.common.scheduler.KepcoScheduler;
 import com.kh.openapi.main.model.dto.RegionEnergyUsageDTO;
 import com.kh.openapi.main.model.service.MainApiService;
+import com.kh.openapi.main.scheduler.KepcoScheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

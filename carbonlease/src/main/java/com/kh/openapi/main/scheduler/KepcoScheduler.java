@@ -1,4 +1,4 @@
-package com.kh.openapi.common.scheduler;
+package com.kh.openapi.main.scheduler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kh.openapi.common.client.EnergyApiClient;
+import com.kh.openapi.main.client.EnergyApiClient;
 import com.kh.openapi.main.model.dao.MainApiMapper;
 import com.kh.openapi.main.model.dto.RegionEnergyUsageDTO;
 import com.kh.openapi.main.model.vo.KoreaRegionCoordVO;

@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import com.kh.openapi.common.client.AirApiClient;
-import com.kh.openapi.common.config.ApiProperties;
+import com.kh.openapi.sidebar.client.AirApiClient;
+import com.kh.openapi.sidebar.config.ApiProperties;
 import com.kh.openapi.sidebar.model.dto.SidoPm25Response;
 import com.kh.openapi.sidebar.model.dto.StationAirResponse;
 

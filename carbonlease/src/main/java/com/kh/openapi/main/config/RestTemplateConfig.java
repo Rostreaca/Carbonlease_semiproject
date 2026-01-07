@@ -1,4 +1,4 @@
-package com.kh.openapi.common.config;
+package com.kh.openapi.main.config;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;

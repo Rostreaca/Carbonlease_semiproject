@@ -1,4 +1,4 @@
-package com.kh.openapi.common.client;
+package com.kh.openapi.main.client;
 
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kh.openapi.common.config.EnergyApiProperties;
+import com.kh.openapi.main.config.EnergyApiProperties;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

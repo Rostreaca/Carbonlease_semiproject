@@ -1,4 +1,4 @@
-package com.kh.openapi.common.client;
+package com.kh.openapi.sidebar.client;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -10,7 +10,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import com.kh.openapi.common.config.ApiProperties;
+import com.kh.openapi.sidebar.config.ApiProperties;
 
 import lombok.extern.slf4j.Slf4j;
 
