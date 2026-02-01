@@ -131,14 +131,14 @@ public class AdminCampaignServiceImpl implements AdminCampaignService {
         campaignValidator.validateCampaignDTO(campaignDTO);
 
         // 1) 첨부파일 처리 (기존 파일 삭제 후 processAttachment 호출)
+        campaignValidator.validateFile(thumbnail);
         if (thumbnail != null && !thumbnail.isEmpty()) {
-            campaignValidator.validateFile(thumbnail);
             deleteAttachment(campaignNo, 0); 
             processAttachment(thumbnail, campaignNo, 0);
         }
 
+        campaignValidator.validateFile(detailImage);
         if (detailImage != null && !detailImage.isEmpty()) {
-            campaignValidator.validateFile(detailImage);
             deleteAttachment(campaignNo, 1);
             processAttachment(detailImage, campaignNo, 1);
         }
