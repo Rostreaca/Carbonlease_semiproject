@@ -8,6 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,7 +65,7 @@ public class AdminCampaignController {
 	 */
 	@PostMapping
 	public ResponseEntity<ResponseData<CampaignVO>> save(
-			@Valid CampaignDTO campaign,
+			@ModelAttribute @Valid CampaignDTO campaign,
 			@RequestParam("thumbnail") MultipartFile thumbnail,
 			@RequestParam("detailImage") MultipartFile detailImage,
 			@AuthenticationPrincipal CustomUserDetails user) {
@@ -117,7 +118,7 @@ public class AdminCampaignController {
 	@PutMapping("/{campaignNo}")
 	public ResponseEntity<ResponseData<CampaignVO>> update(
 		@PathVariable(name="campaignNo") Long campaignNo,
-		@Valid CampaignDTO campaign,
+		@ModelAttribute @Valid CampaignDTO campaign,
 		@RequestParam(value="thumbnail", required=false) MultipartFile thumbnail,
 		@RequestParam(value="detailImage", required=false) MultipartFile detailImage
 	) {
